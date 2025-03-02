@@ -37,7 +37,7 @@ CREATE TABLE PROGETTO (
     dataLimite DATE,
     stato ENUM('aperto', 'chiuso'),
     mailC VARCHAR(255) not null,
-    tipo VARCHAR(100),
+    tipo ENUM('Hardware', 'Software'),
     FOREIGN KEY (mailC) REFERENCES CREATORE(mail)
 )engine= innodb;
 
@@ -308,6 +308,78 @@ BEGIN
 	IF numProgetti > 0 THEN
 		UPDATE creatore SET affidabilita = numProgetti/numProgettiFinanziati WHERE c.mail in (select p.mail from progetto p where p.nome=new.nome);
 	END IF;
+END;
+|
+DELIMITER ;
+
+/*procedure Daniele*/
+/* creo una procedura per l'aggiunta delle reward per un progetto */
+drop PROCEDURE if exists addReward;
+DELIMITER |
+CREATE PROCEDURE addReward (IN inputCod varchar(255), IN inputFoto blob, IN inputDescrizione text, IN inputNomeP VARCHAR(255),  OUT isAddReward bool)  
+BEGIN
+	IF (inputNomeP IS NULL) THEN
+		SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Errore: nomeP non può essere NULL';
+	END IF;
+    
+	if not exists(select * FROM Progetto WHERE nome=inputNomeP) then
+		SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Errore: nomeP non esiste come progetto';
+    end if;
+    
+    INSERT INTO REWARD (cod, foto, descrizione, nomeP) 
+    VALUES (inputCod, inputFoto, inputDescrizione, inputNomeP);
+END;
+|
+DELIMITER ;
+
+/* creo una procedura per l'aggiunta di una risposta ad un commento */
+drop PROCEDURE if exists addResponseToComment;
+DELIMITER |
+CREATE PROCEDURE addResponseToComment(IN inputId INT, IN inputNome VARCHAR(255), IN inputRisposta TEXT)
+BEGIN
+	IF not EXISTS (SELECT * FROM COMMENTO WHERE id = inputId AND risposta IS NULL) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Commento non trovato o risposta già presente';
+    END IF;
+    
+	UPDATE COMMENTO
+    SET risposta = inputRisposta
+    WHERE id = inputId
+    AND nome = inputNome;
+END;
+|
+DELIMITER ;
+
+/* creo una procedura per l'inserimento	di un profilo (solo per la realizzazione di un progetto software) */
+drop PROCEDURE if exists addProfileForProjectSoft ;
+DELIMITER |
+CREATE PROCEDURE addProfileForProjectSoft(IN inputNome VARCHAR(255), IN inputNomeS VARCHAR(255), OUT isProfileAdded BOOLEAN)
+BEGIN
+	IF EXISTS (SELECT * FROM PROGETTO WHERE nome = inputNomeS and tipo = "Software") THEN
+        INSERT INTO PROFILO (nome, nomeS) VALUES (inputNome, inputNomeS);
+        SET isProfileAdded = TRUE;
+    ELSE
+        SET isProfileAdded = FALSE;
+    END IF;
+END;
+|
+DELIMITER ;
+
+/* creo una procedura per gestire l'accettazione di una candidatura */
+drop PROCEDURE if exists gestioneCandidatura ;
+DELIMITER |
+CREATE PROCEDURE gestioneCandidatura(IN inputMail VARCHAR(255), IN inputId INT, IN inputStato VARCHAR(50))
+BEGIN
+	 IF not EXISTS (SELECT * FROM CANDIDATURA WHERE mail = inputMail AND id = inputId) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Candidatura non trovata';
+    END IF;
+    
+    UPDATE CANDIDATURA
+	SET stato = inputStato
+	WHERE mail = inputMail AND id = inputId;
 END;
 |
 DELIMITER ;
