@@ -18,7 +18,7 @@ CREATE TABLE SKILL (
 
 CREATE TABLE CREATORE (
     mail VARCHAR(255) PRIMARY KEY,
-    nr_progetti INT,
+    nr_progetti INT DEFAULT 0,
     affidabilita FLOAT,
     FOREIGN KEY (mail) REFERENCES UTENTE(mail)
 )engine= innodb;
@@ -395,3 +395,16 @@ END;
 |
 DELIMITER ;
 
+/* condizione: Ogni	qualvolta un utente	creatore inserisce un progetto,	il campo nr_progetti viene incrementato	di un’unità*/
+DROP TRIGGER if exists incrementaNrProgetti;
+DELIMITER |
+CREATE TRIGGER incrementaNrProgetti
+AFTER INSERT ON PROGETTO
+FOR EACH ROW
+BEGIN
+    UPDATE CREATORE
+    SET nr_progetti = nr_progetti + 1
+    WHERE mail = NEW.mailC;
+END;
+|
+DELIMITER ;
