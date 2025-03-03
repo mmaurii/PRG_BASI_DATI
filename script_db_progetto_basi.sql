@@ -254,65 +254,7 @@ END;
 |
 DELIMITER ;
 
-/* DEFINIZIONE DELLE VIEW */
-
-/* Visualizzare la classifica degli utenti creatori, in base al loro valore di affidabilità. Mostrare solo il nickname dei primi 3 utenti. */
-DROP VIEW if exists viewClassifica;
-CREATE VIEW viewClassifica(mail, affidabilita) AS
-	SELECT mail, affidabilita
-	FROM creatore
-	order by affidabilita desc
-    limit 3;
-
-/* DEFINIZIONE DEI TRIGGER */
-
-/* triggers per aggiornare l’affidabilità di un utente creatore. L’affidabilità viene calcolata come X è la percentuale di progetti creati dall’utente che hanno ottenuto almeno un finanziamento */
-/* condizione: ogni qualvolta un utente crea un progetto*/
-
-DROP TRIGGER if exists aggiornaAffidabilitaOnProgetto;
-DELIMITER |
-CREATE TRIGGER aggiornaAffidabilitaOnProgetto 
-after INSERT ON progetto
-FOR EACH ROW
-BEGIN
-	DECLARE numProgetti INT DEFAULT 0;
-	DECLARE numProgettiFinanziati INT DEFAULT 0;
-	/* Recupero il numero attuale di progetti dell'utente*/
-	select nr_progetti from creatore where mail=new.mailC INTO numProgetti;
-
-	/* Recupero il numero attuale di progetti finanziati*/
-	select count(*) from finanziamento where nome=new.nome INTO numProgettiFinanziati;
-    
-	IF numProgetti > 0 THEN
-		UPDATE creatore SET affidabilita = numProgetti/numProgettiFinanziati WHERE (mail=NEW.mailC);
-	END IF;
-END;
-|
-DELIMITER ;
-
-/* condizione: ogni qualvolta un progetto dell’utente riceve un finanziamento */
-DROP TRIGGER if exists aggiornaAffidabilitaOnFinanziamento;
-DELIMITER |
-CREATE TRIGGER aggiornaAffidabilitaOnFinanziamento 
-after insert on finanziamento 
-FOR EACH ROW
-BEGIN
-	DECLARE numProgetti INT DEFAULT 0;
-	DECLARE numProgettiFinanziati INT DEFAULT 0;
-	/* Recupero il numero attuale di progetti dell'utente*/
-	select c.nr_progetti from creatore c where c.mail in (select p.mail from progetto p where p.nome=new.nome) INTO numProgetti;
-
-	/* Recupero il numero attuale di progetti finanziati*/
-	select count(*) from finanziamento where nome=new.nome INTO numProgettiFinanziati;
-    
-	IF numProgetti > 0 THEN
-		UPDATE creatore SET affidabilita = numProgetti/numProgettiFinanziati WHERE c.mail in (select p.mail from progetto p where p.nome=new.nome);
-	END IF;
-END;
-|
-DELIMITER ;
-
-/*procedure Daniele*/
+/*d*/
 /* creo una procedura per l'aggiunta delle reward per un progetto */
 drop PROCEDURE if exists addReward;
 DELIMITER |
@@ -383,3 +325,73 @@ BEGIN
 END;
 |
 DELIMITER ;
+
+/* DEFINIZIONE DELLE VIEW */
+
+/* Visualizzare la classifica degli utenti creatori, in base al loro valore di affidabilità. Mostrare solo il nickname dei primi 3 utenti. */
+DROP VIEW if exists viewClassifica;
+CREATE VIEW viewClassifica(mail, affidabilita) AS
+	SELECT mail, affidabilita
+	FROM creatore
+	order by affidabilita desc
+    limit 3;
+    
+/* Visualizzare	la	classifica	degli	utenti,	ordinati	in	base	al	TOTALE di	finanziamenti erogati.	
+Mostrare	solo	i	nickname	dei	primi	3	utenti.*/
+DROP VIEW if exists ClassificaTotFinanziamenti;
+CREATE VIEW ClassificaTotFinanziamenti AS
+	SELECT U.nickname, SUM(F.importo) AS Totale_Finanziamenti
+	FROM UTENTE U, FINANZIAMENTO F
+	where U.mail = F.mail
+	GROUP BY U.mail
+	ORDER BY Totale_Finanziamenti DESC
+	LIMIT 3;
+
+/* DEFINIZIONE DEI TRIGGER */
+
+/* triggers per aggiornare l’affidabilità di un utente creatore. L’affidabilità viene calcolata come X è la percentuale di progetti creati dall’utente che hanno ottenuto almeno un finanziamento */
+/* condizione: ogni qualvolta un utente crea un progetto*/
+
+DROP TRIGGER if exists aggiornaAffidabilitaOnProgetto;
+DELIMITER |
+CREATE TRIGGER aggiornaAffidabilitaOnProgetto 
+after INSERT ON progetto
+FOR EACH ROW
+BEGIN
+	DECLARE numProgetti INT DEFAULT 0;
+	DECLARE numProgettiFinanziati INT DEFAULT 0;
+	/* Recupero il numero attuale di progetti dell'utente*/
+	select nr_progetti from creatore where mail=new.mailC INTO numProgetti;
+
+	/* Recupero il numero attuale di progetti finanziati*/
+	select count(*) from finanziamento where nome=new.nome INTO numProgettiFinanziati;
+    
+	IF numProgetti > 0 THEN
+		UPDATE creatore SET affidabilita = numProgetti/numProgettiFinanziati WHERE (mail=NEW.mailC);
+	END IF;
+END;
+|
+DELIMITER ;
+
+/* condizione: ogni qualvolta un progetto dell’utente riceve un finanziamento */
+DROP TRIGGER if exists aggiornaAffidabilitaOnFinanziamento;
+DELIMITER |
+CREATE TRIGGER aggiornaAffidabilitaOnFinanziamento 
+after insert on finanziamento 
+FOR EACH ROW
+BEGIN
+	DECLARE numProgetti INT DEFAULT 0;
+	DECLARE numProgettiFinanziati INT DEFAULT 0;
+	/* Recupero il numero attuale di progetti dell'utente*/
+	select c.nr_progetti from creatore c where c.mail in (select p.mail from progetto p where p.nome=new.nome) INTO numProgetti;
+
+	/* Recupero il numero attuale di progetti finanziati*/
+	select count(*) from finanziamento where nome=new.nome INTO numProgettiFinanziati;
+    
+	IF numProgetti > 0 THEN
+		UPDATE creatore SET affidabilita = numProgetti/numProgettiFinanziati WHERE c.mail in (select p.mail from progetto p where p.nome=new.nome);
+	END IF;
+END;
+|
+DELIMITER ;
+
