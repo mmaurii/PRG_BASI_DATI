@@ -25,6 +25,7 @@ CREATE TABLE CREATORE (
 
 CREATE TABLE ADMIN (
     mail VARCHAR(255) PRIMARY KEY,
+    
     codSicurezza VARCHAR(255) not null,
     FOREIGN KEY (mail) REFERENCES UTENTE(mail)
 )engine= innodb;
@@ -276,6 +277,85 @@ END;
 |
 DELIMITER ;
 
+/* Inserimento di un commento relativo ad un progetto */
+DROP PROCEDURE IF EXISTS InserisciCommento;
+DELIMITER |
+CREATE PROCEDURE InserisciCommento(IN inputMail VARCHAR(255), IN inputNomeProgetto VARCHAR(255), IN inputTesto TEXT, IN inputData DATE)
+BEGIN
+    if not exists(select * from progetto where nome = inputNomeProgetto) then
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'inputNome doesn\'t exists';
+    END IF;
+    insert into commento (data, testo, mail, nome)
+	values (inputData, inputTesto, inputMail, inputNomeProgetto);
+END;
+|
+DELIMITER ;
+
+
+/* Inserimento di una candidatura per un profilo richiesto per la realizzazione di un progetto software */
+DROP PROCEDURE IF EXISTS InserisciCandidatura;
+DELIMITER |
+CREATE PROCEDURE InserisciCandidatura(IN inputMail VARCHAR(255), IN inputId INT, IN inputStato VARCHAR(50))
+BEGIN
+    if not exists(select * from profilo where id = inputId) then
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'inputId doesn\'t exists';
+    END IF;
+    insert into candidatura (mail, id, stato)
+	values (inputMail, inputId, inputStato);
+END;
+|
+DELIMITER ;
+
+
+/* Inserimento di una nuova stringa nella lista delle competenze */
+DROP PROCEDURE IF EXISTS InserisciCompetenza;
+DELIMITER |
+CREATE PROCEDURE InserisciCompetenza(IN inputCompetenza VARCHAR(255))
+BEGIN
+    if exists(select * from SKILL where competenza = inputCompetenza) then
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'inputId alredy exists';
+    END IF;
+    insert into SKILL (competenza)
+	values (inputCompetenza);
+END;
+|
+DELIMITER ;
+
+
+/* In fase di autenticazione, oltre a username e password, viene richiesto anche il codice di sicurezza */
+drop PROCEDURE if exists logInAdmin;
+DELIMITER |
+CREATE PROCEDURE logInAdmin (IN inputMail varchar(255), IN inputPassword varchar(255), IN inputCodSicurezza varchar(255), OUT isLogIn bool)  
+BEGIN
+	if exists(select mail, password, codSicurezza
+				FROM ADMIN
+				WHERE (mail=inputMail) AND (password=inputPassword) AND (codSicurezza=inputCodSicurezza)) then
+		set isLogIn = true;
+    else
+		set isLogIn = false;
+    end if;
+END;
+|
+DELIMITER ;
+
+/* Inserimento di un nuovo progetto */
+DROP PROCEDURE IF EXISTS InserisciProgetto;
+DELIMITER |
+CREATE PROCEDURE InserisciProgetto(inputNome VARCHAR(255), inputDescrizione text, inputDataInserimento DATE, inputBudget int, inputDataLimite DATE, inputStato ENUM('aperto', 'chiuso'), inputMailC VARCHAR(255), inputTipo ENUM('Hardware', 'Software'))
+BEGIN
+    if exists(select * from PROGETTO where nome = inputNome) then
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'name project alredy exists';
+    END IF;
+    insert into PROGETTO (nome, descrizione, dataInserimento, budget, dataLimite, stato, mailC, tipo)
+	values (inputNome, inputDescrizione, inputDataInserimento, inputBudget, inputDataLimite, inputStato, inputMailC, inputTipo);
+END;
+|
+DELIMITER ;
+
 /* creo una procedura per l'aggiunta di una risposta ad un commento */
 drop PROCEDURE if exists addResponseToComment;
 DELIMITER |
@@ -335,7 +415,19 @@ CREATE VIEW viewClassifica(mail, affidabilita) AS
 	FROM creatore
 	order by affidabilita desc
     limit 3;
-    
+
+/* Visualizzare i progetti APERTI che sono più vicini al proprio completamento (= minore differenza tra budget richiesto e somma totale dei finanziamenti ricevuti). Mostrare solo i primi 3 progetti. */
+DROP VIEW if exists viewClassificaProgettiAperti;
+CREATE VIEW viewClassificaProgettiAperti AS
+SELECT P.nome, P.descrizione, P.dataInserimento, P.budget, P.dataLimite, 
+       P.budget - (SELECT SUM(F.importo) 
+                   FROM FINANZIAMENTO F 
+                   WHERE F.nome = P.nome) AS differenza_budget
+FROM PROGETTO P
+WHERE P.stato = 'aperto'
+ORDER BY differenza_budget ASC
+LIMIT 3;
+
 /* Visualizzare	la	classifica	degli	utenti,	ordinati	in	base	al	TOTALE di	finanziamenti erogati.	
 Mostrare	solo	i	nickname	dei	primi	3	utenti.*/
 DROP VIEW if exists ClassificaTotFinanziamenti;
@@ -391,6 +483,26 @@ BEGIN
 	IF numProgetti > 0 THEN
 		UPDATE creatore SET affidabilita = numProgetti/numProgettiFinanziati WHERE c.mail in (select p.mail from progetto p where p.nome=new.nome);
 	END IF;
+END;
+|
+DELIMITER ;
+
+/* Utilizzare un trigger per cambiare lo stato di un progetto. Lo stato di un progetto diventa CHIUSO quando ha raggiunto un valore complessivo di finanziamenti pari al budget richiesto. */
+DROP TRIGGER if exists AggiornaStatoProgetto;
+DELIMITER |
+CREATE TRIGGER AggiornaStatoProgetto
+AFTER INSERT ON FINANZIAMENTO
+FOR EACH ROW
+BEGIN
+    DECLARE totale_finanziamenti INT;
+
+    SELECT SUM(importo) INTO totale_finanziamenti
+    FROM FINANZIAMENTO
+    WHERE nome = NEW.nome;
+
+    UPDATE PROGETTO 
+    SET stato = 'chiuso' 
+    WHERE nome = NEW.nome AND totale_finanziamenti >= budget;
 END;
 |
 DELIMITER ;
