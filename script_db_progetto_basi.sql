@@ -412,7 +412,7 @@ DELIMITER ;
 DROP VIEW if exists viewClassifica;
 CREATE VIEW viewClassifica(mail, affidabilita) AS
 	SELECT mail, affidabilita
-	FROM creatore
+	FROM CREATORE
 	order by affidabilita desc
     limit 3;
 
@@ -447,19 +447,19 @@ CREATE VIEW ClassificaTotFinanziamenti AS
 DROP TRIGGER if exists aggiornaAffidabilitaOnProgetto;
 DELIMITER |
 CREATE TRIGGER aggiornaAffidabilitaOnProgetto 
-after INSERT ON progetto
+after INSERT ON PROGETTO
 FOR EACH ROW
 BEGIN
 	DECLARE numProgetti INT DEFAULT 0;
 	DECLARE numProgettiFinanziati INT DEFAULT 0;
 	/* Recupero il numero attuale di progetti dell'utente*/
-	select nr_progetti from creatore where mail=new.mailC INTO numProgetti;
+	select nr_progetti from CREATORE where mail=new.mailC INTO numProgetti;
 
 	/* Recupero il numero attuale di progetti finanziati*/
-	select count(*) from finanziamento where nome=new.nome INTO numProgettiFinanziati;
+	select count(*) from FINAZIAMENTO where nome=new.nome INTO numProgettiFinanziati;
     
 	IF numProgetti > 0 THEN
-		UPDATE creatore SET affidabilita = numProgetti/numProgettiFinanziati WHERE (mail=NEW.mailC);
+		UPDATE CREATORE SET affidabilita = numProgetti/numProgettiFinanziati WHERE (mail=NEW.mailC);
 	END IF;
 END;
 |
@@ -469,19 +469,19 @@ DELIMITER ;
 DROP TRIGGER if exists aggiornaAffidabilitaOnFinanziamento;
 DELIMITER |
 CREATE TRIGGER aggiornaAffidabilitaOnFinanziamento 
-after insert on finanziamento 
+after insert on FINANZIAMENTO 
 FOR EACH ROW
 BEGIN
 	DECLARE numProgetti INT DEFAULT 0;
 	DECLARE numProgettiFinanziati INT DEFAULT 0;
 	/* Recupero il numero attuale di progetti dell'utente*/
-	select c.nr_progetti from creatore c where c.mail in (select p.mail from progetto p where p.nome=new.nome) INTO numProgetti;
+	select c.nr_progetti from CREATORE c where c.mail in (select p.mail from progetto p where p.nome=new.nome) INTO numProgetti;
 
 	/* Recupero il numero attuale di progetti finanziati*/
-	select count(*) from finanziamento where nome=new.nome INTO numProgettiFinanziati;
+	select count(*) from FINANZIAMENTO where nome=new.nome INTO numProgettiFinanziati;
     
 	IF numProgetti > 0 THEN
-		UPDATE creatore SET affidabilita = numProgetti/numProgettiFinanziati WHERE c.mail in (select p.mail from progetto p where p.nome=new.nome);
+		UPDATE CREATORE SET affidabilita = numProgetti/numProgettiFinanziati WHERE c.mail in (select p.mail from progetto p where p.nome=new.nome);
 	END IF;
 END;
 |
@@ -520,3 +520,5 @@ BEGIN
 END;
 |
 DELIMITER ;
+
+SHOW PROCEDURE STATUS WHERE Db = 'BOSTARTER';
