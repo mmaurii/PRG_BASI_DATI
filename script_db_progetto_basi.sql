@@ -25,7 +25,6 @@ CREATE TABLE CREATORE (
 
 CREATE TABLE ADMIN (
     mail VARCHAR(255) PRIMARY KEY,
-    
     codSicurezza VARCHAR(255) not null,
     FOREIGN KEY (mail) REFERENCES UTENTE(mail)
 )engine= innodb;
@@ -328,15 +327,20 @@ DELIMITER ;
 /* In fase di autenticazione, oltre a username e password, viene richiesto anche il codice di sicurezza */
 drop PROCEDURE if exists logInAdmin;
 DELIMITER |
-CREATE PROCEDURE logInAdmin (IN inputMail varchar(255), IN inputPassword varchar(255), IN inputCodSicurezza varchar(255), OUT isLogIn bool)  
+CREATE PROCEDURE logInAdmin (IN inputMail VARCHAR(255), IN inputPassword VARCHAR(255), IN inputCodSicurezza VARCHAR(255), OUT isLogIn BOOL)  
 BEGIN
-	if exists(select mail, password, codSicurezza
-				FROM ADMIN
-				WHERE (mail=inputMail) AND (password=inputPassword) AND (codSicurezza=inputCodSicurezza)) then
-		set isLogIn = true;
-    else
-		set isLogIn = false;
-    end if;
+    IF EXISTS (
+        SELECT mail
+        FROM ADMIN A
+        JOIN UTENTE U ON A.mail = U.mail
+        WHERE A.mail = inputMail 
+              AND U.password = inputPassword 
+              AND A.codSicurezza = inputCodSicurezza
+    ) THEN
+        SET isLogIn = TRUE;
+    ELSE
+        SET isLogIn = FALSE;
+    END IF;
 END;
 |
 DELIMITER ;
