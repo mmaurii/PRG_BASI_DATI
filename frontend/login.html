@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>HTML Login Form</title>
+    <link rel="stylesheet" type="text/css" href="style_index.css">
+    <script src="script_index.js"></script>
+</head>
+
+<body>
+    <div class="main">
+        <h1>SELFIE</h1>
+        <h3>Enter your login credentials</h3>
+        <p id="errorMsg"></p>
+        <form action="">
+            <label for="first">
+                Username:
+            </label>
+            <input type="text" id="first" name="first"
+                   placeholder="Enter your Username" required>
+
+            <label for="password">
+                Password:
+            </label>
+            <input type="password" id="password" name="password"
+                   placeholder="Enter your Password" required>
+
+            <div class="wrap">
+                <button id="login" type="submit">
+                    Login
+                </button>
+                <button id="createAccount" type="submit">
+                    Submit
+                </button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
