@@ -19,7 +19,7 @@ CREATE TABLE SKILL (
 CREATE TABLE CREATORE (
     mail VARCHAR(255) PRIMARY KEY,
     nr_progetti INT DEFAULT 0,
-    affidabilita FLOAT,
+    affidabilita FLOAT DEFAULT 0,
     FOREIGN KEY (mail) REFERENCES UTENTE(mail)
 )engine= innodb;
 
@@ -35,7 +35,7 @@ CREATE TABLE PROGETTO (
     dataInserimento DATE,
     budget int,
     dataLimite DATE,
-    stato ENUM('aperto', 'chiuso'),
+    stato ENUM('aperto', 'chiuso') default 'aperto',
     mailC VARCHAR(255) not null,
     tipo ENUM('Hardware', 'Software'),
     FOREIGN KEY (mailC) REFERENCES CREATORE(mail)
@@ -129,21 +129,6 @@ CREATE TABLE CANDIDATURA (
     FOREIGN KEY (mail) REFERENCES UTENTE(mail),
     FOREIGN KEY (id) REFERENCES PROFILO(id)
 )engine= innodb;
-
-DESCRIBE SKILL;
-DESCRIBE COMMENTO;
-DESCRIBE CREATORE;
-DESCRIBE ADMIN;
-DESCRIBE FOTO;
-DESCRIBE PROGETTO;
-DESCRIBE COMPONENTE;
-DESCRIBE PROFILO;
-DESCRIBE REWARD;
-DESCRIBE FINANZIAMENTO;
-DESCRIBE POSSIEDE;
-DESCRIBE S_P;
-DESCRIBE COMPOSTO;
-DESCRIBE CANDIDATURA;
 
 SELECT User, Host FROM mysql.user;
 
@@ -460,36 +445,54 @@ BEGIN
 	select nr_progetti from CREATORE where mail=new.mailC INTO numProgetti;
 
 	/* Recupero il numero attuale di progetti finanziati*/
-	select count(*) from FINAZIAMENTO where nome=new.nome INTO numProgettiFinanziati;
+	select count(*) from FINANZIAMENTO where nome=new.nome INTO numProgettiFinanziati;
     
-	IF numProgetti > 0 THEN
-		UPDATE CREATORE SET affidabilita = numProgetti/numProgettiFinanziati WHERE (mail=NEW.mailC);
-	END IF;
+    /* Solo se il progetto ha finanziamenti, aggiorno l'affidabilità */
+	IF numProgettiFinanziati > 0 THEN
+        IF numProgetti > 0 THEN
+            UPDATE CREATORE 
+            SET affidabilita = numProgetti / numProgettiFinanziati 
+            WHERE mail = NEW.mailC;
+        END IF;
+    END IF;
 END;
 |
 DELIMITER ;
 
 /* condizione: ogni qualvolta un progetto dell’utente riceve un finanziamento */
-DROP TRIGGER if exists aggiornaAffidabilitaOnFinanziamento;
+DROP TRIGGER IF EXISTS aggiornaAffidabilitaOnFinanziamento;
 DELIMITER |
 CREATE TRIGGER aggiornaAffidabilitaOnFinanziamento 
-after insert on FINANZIAMENTO 
+AFTER INSERT ON FINANZIAMENTO 
 FOR EACH ROW
 BEGIN
-	DECLARE numProgetti INT DEFAULT 0;
-	DECLARE numProgettiFinanziati INT DEFAULT 0;
-	/* Recupero il numero attuale di progetti dell'utente*/
-	select c.nr_progetti from CREATORE c where c.mail in (select p.mail from progetto p where p.nome=new.nome) INTO numProgetti;
+    DECLARE numProgetti INT DEFAULT 0;
+    DECLARE numProgettiFinanziati INT DEFAULT 0;
 
-	/* Recupero il numero attuale di progetti finanziati*/
-	select count(*) from FINANZIAMENTO where nome=new.nome INTO numProgettiFinanziati;
-    
-	IF numProgetti > 0 THEN
-		UPDATE CREATORE SET affidabilita = numProgetti/numProgettiFinanziati WHERE c.mail in (select p.mail from progetto p where p.nome=new.nome);
-	END IF;
+    /* Recupero il numero attuale di progetti dell'utente */
+    SELECT c.nr_progetti
+    INTO numProgetti
+    FROM CREATORE c
+    JOIN PROGETTO p ON p.mailC = c.mail
+    WHERE p.nome = NEW.nome;
+
+    /* Recupero il numero attuale di progetti finanziati */
+    SELECT COUNT(*)
+    INTO numProgettiFinanziati
+    FROM FINANZIAMENTO
+    WHERE nome = NEW.nome;
+
+    /* Evita divisioni per zero */
+    IF numProgettiFinanziati > 0 THEN
+        UPDATE CREATORE 
+        SET affidabilita = numProgetti / numProgettiFinanziati
+        WHERE mail = (SELECT p.mailC FROM PROGETTO p WHERE p.nome = NEW.nome LIMIT 1);
+    END IF;
 END;
 |
 DELIMITER ;
+
+
 
 /* Utilizzare un trigger per cambiare lo stato di un progetto. Lo stato di un progetto diventa CHIUSO quando ha raggiunto un valore complessivo di finanziamenti pari al budget richiesto. */
 DROP TRIGGER if exists AggiornaStatoProgetto;
@@ -526,3 +529,221 @@ END;
 DELIMITER ;
 
 SHOW PROCEDURE STATUS WHERE Db = 'BOSTARTER';
+
+INSERT INTO UTENTE (mail, nickname, password, nome, cognome, annoN, luogo) 
+VALUES 
+('mario.rossi@email.com', 'MarioR', 'Pass123!', 'Mario', 'Rossi', 1995, 'Roma'),
+('luca.bianchi@email.com', 'LucaB', 'Secure456$', 'Luca', 'Bianchi', 1998, 'Milano'),
+('anna.verdi@email.com', 'AnnaV', 'Anna789%', 'Anna', 'Verdi', 2000, 'Firenze'),
+('sara.neri@email.com', 'SaraN', 'SaraPass99', 'Sara', 'Neri', 1993, 'Torino'),
+('giovanni.ferri@email.com', 'GiovanniF', 'GioSecure22', 'Giovanni', 'Ferri', 1997, 'Napoli'),
+('elena.moro@email.com', 'ElenaM', 'MoroPass33', 'Elena', 'Moro', 1996, 'Bologna'),
+('paolo.riva@email.com', 'PaoloR', 'RivaStrong77', 'Paolo', 'Riva', 1992, 'Genova'),
+('francesca.fontana@email.com', 'FrancyF', 'Fontana!88', 'Francesca', 'Fontana', 2001, 'Palermo'),
+('andrea.serra@email.com', 'AndreaS', 'SerraXx12', 'Andrea', 'Serra', 1999, 'Cagliari'),
+('valentina.marchi@email.com', 'ValeM', 'MarchiPass66', 'Valentina', 'Marchi', 1994, 'Verona');
+
+INSERT INTO SKILL (competenza) VALUES 
+('Programmazione'),
+('Design Grafico'),
+('Marketing Digitale'),
+('Scrittura Creativa'),
+('Gestione Progetti'),
+('Fotografia'),
+('Montaggio Video'),
+('Sviluppo Business'),
+('Ingegneria Elettronica'),
+('UI/UX Design');
+
+INSERT INTO CREATORE (mail, nr_progetti, affidabilita) VALUES 
+('mario.rossi@email.com', 0, 0),
+('luca.bianchi@email.com', 0, 0),
+('anna.verdi@email.com', 0, 0),
+('sara.neri@email.com', 0, 0),
+('giovanni.ferri@email.com', 0, 0);
+
+INSERT INTO ADMIN (mail, codSicurezza) VALUES 
+('mario.rossi@email.com', 'SEC123XYZ'),
+('sara.neri@email.com', 'SAFE456ABC'),
+('paolo.riva@email.com', 'PROT789DEF'),
+('valentina.marchi@email.com', 'SECURE101GHI'),
+('andrea.serra@email.com', 'LOCK202JKL');
+
+INSERT INTO PROGETTO (nome, descrizione, dataInserimento, budget, dataLimite, stato, mailC, tipo) VALUES 
+('Smart Home Hub', 'Un dispositivo per la gestione della casa domotica.', '2025-02-15', 5000, '2025-06-15', 'aperto', 'mario.rossi@email.com', 'Hardware'),
+('App Fitness Tracker', 'Un app mobile per monitorare l\'attività fisica.', '2025-01-10', 3000, '2025-05-01', 'aperto', 'luca.bianchi@email.com', 'Software'),
+('Drone Fotografico', 'Un drone compatto per fotografie ad alta risoluzione.', '2025-03-01', 8000, '2025-07-01', 'aperto', 'anna.verdi@email.com', 'Hardware'),
+('Piattaforma E-Learning', 'Un portale per corsi online interattivi.', '2025-02-20', 7000, '2025-06-30', 'aperto', 'sara.neri@email.com', 'Software'),
+('Sistema AI Chatbot', 'Un chatbot basato su AI per customer support.', '2025-01-25', 6000, '2025-04-30', 'aperto', 'giovanni.ferri@email.com', 'Software'),
+('Smartwatch Personalizzabile', 'Uno smartwatch con cinturini e display intercambiabili.', '2025-02-05', 10000, '2025-07-15', 'aperto', 'mario.rossi@email.com', 'Hardware'),
+('App Finanziaria', 'Un app per la gestione delle spese personali.', '2025-03-10', 4000, '2025-08-10', 'aperto', 'luca.bianchi@email.com', 'Software'),
+('Stampante 3D Portatile', 'Una stampante 3D compatta e facile da trasportare.', '2025-01-30', 12000, '2025-06-10', 'aperto', 'anna.verdi@email.com', 'Hardware'),
+('Social Network Creativo', 'Una piattaforma per artisti e designer.', '2025-02-12', 9000, '2025-09-01', 'aperto', 'sara.neri@email.com', 'Software'),
+('Dispositivo IoT per Piante', 'Un sensore intelligente per monitorare le piante domestiche.', '2025-03-05', 5000, '2025-07-20', 'aperto', 'giovanni.ferri@email.com', 'Hardware');
+
+INSERT INTO FOTO (foto, nomeP) VALUES
+(0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Smart Home Hub'),
+(0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'App Fitness Tracker'),
+(0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Drone Fotografico'),
+(0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Piattaforma E-Learning'),
+(0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Sistema AI Chatbot');
+
+INSERT INTO COMMENTO (data, testo, risposta, mail, nome) VALUES
+('2025-03-01', 'Questo progetto è molto interessante, non vedo l\'ora di vedere i progressi!', NULL, 'luca.bianchi@email.com', 'Smart Home Hub'),
+('2025-03-02', 'Mi piacerebbe saperne di più sulla tecnologia dietro il fitness tracker.', NULL, 'giovanni.ferri@email.com', 'App Fitness Tracker'),
+('2025-03-03', 'Spero che il drone abbia una buona stabilità nelle riprese ad alta altitudine.', NULL, 'mario.rossi@email.com', 'Drone Fotografico'),
+('2025-03-04', 'Piattaforma molto interessante, mi piace l\'idea di corsi online interattivi.', NULL, 'anna.verdi@email.com', 'Piattaforma E-Learning'),
+('2025-03-05', 'Un chatbot basato su AI può davvero migliorare il supporto clienti!', NULL, 'sara.neri@email.com', 'Sistema AI Chatbot');
+
+INSERT INTO COMPONENTE (nomeC, descrizione, prezzo, qt) VALUES
+('Modulo Wi-Fi', 'Un modulo per aggiungere connettività Wi-Fi a dispositivi elettronici.', 50, 100),
+('Sensore di Temperatura', 'Sensore per misurare la temperatura in ambienti esterni o interni.', 20, 150),
+('Batteria Li-Ion', 'Batteria ricaricabile per alimentare dispositivi mobili e hardware portatile.', 40, 200),
+('Motore Elettrico', 'Motore ad alta efficienza per applicazioni robotiche o veicoli elettrici.', 120, 80),
+('Display LCD 4.3"', 'Display a cristalli liquidi per progetti elettronici di piccole dimensioni.', 25, 50),
+('Sensore di Movimento', 'Sensore di movimento per sistemi di sicurezza o automazione domestica.', 15, 120),
+('Scheda Arduino Uno', 'Scheda di sviluppo per prototipi elettronici e applicazioni embedded.', 35, 200),
+('Camera 4K', 'Camera compatta ad alta risoluzione, ideale per droni o progetti di videosorveglianza.', 250, 30),
+('Pannello Solare', 'Pannello solare per alimentare dispositivi elettronici in ambienti esterni.', 150, 60),
+('Cinturino Smartwatch', 'Cinturino in silicone per smartwatch personalizzabili.', 10, 300);
+
+INSERT INTO REWARD (cod, foto, descrizione, nomeP) VALUES
+('RWD01', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Un kit per l\'automazione della casa, incluso il modulo Wi-Fi e sensori di movimento.', 'Smart Home Hub'),
+('RWD02', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Un abbonamento premium con funzionalità avanzate per tracciare i progressi e le prestazioni.', 'App Fitness Tracker'),
+('RWD03', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Accessori premium per il drone, inclusi nuovi filtri e una batteria di lunga durata.', 'Drone Fotografico'),
+('RWD04', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Un corso online gratuito sulla creazione di contenuti e corsi interattivi sulla piattaforma.', 'Piattaforma E-Learning'),
+('RWD05', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Un pacchetto di 5 ore di consulenza su come migliorare le prestazioni del tuo chatbot.', 'Sistema AI Chatbot'),
+('RWD06', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Un smartwatch personalizzabile con display intercambiabile.', 'Smartwatch Personalizzabile'),
+('RWD07', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Un accessorio aggiuntivo per l\'app, inclusi nuovi strumenti di analisi finanziaria.', 'App Finanziaria'),
+('RWD08', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Un kit portatile di stampante 3D, con filamento incluso.', 'Stampante 3D Portatile'),
+('RWD09', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Un pacchetto di supporto dedicato agli artisti con strumenti creativi avanzati.', 'Social Network Creativo'),
+('RWD10', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Un sensore IoT per monitorare l\'umidità delle piante e ricevere notifiche.', 'Dispositivo IoT per Piante');
+
+INSERT INTO FINANZIAMENTO (mail, nome, data, importo, codR) VALUES
+('mario.rossi@email.com', 'Smart Home Hub', '2025-02-20', 2000, 'RWD01'),
+('luca.bianchi@email.com', 'App Fitness Tracker', '2025-01-12', 1500, 'RWD02'),
+('anna.verdi@email.com', 'Drone Fotografico', '2025-03-05', 2500, 'RWD03'),
+('sara.neri@email.com', 'Piattaforma E-Learning', '2025-02-22', 3000, 'RWD04'),
+('giovanni.ferri@email.com', 'Sistema AI Chatbot', '2025-01-28', 2000, 'RWD05'),
+('mario.rossi@email.com', 'Smartwatch Personalizzabile', '2025-02-15', 2500, 'RWD06'),
+('luca.bianchi@email.com', 'App Finanziaria', '2025-03-01', 18000, 'RWD07'),
+('anna.verdi@email.com', 'Stampante 3D Portatile', '2025-01-25', 3500, 'RWD08'),
+('sara.neri@email.com', 'Social Network Creativo', '2025-02-10', 40000, 'RWD09'),
+('giovanni.ferri@email.com', 'Dispositivo IoT per Piante', '2025-03-08', 2200, 'RWD10');
+
+INSERT INTO POSSIEDE (mail, competenza, livello) VALUES
+('mario.rossi@email.com', 'Programmazione', 4),
+('mario.rossi@email.com', 'Gestione Progetti', 3),
+('luca.bianchi@email.com', 'Design Grafico', 5),
+('luca.bianchi@email.com', 'Marketing Digitale', 4),
+('anna.verdi@email.com', 'Fotografia', 4),
+('anna.verdi@email.com', 'Montaggio Video', 3),
+('sara.neri@email.com', 'UI/UX Design', 5),
+('sara.neri@email.com', 'Design Grafico', 4),
+('giovanni.ferri@email.com', 'Ingegneria Elettronica', 5),
+('giovanni.ferri@email.com', 'Sviluppo Business', 3);
+
+INSERT INTO PROFILO (nome, nomeS) VALUES
+('Sviluppatore Backend', 'Smart Home Hub'),
+('Sviluppatore Frontend', 'Smart Home Hub'),
+('Designer UI/UX', 'App Fitness Tracker'),
+('Marketing Specialist', 'App Fitness Tracker'),
+('Fotografo', 'Drone Fotografico'),
+('Ingegnere Elettronico', 'Drone Fotografico'),
+('Docente', 'Piattaforma E-Learning'),
+('Sviluppatore Web', 'Piattaforma E-Learning'),
+('Specialista AI', 'Sistema AI Chatbot'),
+('Sviluppatore App', 'Sistema AI Chatbot'),
+('Hardware Engineer', 'Smartwatch Personalizzabile'),
+('Designer di Prodotto', 'Smartwatch Personalizzabile'),
+('Sviluppatore iOS', 'App Finanziaria'),
+('Sviluppatore Android', 'App Finanziaria'),
+('Tecnico di Stampa 3D', 'Stampante 3D Portatile'),
+('Ingegnere Meccanico', 'Stampante 3D Portatile'),
+('Social Media Manager', 'Social Network Creativo'),
+('Sviluppatore Frontend', 'Social Network Creativo'),
+('Sviluppatore IoT', 'Dispositivo IoT per Piante'),
+('Agronomo', 'Dispositivo IoT per Piante');
+
+INSERT INTO S_P (competenza, idProfilo, livello) VALUES 
+('Programmazione', 1, 4), 
+('UI/UX Design', 1, 5), 
+('Design Grafico', 2, 3), 
+('Marketing Digitale', 2, 4), 
+('Programmazione', 3, 4), 
+('Ingegneria Elettronica', 3, 5), 
+('Gestione Progetti', 4, 4), 
+('Programmazione', 4, 5), 
+('Programmazione', 5, 4), 
+('Sviluppo Business', 5, 5), 
+('Ingegneria Elettronica', 6, 3), 
+('Design Grafico', 6, 4), 
+('Programmazione', 7, 4), 
+('Programmazione', 9, 5), 
+('Programmazione', 10, 5);
+
+INSERT INTO COMPOSTO (nomeC, nomeH) VALUES
+('Modulo Wi-Fi', 'Smart Home Hub'),
+('Sensore di Movimento', 'Smart Home Hub'),
+('Batteria Li-Ion', 'Smart Home Hub'),
+('Display LCD 4.3"', 'Smart Home Hub'),
+('Motore Elettrico', 'Drone Fotografico'),
+('Camera 4K', 'Drone Fotografico'),
+('Batteria Li-Ion', 'Drone Fotografico'),
+('Modulo Wi-Fi', 'Piattaforma E-Learning'),
+('Sensore di Temperatura', 'Piattaforma E-Learning'),
+('Batteria Li-Ion', 'Piattaforma E-Learning'),
+('Scheda Arduino Uno', 'Sistema AI Chatbot'),
+('Sensore di Movimento', 'Sistema AI Chatbot'),
+('Sensore di Temperatura', 'Sistema AI Chatbot'),
+('Cinturino Smartwatch', 'Smartwatch Personalizzabile'),
+('Display LCD 4.3"', 'Smartwatch Personalizzabile'),
+('Batteria Li-Ion', 'Smartwatch Personalizzabile'),
+('Modulo Wi-Fi', 'App Finanziaria'),
+('Sensore di Temperatura', 'App Finanziaria'),
+('Cinturino Smartwatch', 'App Finanziaria'),
+('Pannello Solare', 'Stampante 3D Portatile'),
+('Motore Elettrico', 'Stampante 3D Portatile'),
+('Batteria Li-Ion', 'Stampante 3D Portatile'),
+('Display LCD 4.3"', 'Social Network Creativo'),
+('Scheda Arduino Uno', 'Social Network Creativo'),
+('Sensore di Movimento', 'Social Network Creativo'),
+('Motore Elettrico', 'Dispositivo IoT per Piante'),
+('Sensore di Temperatura', 'Dispositivo IoT per Piante'),
+('Batteria Li-Ion', 'Dispositivo IoT per Piante');
+
+INSERT INTO CANDIDATURA (mail, id, stato) VALUES
+('mario.rossi@email.com', 1, 'in attesa'),  -- Candidato per il profilo 1
+('luca.bianchi@email.com', 2, 'in attesa'), -- Candidato per il profilo 2
+('anna.verdi@email.com', 3, 'in attesa'),   -- Candidato per il profilo 3
+('sara.neri@email.com', 4, 'in attesa'),    -- Candidato per il profilo 4
+('giovanni.ferri@email.com', 5, 'in attesa'), -- Candidato per il profilo 5
+('mario.rossi@email.com', 6, 'in attesa'),  -- Candidato per il profilo 6
+('luca.bianchi@email.com', 7, 'in attesa'), -- Candidato per il profilo 7
+('anna.verdi@email.com', 8, 'in attesa'),   -- Candidato per il profilo 8
+('sara.neri@email.com', 9, 'in attesa'),    -- Candidato per il profilo 9
+('giovanni.ferri@email.com', 10, 'in attesa'); -- Candidato per il profilo 10
+
+SELECT * FROM UTENTE;
+SELECT * FROM CREATORE;
+SELECT * FROM ADMIN;
+SELECT * FROM PROGETTO;
+SELECT * FROM FINANZIAMENTO;
+SELECT * FROM REWARD;
+SELECT * FROM FOTO;
+SELECT * FROM COMMENTO;
+SELECT * FROM COMPONENTE;
+SELECT * FROM COMPOSTO;
+SELECT * FROM SKILL;
+SELECT * FROM POSSIEDE;
+SELECT * FROM PROFILO;
+SELECT * FROM S_P;
+SELECT * FROM CANDIDATURA;
+
+select * from viewClassifica;
+select * from viewClassificaProgettiAperti;
+select * from ClassificaTotFinanziamenti;
+
+SHOW PROCEDURE STATUS WHERE Db = 'BOSTARTER';
+
+
