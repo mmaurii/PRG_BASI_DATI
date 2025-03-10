@@ -310,12 +310,12 @@ DELIMITER ;
 
 
 /* In fase di autenticazione, oltre a username e password, viene richiesto anche il codice di sicurezza */
-drop PROCEDURE if exists logInAdmin;
+DROP PROCEDURE IF EXISTS logInAdmin;
 DELIMITER |
 CREATE PROCEDURE logInAdmin (IN inputMail VARCHAR(255), IN inputPassword VARCHAR(255), IN inputCodSicurezza VARCHAR(255), OUT isLogIn BOOL)  
 BEGIN
     IF EXISTS (
-        SELECT mail
+        SELECT A.mail
         FROM ADMIN A
         JOIN UTENTE U ON A.mail = U.mail
         WHERE A.mail = inputMail 
