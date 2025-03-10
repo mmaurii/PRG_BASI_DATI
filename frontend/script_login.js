@@ -29,7 +29,8 @@ async function createAccount(event){
    //verifico che non ci sia già un utente con lo stesso nome
    // Hash della password (utilizzando la libreria SubtleCrypto disponibile nei browser moderni)
    try {
-      const hashedPassword = await hashPassword(password);
+/*       const hashedPassword = await hashPassword(password);
+ */      const hashedPassword = password;
 
       // Prepara i dati da inviare al server
       const registerData = {
@@ -77,16 +78,17 @@ async function login(event){
 
    // Hash della password (utilizzando la libreria SubtleCrypto disponibile nei browser moderni)
    try {
-      const hashedPassword = await hashPassword(password);
+      //const hashedPassword = await hashPassword(password);
+      const hashedPassword = password;
 
       // Prepara i dati da inviare al server
       const loginData = {
-         username: username,
-         password: hashedPassword, // Invia l'hash invece della password in chiaro
+         mail: username,
+         password: hashedPassword,
       };
 
       // Invia i dati al server tramite una richiesta POST
-      const response = await fetch('http://localhost:3000/login', {
+      const response = await fetch('http://localhost/prg_basi_dati/backend/login.php', {
          method: 'POST',
          headers: {
             'Content-Type': 'application/json'
@@ -100,7 +102,10 @@ async function login(event){
          usernameField.value = '';
          passwordField.value = '';
          // alert('Login effettuato con successo!');
-         window.location.href = '/home'; // Reindirizza a una nuova pagina
+         jwtToken = await response.text();
+         localStorage.setItem('jwt', jwtToken);
+         console.log(jwtToken);
+        // window.location.href = './index.html'; // Reindirizza a una nuova pagina
       }else if(response.status === 400){
          let msg = await response.text();
          pErrorMsg.innerText = msg;

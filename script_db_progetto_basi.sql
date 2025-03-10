@@ -140,7 +140,7 @@ DELIMITER |
 CREATE PROCEDURE logIn (IN inputMail varchar(255), IN inputPassword varchar(255), OUT isLogIn bool)  
 BEGIN
 	if exists(select mail, password
-				FROM utente
+				FROM UTENTE
 				WHERE (mail=inputMail) AND (password=inputPassword)) then
 		set isLogIn = true;
     else
