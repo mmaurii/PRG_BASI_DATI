@@ -104,8 +104,10 @@ async function login(event){
          // alert('Login effettuato con successo!');
          jwtToken = await response.text();
          localStorage.setItem('jwt', jwtToken);
+         
+         //MENAGE LOGIN
          console.log(jwtToken);
-        // window.location.href = './index.html'; // Reindirizza a una nuova pagina
+         window.location.href = './index.html'; // Reindirizza a una nuova pagina
       }else if(response.status === 400){
          let msg = await response.text();
          pErrorMsg.innerText = msg;
