@@ -1,15 +1,15 @@
 <?php
-require 'config.php';
+require_once 'config.php';
 require  __DIR__ . '/../vendor/autoload.php';
 
-/* $servername = "13.61.196.206";  // Usa "localhost" se il database è sulla stessa macchina
+$servername = "13.61.196.206";  // Usa "localhost" se il database è sulla stessa macchina
 $dbUsername = "prova";         // Nome utente MySQL (modifica se necessario)
 $dbPassword = "MyNewPass1!";   // Password dell'utente MySQL (se impostata)
-$dbName = "BOSTARTER";  // Il nome del database */
+$dbName = "BOSTARTER";  // Il nome del database
 
 // key for JWT connection
-/* $jwtKey = bin2hex(random_bytes(32)); // Keep this secret!
- */
+$jwtKey = bin2hex(random_bytes(32)); // Keep this secret!
+
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 "aud" => "yourdomain.com",
                 "iat" => $issuedAt,
                 "exp" => $expirationTime,
-                "user_id" => rand(1, 1000),
+                "user_id" => $username,
                 "username" => $username
             ];
 
@@ -73,7 +73,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         echo json_encode(["error" => "User not found"]);
     }
-}else {
-    echo json_encode(["error" => "HTTP method not allowed"]);
 }
 ?>

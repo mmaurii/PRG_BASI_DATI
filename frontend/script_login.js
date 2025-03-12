@@ -102,10 +102,8 @@ async function login(event){
          usernameField.value = '';
          passwordField.value = '';
          // alert('Login effettuato con successo!');
-         localStorage.removeItem("jwtToken"); // Remove the token
-
          jwtToken = await response.text();
-         localStorage.setItem('jwtToken', jwtToken);
+         localStorage.setItem('jwt', jwtToken);
          
          //MENAGE LOGIN
          console.log(jwtToken);

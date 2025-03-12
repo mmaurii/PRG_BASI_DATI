@@ -2,8 +2,6 @@ drop database if exists BOSTARTER;
 create database BOSTARTER;
 use BOSTARTER;
 
-/*definizione schema db*/
-
 create table UTENTE(
 	mail varchar(255) primary key,
     nickname varchar(255),
@@ -81,7 +79,7 @@ CREATE TABLE FINANZIAMENTO (
     nome VARCHAR(255),
     data DATE,
     importo int,
-    codR VARCHAR(255),
+    codR VARCHAR(255) not null,
     PRIMARY KEY (mail, nome, data),
     FOREIGN KEY (mail) REFERENCES UTENTE(mail),
     FOREIGN KEY (nome) REFERENCES PROGETTO(nome),
