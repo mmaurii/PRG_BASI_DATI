@@ -1,5 +1,5 @@
 <?php
-require 'config.php';
+require_once 'config.php';
 require  __DIR__ . '/../vendor/autoload.php';
 
 /* $servername = "13.61.196.206";  // Usa "localhost" se il database è sulla stessa macchina
@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Connessione al DB
     try {
-        $pdo = new PDO('mysql:host='.$servername.';dbname='.$dbName, $dbUsername, $dbPassword);
+        $pdo = new PDO('mysql:host='.servername.';dbname='.dbName, dbUsername, dbPassword);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (PDOException $e) {
         echo ("[ERRORE] Connessione al DB non riuscita. Errore: " . $e->getMessage());
@@ -56,17 +56,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($row > 0) {
         if ($row['outputValue']) {
             $payload = [
-                "iss" => "yourdomain.com",
-                "aud" => "yourdomain.com",
+                "iss" => "bostarter.com",
+                "aud" => "bostarter.com",
                 "iat" => $issuedAt,
                 "exp" => $expirationTime,
-                "user_id" => rand(1, 1000),
+                "user_id" => $username,
                 "username" => $username
             ];
 
-            $jwt = JWT::encode($payload, $jwtKey, 'HS256');
+            $jwtToken = JWT::encode($payload, JWTKEY, 'HS256');
 
-            echo json_encode(["token" => $jwt]);
+            echo json_encode(["token" => $jwtToken]);
         } else {
             echo json_encode(["error" => "Invalid credentials"]);
         }

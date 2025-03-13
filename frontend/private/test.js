@@ -19,13 +19,21 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     });
 
-    // Access `a.php` securely
+    // Access to the backend securely
     const token = localStorage.getItem("jwtToken");
 
     if (!token) {
         window.location.href = "login.html"; // Redirect if no token
     } else {
-        axios.put("http://localhost/prg_basi_dati/backend/choseReward.php", {
+        // Prepara i dati da inviare al server
+        const data = {
+            mail: "anna.verdi@email.com",
+            nomeProgetto: "Drone Fotografico",
+            dataFinanziamento: "2025-03-05",
+            codiceReward: "RWD03",
+        };
+
+        axios.put("http://localhost/prg_basi_dati/backend/choseReward.php", data, {
             headers: { "Authorization": `Bearer ${token}` }
         })
             .then(response => {
@@ -33,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(error => {
                 console.error("Access denied:", error.response ? error.response.data : error.message);
-                window.location.href = "login.html"; // Redirect if unauthorized
+                //window.location.href = "login.html"; // Redirect if unauthorized
             });
     }
 });

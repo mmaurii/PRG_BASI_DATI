@@ -1,20 +1,19 @@
 <?php
-    require 'config.php';
+    require_once 'config.php';
     require 'protected.php';
     require  __DIR__ . '/../vendor/autoload.php';
 
     if($_SERVER["REQUEST_METHOD"] == "PUT") {
         if(verifyJwtToken()) {
+            // Recupero i dati inviati dal client
             $data = json_decode(file_get_contents('php://input'), true);
-            $id = $data["id"];
-            $reward = $data["reward"];
-            $description = $data["description"];
-            $price = $data["price"];
-            $quantity = $data["quantity"];
-            $image = $data["image"];
+            $mail = $data["mail"];
+            $nomeProgetto = $data["nomeProgetto"];
+            $dataFinanziamento = $data["dataFinanziamento"];
+            $codiceReward = $data["codiceReward"];
 
             try {
-                $pdo = new PDO('mysql:host='.$servername.';dbname='.$dbName, $dbUsername, $dbPassword);
+                $pdo = new PDO('mysql:host='.servername.';dbname='.dbName, dbUsername, dbPassword);
                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             } catch (PDOException $e) {
                 echo ("[ERRORE] Connessione al DB non riuscita. Errore: " . $e->getMessage());
@@ -22,19 +21,23 @@
             }
 
             try {
-                $sql = "UPDATE Rewards SET reward = :reward, description = :description, price = :price, quantity = :quantity, image = :image WHERE id = :id";
+                // Preparing the SQL query to call the procedure with an output parameter
+                $sql = "CALL choseReward(:mail, :nomeProgetto, :dataFinanziamento, :codiceReward)";
                 $stmt = $pdo->prepare($sql);
-                $stmt->execute([
-                    'id' => $id,
-                    'reward' => $reward,
-                    'description' => $description,
-                    'price' => $price,
-                    'quantity' => $quantity,
-                    'image' => $image
-                ]);
-                echo json_encode(["success" => true]);
+
+                // Binding the input parameters
+                $stmt->bindParam(':mail', $mail, PDO::PARAM_STR);
+                $stmt->bindParam(':nomeProgetto', $nomeProgetto, PDO::PARAM_STR);
+                $stmt->bindParam(':dataFinanziamento', $dataFinanziamento, PDO::PARAM_STR);
+                $stmt->bindParam(':codiceReward', $codiceReward, PDO::PARAM_STR);
+
+                // Execute the query
+                $result = $stmt->execute();
+                
+                echo $result;
             } catch (PDOException $e) {
-                echo json_encode(["error" => "Errore nell'esecuzione della query."]);
+                echo ("[ERRORE] Query SQL non riuscita. Errore: " . $e->getMessage());
+                exit();
             }
         }
         else {

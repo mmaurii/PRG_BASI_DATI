@@ -217,28 +217,27 @@ DELIMITER ;
 /* creo una procedura per scegliere la reward a valle del finanziamento di un progetto. */
 drop PROCEDURE if exists choseReward;
 DELIMITER |
-CREATE PROCEDURE choseReward(IN imnputMail VARCHAR(255), IN imnputNome VARCHAR(255),IN imnputData DATE, IN inputCodR VARCHAR(255)) 
+CREATE PROCEDURE choseReward(IN inputMail VARCHAR(255), IN inputNome VARCHAR(255),IN inputData DATE, IN inputCodR VARCHAR(255))
 BEGIN
 	if (inputCodR is null) then
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'inputCodR cannot be null';
     END IF;
 
-	if not exists(select * from progetto where nome = inputNome) then
+	if not exists(select * from PROGETTO where nome = inputNome) then
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'inputNome doesn\'t exists';
     END IF;
     
-	if not exists(select * from reward where (cod = inputCodR) and (nomeP = inputNome)) then
+	if not exists(select * from REWARD where (cod = inputCodR) and (nomeP = inputNome)) then
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'inputCodR doesn\'t exists';
     END IF;
     
-	update finanziamento 
+	update FINANZIAMENTO 
 	set codR=inputCodR
-    where (mail = imnputMail) and (nome = imnputNome) and (data = inputData);
-END;
-|
+    where (mail = inputMail) and (nome = inputNome) and (data = inputData);
+END|
 DELIMITER ;
 
 /*d*/
