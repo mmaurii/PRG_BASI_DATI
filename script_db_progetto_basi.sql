@@ -244,14 +244,14 @@ DELIMITER ;
 /* creo una procedura per l'aggiunta delle reward per un progetto */
 drop PROCEDURE if exists addReward;
 DELIMITER |
-CREATE PROCEDURE addReward (IN inputCod varchar(255), IN inputFoto blob, IN inputDescrizione text, IN inputNomeP VARCHAR(255),  OUT isAddReward bool)  
+CREATE PROCEDURE addReward (IN inputCod varchar(255), IN inputFoto blob, IN inputDescrizione text, IN inputNomeP VARCHAR(255))  
 BEGIN
-	IF (inputNomeP IS NULL) THEN
+    IF (inputNomeP IS NULL) THEN
 		SIGNAL SQLSTATE '45000' 
         SET MESSAGE_TEXT = 'Errore: nomeP non può essere NULL';
 	END IF;
     
-	if not exists(select * FROM Progetto WHERE nome=inputNomeP) then
+	if not exists(select * FROM PROGETTO WHERE nome=inputNomeP) then
 		SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Errore: nomeP non esiste come progetto';
     end if;
@@ -263,15 +263,15 @@ END;
 DELIMITER ;
 
 /* Inserimento di un commento relativo ad un progetto */
-DROP PROCEDURE IF EXISTS InserisciCommento;
+DROP PROCEDURE IF EXISTS addComment;
 DELIMITER |
-CREATE PROCEDURE InserisciCommento(IN inputMail VARCHAR(255), IN inputNomeProgetto VARCHAR(255), IN inputTesto TEXT, IN inputData DATE)
+CREATE PROCEDURE addComment(IN inputMail VARCHAR(255), IN inputNomeProgetto VARCHAR(255), IN inputTesto TEXT, IN inputData DATE)
 BEGIN
-    if not exists(select * from progetto where nome = inputNomeProgetto) then
+    if not exists(select * from PROGETTO where nome = inputNomeProgetto) then
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'inputNome doesn\'t exists';
     END IF;
-    insert into commento (data, testo, mail, nome)
+    insert into COMMENTO (data, testo, mail, nome)
 	values (inputData, inputTesto, inputMail, inputNomeProgetto);
 END;
 |
