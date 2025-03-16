@@ -349,7 +349,7 @@ DELIMITER ;
 /* creo una procedura per l'aggiunta di una risposta ad un commento */
 drop PROCEDURE if exists addResponseToComment;
 DELIMITER |
-CREATE PROCEDURE addResponseToComment(IN inputId INT, IN inputNome VARCHAR(255), IN inputRisposta TEXT)
+CREATE PROCEDURE addResponseToComment(IN inputId INT, IN inputRisposta TEXT)
 BEGIN
 	IF not EXISTS (SELECT * FROM COMMENTO WHERE id = inputId AND risposta IS NULL) THEN
         SIGNAL SQLSTATE '45000'
@@ -358,31 +358,35 @@ BEGIN
     
 	UPDATE COMMENTO
     SET risposta = inputRisposta
-    WHERE id = inputId
-    AND nome = inputNome;
+    WHERE id = inputId;
 END;
 |
 DELIMITER ;
 
-/* creo una procedura per l'inserimento	di un profilo (solo per la realizzazione di un progetto software) */
-drop PROCEDURE if exists addProfileForProjectSoft ;
+DROP PROCEDURE IF EXISTS addProfileForProjectSoft;
 DELIMITER |
-CREATE PROCEDURE addProfileForProjectSoft(IN inputNome VARCHAR(255), IN inputNomeS VARCHAR(255), OUT isProfileAdded BOOLEAN)
+CREATE PROCEDURE addProfileForProjectSoft(IN inputNome VARCHAR(255), IN inputNomeS VARCHAR(255))
 BEGIN
-	IF EXISTS (SELECT * FROM PROGETTO WHERE nome = inputNomeS and tipo = "Software") THEN
-        INSERT INTO PROFILO (nome, nomeS) VALUES (inputNome, inputNomeS);
-        SET isProfileAdded = TRUE;
-    ELSE
-        SET isProfileAdded = FALSE;
+    IF NOT EXISTS (SELECT 1 FROM PROGETTO WHERE nome = inputNomeS) THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Errore: Il progetto non esiste.';
     END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM PROGETTO WHERE nome = inputNomeS AND tipo = 'Software') THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Errore: Il progetto esiste, ma non è di tipo Software.';
+    END IF;
+
+    INSERT INTO PROFILO (nome, nomeS) VALUES (inputNome, inputNomeS);
 END;
 |
 DELIMITER ;
+
 
 /* creo una procedura per gestire l'accettazione di una candidatura */
-drop PROCEDURE if exists gestioneCandidatura ;
+drop PROCEDURE if exists manageApplicationStatus ;
 DELIMITER |
-CREATE PROCEDURE gestioneCandidatura(IN inputMail VARCHAR(255), IN inputId INT, IN inputStato VARCHAR(50))
+CREATE PROCEDURE manageApplicationStatus(IN inputMail VARCHAR(255), IN inputId INT, IN inputStato VARCHAR(50))
 BEGIN
 	 IF not EXISTS (SELECT * FROM CANDIDATURA WHERE mail = inputMail AND id = inputId) THEN
         SIGNAL SQLSTATE '45000'
@@ -645,26 +649,17 @@ INSERT INTO POSSIEDE (mail, competenza, livello) VALUES
 ('giovanni.ferri@email.com', 'Sviluppo Business', 3);
 
 INSERT INTO PROFILO (nome, nomeS) VALUES
-('Sviluppatore Backend', 'Smart Home Hub'),
-('Sviluppatore Frontend', 'Smart Home Hub'),
+('Sviluppatore Frontend', 'App Fitness Tracker'),
 ('Designer UI/UX', 'App Fitness Tracker'),
-('Marketing Specialist', 'App Fitness Tracker'),
-('Fotografo', 'Drone Fotografico'),
-('Ingegnere Elettronico', 'Drone Fotografico'),
 ('Docente', 'Piattaforma E-Learning'),
 ('Sviluppatore Web', 'Piattaforma E-Learning'),
 ('Specialista AI', 'Sistema AI Chatbot'),
 ('Sviluppatore App', 'Sistema AI Chatbot'),
-('Hardware Engineer', 'Smartwatch Personalizzabile'),
-('Designer di Prodotto', 'Smartwatch Personalizzabile'),
 ('Sviluppatore iOS', 'App Finanziaria'),
 ('Sviluppatore Android', 'App Finanziaria'),
-('Tecnico di Stampa 3D', 'Stampante 3D Portatile'),
-('Ingegnere Meccanico', 'Stampante 3D Portatile'),
 ('Social Media Manager', 'Social Network Creativo'),
-('Sviluppatore Frontend', 'Social Network Creativo'),
-('Sviluppatore IoT', 'Dispositivo IoT per Piante'),
-('Agronomo', 'Dispositivo IoT per Piante');
+('Sviluppatore Frontend', 'Social Network Creativo');
+
 
 INSERT INTO S_P (competenza, idProfilo, livello) VALUES 
 ('Programmazione', 1, 4), 
