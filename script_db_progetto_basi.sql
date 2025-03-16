@@ -283,11 +283,11 @@ DROP PROCEDURE IF EXISTS InserisciCandidatura;
 DELIMITER |
 CREATE PROCEDURE InserisciCandidatura(IN inputMail VARCHAR(255), IN inputId INT, IN inputStato VARCHAR(50))
 BEGIN
-    if not exists(select * from profilo where id = inputId) then
+    if not exists(select * from PROFILO where id = inputId) then
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'inputId doesn\'t exists';
     END IF;
-    insert into candidatura (mail, id, stato)
+    insert into CANDIDATURA (mail, id, stato)
 	values (inputMail, inputId, inputStato);
 END;
 |
