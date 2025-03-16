@@ -14,15 +14,15 @@ document.addEventListener('DOMContentLoaded', () => {
    btnCreateAccount.addEventListener('click', createAccount);
 });
 
-async function createAccount(event){
+async function createAccount(event) {
    event.preventDefault();
-   pErrorMsg.innerText="";
+   pErrorMsg.innerText = "";
 
    // Leggi i valori dei campi
    const username = usernameField.value.trim();
    const password = passwordField.value;
 
-   if(!validateData(username,password)){
+   if (!validateData(username, password)) {
       return;
    }
 
@@ -52,7 +52,7 @@ async function createAccount(event){
          alert('Account creato con successo! Puoi ora effettuare il login.');
          usernameField.value = '';
          passwordField.value = '';
-      } else if(response.status===400) {
+      } else if (response.status === 400) {
          let msg = await response.text();
          pErrorMsg.innerText = msg;
       }
@@ -64,15 +64,15 @@ async function createAccount(event){
 }
 
 // Aggiungi un event listener al pulsante di login
-async function login(event){
+async function login(event) {
    event.preventDefault(); // Previene il comportamento predefinito del bottone
-   pErrorMsg.innerText="";
+   pErrorMsg.innerText = "";
 
    // Leggi i valori dei campi
    const username = usernameField.value.trim();
    const password = passwordField.value;
 
-   if(!validateData(username,password)){
+   if (!validateData(username, password)) {
       return;
    }
 
@@ -88,7 +88,7 @@ async function login(event){
       };
 
       // Invia i dati al server tramite una richiesta POST
-      const response = await fetch('http://localhost/prg_basi_dati/backend/login.php', {
+      const response = await fetch('../backend/login.php', {
          method: 'POST',
          headers: {
             'Content-Type': 'application/json'
@@ -101,16 +101,24 @@ async function login(event){
       if (response.ok) {
          usernameField.value = '';
          passwordField.value = '';
-         // alert('Login effettuato con successo!');
-         localStorage.removeItem("jwtToken"); // Remove the token
 
-         jwtToken = await response.text();
-         localStorage.setItem('jwtToken', jwtToken);
-         
+         result = JSON.parse(await response.text());
+
          //MENAGE LOGIN
-         console.log(jwtToken);
-         window.location.href = './index.html'; // Reindirizza a una nuova pagina
-      }else if(response.status === 400){
+         if (result.token) {
+            // Remove the past token and store the new one
+            localStorage.removeItem("jwtToken");
+            localStorage.setItem('jwtToken', result.token);
+
+            // Reindirizza a una nuova pagina
+            window.location.href = './index.html';
+         } else if (result.error) {
+            pErrorMsg.innerText = result.error;
+         } else {
+            pErrorMsg.innerText = 'Uncorrect response from the end point.';
+         }
+
+      } else if (response.status === 400) {
          let msg = await response.text();
          pErrorMsg.innerText = msg;
       }
@@ -131,20 +139,20 @@ async function hashPassword(password) {
 // Funzione per convertire un ArrayBuffer in una stringa esadecimale
 function bufferToHex(buffer) {
    return Array.from(new Uint8Array(buffer))
-       .map(b => b.toString(16).padStart(2, '0'))
-       .join('');
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
 }
 
 function validateData(username, password) {
    // Controlla che i campi non siano vuoti
    if (!username || !password) {
-      pErrorMsg.innerText='Inserisci sia il nome utente che la password.';
+      pErrorMsg.innerText = 'Inserisci sia il nome utente che la password.';
       return false;
    }
 
    // Esegui una validazione base (esempio: lunghezza minima)
    if (password.length < 5) {
-      pErrorMsg.innerText='La password deve contenere almeno 5 caratteri.';
+      pErrorMsg.innerText = 'La password deve contenere almeno 5 caratteri.';
       return false;
    }
    return true;
