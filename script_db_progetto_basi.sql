@@ -283,11 +283,11 @@ DROP PROCEDURE IF EXISTS InserisciCandidatura;
 DELIMITER |
 CREATE PROCEDURE InserisciCandidatura(IN inputMail VARCHAR(255), IN inputId INT, IN inputStato VARCHAR(50))
 BEGIN
-    if not exists(select * from PROFILO where id = inputId) then
+    if not exists(select * from profilo where id = inputId) then
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'inputId doesn\'t exists';
     END IF;
-    insert into CANDIDATURA (mail, id, stato)
+    insert into candidatura (mail, id, stato)
 	values (inputMail, inputId, inputStato);
 END;
 |
@@ -397,6 +397,31 @@ BEGIN
 	SET stato = inputStato
 	WHERE mail = inputMail AND id = inputId;
 END;
+|
+DELIMITER ;
+
+/*ottenere il ruolo dell'utente, se admin, amministratore, entrambi o nessuno dei due*/
+DROP PROCEDURE IF EXISTS getUserRole;
+DELIMITER |
+CREATE PROCEDURE getUserRole(IN user_mail VARCHAR(255), OUT user_role VARCHAR(50))
+BEGIN
+	IF NOT EXISTS (SELECT 1 FROM UTENTE WHERE mail = user_mail) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'L\'utente non esiste nel sistema';
+    END IF;
+    
+    SELECT 
+        CASE 
+            WHEN a.mail IS NOT NULL AND c.mail IS NOT NULL THEN 'admin_creator'
+            WHEN a.mail IS NOT NULL THEN 'admin'
+            WHEN c.mail IS NOT NULL THEN 'creator'
+            ELSE 'user'
+        END INTO user_role
+    FROM UTENTE u
+    LEFT JOIN ADMIN a ON u.mail = a.mail
+    LEFT JOIN CREATORE c ON u.mail = c.mail
+    WHERE u.mail = user_mail;
+END 
 |
 DELIMITER ;
 
@@ -739,6 +764,9 @@ SELECT * FROM CANDIDATURA;
 select * from viewClassifica;
 select * from viewClassificaProgettiAperti;
 select * from ClassificaTotFinanziamenti;
+
+CALL getUserRole('sara.neri@email.com', @role);
+SELECT @role;
 
 SHOW PROCEDURE STATUS WHERE Db = 'BOSTARTER';
 

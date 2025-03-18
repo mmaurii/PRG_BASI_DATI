@@ -78,7 +78,6 @@ async function login(event) {
 
    // Hash della password (utilizzando la libreria SubtleCrypto disponibile nei browser moderni)
    try {
-      //const hashedPassword = await hashPassword(password);
       const hashedPassword = password;
 
       // Prepara i dati da inviare al server
@@ -91,42 +90,43 @@ async function login(event) {
       const response = await fetch('../backend/login.php', {
          method: 'POST',
          headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
          },
          credentials: 'include',
-         body: JSON.stringify(loginData)
+         body: JSON.stringify(loginData),
       });
 
-      // Gestisci la risposta del server
+      // Verifica se la risposta è corretta (status 200-299)
       if (response.ok) {
-         usernameField.value = '';
-         passwordField.value = '';
+         const result = await response.json(); // Risponde con un oggetto JSON
 
-         result = JSON.parse(await response.text());
-
-         //MENAGE LOGIN
+         // Gestione del login
          if (result.token) {
-            // Remove the past token and store the new one
-            localStorage.removeItem("jwtToken");
-            localStorage.setItem('jwtToken', result.token);
+            localStorage.setItem('jwtToken', JSON.stringify(result));
+            console.log(JSON.stringify(result));
 
             // Reindirizza a una nuova pagina
             window.location.href = './index.html';
          } else if (result.error) {
             pErrorMsg.innerText = result.error;
          } else {
-            pErrorMsg.innerText = 'Uncorrect response from the end point.';
+            pErrorMsg.innerText = 'Risposta non corretta dal server.';
          }
 
-      } else if (response.status === 400) {
-         let msg = await response.text();
+         // Pulisce i campi di input
+         usernameField.value = '';
+         passwordField.value = '';
+      } else {
+         const msg = await response.text();
          pErrorMsg.innerText = msg;
       }
    } catch (error) {
       console.error('Errore durante il login:', error);
       alert('Si è verificato un errore. Riprova più tardi.');
    }
+
 }
+
 
 // Funzione per effettuare l'hashing della password
 async function hashPassword(password) {
