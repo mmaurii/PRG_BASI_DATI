@@ -122,7 +122,6 @@ async function login(event) {
       }
    } catch (error) {
       console.error('Errore durante il login:', error);
-      alert('Si è verificato un errore. Riprova più tardi.');
    }
 
 }

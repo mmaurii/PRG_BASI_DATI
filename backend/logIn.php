@@ -6,7 +6,8 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
 $issuedAt = time();
-$expirationTime = $issuedAt + 3600; // Token expires in 1 hour
+// Token expires in 1 hour
+$expirationTime = $issuedAt + 3600; 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -74,7 +75,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         echo json_encode(["error" => "Invalid credentials"]);
     }
-} else {
+}else {
+    http_response_code(400);
     echo json_encode(["error" => "HTTP method not allowed"]);
 }
 ?>

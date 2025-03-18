@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById("loginForm").addEventListener("submit", function (e) {
+    /* document.getElementById("loginForm").addEventListener("submit", function (e) {
         e.preventDefault();
 
         const email = document.getElementById("email").value;
@@ -17,8 +17,13 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => {
                 console.error("Login error:", error.response ? error.response.data : error.message);
             });
-    });
+    }); */
 
+    btnTest = document.getElementById("test");
+    btnTest.addEventListener('click', test);
+});
+
+function test(event) {
     // Access to the backend securely
     const token = localStorage.getItem("jwtToken");
 
@@ -44,4 +49,4 @@ document.addEventListener('DOMContentLoaded', function () {
                 //window.location.href = "login.html"; // Redirect if unauthorized
             });
     }
-});
+}    

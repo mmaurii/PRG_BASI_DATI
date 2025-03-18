@@ -79,13 +79,11 @@ CREATE TABLE REWARD (
 CREATE TABLE FINANZIAMENTO (
     mail VARCHAR(255),
     nome VARCHAR(255),
-    data DATE,
+    dataF DATE,
     importo int,
-    codR VARCHAR(255),
-    PRIMARY KEY (mail, nome, data),
+    PRIMARY KEY (mail, nome, dataF),
     FOREIGN KEY (mail) REFERENCES UTENTE(mail),
-    FOREIGN KEY (nome) REFERENCES PROGETTO(nome),
-    FOREIGN KEY (codR) REFERENCES REWARD(cod)
+    FOREIGN KEY (nome) REFERENCES PROGETTO(nome)
 )engine= innodb;
 
 CREATE TABLE POSSIEDE (
@@ -130,6 +128,16 @@ CREATE TABLE CANDIDATURA (
     PRIMARY KEY (mail, id),
     FOREIGN KEY (mail) REFERENCES UTENTE(mail),
     FOREIGN KEY (id) REFERENCES PROFILO(id)
+)engine= innodb;
+
+CREATE TABLE F_R (
+    mail VARCHAR(255),
+    nome VARCHAR(255),
+    dataF DATE,
+    codR VARCHAR(255),
+	PRIMARY KEY (mail, nome, dataF, codR),
+    FOREIGN KEY (mail, nome, dataF) REFERENCES FINANZIAMENTO(mail, nome, dataF),
+    FOREIGN KEY (codR) REFERENCES REWARD(cod)
 )engine= innodb;
 
 SELECT User, Host FROM mysql.user;
@@ -192,7 +200,7 @@ DELIMITER |
 CREATE PROCEDURE getProgetti () 
 BEGIN
 	select *
-    from progetti
+    from PROGETTO
     where stato = 'aperto';
 END;
 |
@@ -201,15 +209,15 @@ DELIMITER ;
 /* creo una procedura per il finanziamento di un progetto (aperto). Un utente può finanziare anche il progetto di cui è creatore. */
 drop PROCEDURE if exists finanziaProgetto;
 DELIMITER |
-CREATE PROCEDURE finanziaProgetto(IN imnputMail VARCHAR(255), IN imnputNome VARCHAR(255),IN imnputData DATE, IN imnputImporto int, IN inputCodR VARCHAR(255)) 
+CREATE PROCEDURE finanziaProgetto(IN inputMail VARCHAR(255), IN inputNome VARCHAR(255),IN inputData DATE, IN inputImporto int, IN inputCodR VARCHAR(255))
 BEGIN
-	if not exists(select * from progetto where (nome = inputNome) and (stato = 'aperto')) then
+	if not exists(select * from PROGETTO where (nome = inputNome) and (stato = 'aperto')) then
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'inputNome doesn\'t exists or is not an open project';
     END IF;
         
-	insert into finanziamento (mail, nome, data, importo, codR)
-	values (imnputMail, imnputNome, imnputData, imnputImporto, inputCodR);
+	insert into FINANZIAMENTO (mail, nome, dataF, importo, codR)
+	values (inputMail, inputNome, inputData, inputImporto, inputCodR);
 END;
 |
 DELIMITER ;
@@ -236,8 +244,9 @@ BEGIN
     
 	update FINANZIAMENTO 
 	set codR=inputCodR
-    where (mail = inputMail) and (nome = inputNome) and (data = inputData);
-END|
+    where (mail = inputMail) and (nome = inputNome) and (dataF = inputData);
+END;
+|
 DELIMITER ;
 
 /*d*/
@@ -601,7 +610,7 @@ INSERT INTO ADMIN (mail, codSicurezza) VALUES
 
 INSERT INTO PROGETTO (nome, descrizione, dataInserimento, budget, dataLimite, stato, mailC, tipo) VALUES 
 ('Smart Home Hub', 'Un dispositivo per la gestione della casa domotica.', '2025-02-15', 5000, '2025-06-15', 'aperto', 'mario.rossi@email.com', 'Hardware'),
-('App Fitness Tracker', 'Un app mobile per monitorare l\'attività fisica.', '2025-01-10', 3000, '2025-05-01', 'aperto', 'luca.bianchi@email.com', 'Software'),
+('App Fitness Tracker', 'Un app mobile per monitorare l\'attivita fisica.', '2025-01-10', 3000, '2025-05-01', 'aperto', 'luca.bianchi@email.com', 'Software'),
 ('Drone Fotografico', 'Un drone compatto per fotografie ad alta risoluzione.', '2025-03-01', 8000, '2025-07-01', 'aperto', 'anna.verdi@email.com', 'Hardware'),
 ('Piattaforma E-Learning', 'Un portale per corsi online interattivi.', '2025-02-20', 7000, '2025-06-30', 'aperto', 'sara.neri@email.com', 'Software'),
 ('Sistema AI Chatbot', 'Un chatbot basato su AI per customer support.', '2025-01-25', 6000, '2025-04-30', 'aperto', 'giovanni.ferri@email.com', 'Software'),
@@ -649,17 +658,17 @@ INSERT INTO REWARD (cod, foto, descrizione, nomeP) VALUES
 ('RWD09', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Un pacchetto di supporto dedicato agli artisti con strumenti creativi avanzati.', 'Social Network Creativo'),
 ('RWD10', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Un sensore IoT per monitorare l\'umidità delle piante e ricevere notifiche.', 'Dispositivo IoT per Piante');
 
-INSERT INTO FINANZIAMENTO (mail, nome, data, importo, codR) VALUES
-('mario.rossi@email.com', 'Smart Home Hub', '2025-02-20', 2000, 'RWD01'),
-('luca.bianchi@email.com', 'App Fitness Tracker', '2025-01-12', 1500, 'RWD02'),
-('anna.verdi@email.com', 'Drone Fotografico', '2025-03-05', 2500, 'RWD03'),
-('sara.neri@email.com', 'Piattaforma E-Learning', '2025-02-22', 3000, 'RWD04'),
-('giovanni.ferri@email.com', 'Sistema AI Chatbot', '2025-01-28', 2000, 'RWD05'),
-('mario.rossi@email.com', 'Smartwatch Personalizzabile', '2025-02-15', 2500, 'RWD06'),
-('luca.bianchi@email.com', 'App Finanziaria', '2025-03-01', 18000, 'RWD07'),
-('anna.verdi@email.com', 'Stampante 3D Portatile', '2025-01-25', 3500, 'RWD08'),
-('sara.neri@email.com', 'Social Network Creativo', '2025-02-10', 40000, 'RWD09'),
-('giovanni.ferri@email.com', 'Dispositivo IoT per Piante', '2025-03-08', 2200, 'RWD10');
+INSERT INTO FINANZIAMENTO (mail, nome, dataF, importo) VALUES
+('mario.rossi@email.com', 'Smart Home Hub', '2025-02-20', 2000),
+('luca.bianchi@email.com', 'App Fitness Tracker', '2025-01-12', 1500),
+('anna.verdi@email.com', 'Drone Fotografico', '2025-03-05', 2500),
+('sara.neri@email.com', 'Piattaforma E-Learning', '2025-02-22', 3000),
+('giovanni.ferri@email.com', 'Sistema AI Chatbot', '2025-01-28', 2000),
+('mario.rossi@email.com', 'Smartwatch Personalizzabile', '2025-02-15', 2500),
+('luca.bianchi@email.com', 'App Finanziaria', '2025-03-01', 18000),
+('anna.verdi@email.com', 'Stampante 3D Portatile', '2025-01-25', 3500),
+('sara.neri@email.com', 'Social Network Creativo', '2025-02-10', 40000),
+('giovanni.ferri@email.com', 'Dispositivo IoT per Piante', '2025-03-08', 2200);
 
 INSERT INTO POSSIEDE (mail, competenza, livello) VALUES
 ('mario.rossi@email.com', 'Programmazione', 4),

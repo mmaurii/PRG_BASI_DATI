@@ -56,7 +56,7 @@ function verifyJwtToken() : bool {
         exit();
     }
 
-    $token = json_decode(str_replace("Bearer ", "", $headers['Authorization']), true)['token'];
+    $token = str_replace("Bearer ", "", $headers['Authorization']);
 
     try {
         $decoded = JWT::decode($token, new Key(JWTKEY, 'HS256'));

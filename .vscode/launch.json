@@ -7,6 +7,7 @@
         {
             "name": "Listen for Xdebug",
             "type": "php",
+            //"stopOnEntry": true,
             "request": "launch",
             "port": 9003,
         },
