@@ -1,0 +1,212 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 32px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: green;
+}
+
+.search-bar {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    max-width: 500px;
+    width: 40vw;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 8px 16px;
+    border: 1px solid lightgray;
+    border-radius: 4px 0 0 4px;
+    font-size: 16px;
+    outline: none;
+}
+
+.search-bar input:focus {
+    border-color: green;
+}
+
+.search-button {
+    padding: 8px 16px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: darkgreen;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 32px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: black;
+    font-weight: 500;
+}
+
+.nav-links a:hover {
+    color: green;
+}
+
+.new-project {
+    max-width: 800px;
+    margin: 32px auto;
+    padding: 0 32px;
+}
+
+.new-project h1 {
+    font-size: 40px;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.subtitle {
+    font-size: 19px;
+    color: gray;
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+.project-form {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.form-section {
+    background-color: white;
+    border: 1px solid lightgray;
+    border-radius: 8px;
+    padding: 24px;
+}
+
+.form-section h2 {
+    font-size: 29px;
+    margin-bottom: 16px;
+}
+
+.form-section label {
+    display: block;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: black;
+}
+
+.form-section input,
+.form-section textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid lightgray;
+    border-radius: 4px;
+    font-size: 16px;
+    outline: none;
+    margin-bottom: 16px;
+}
+
+.form-section input:focus,
+.form-section textarea:focus {
+    border-color: green;
+}
+
+#short-description {
+    min-height: 100px;
+    resize: vertical;
+}
+
+#story {
+    min-height: 200px;
+    resize: vertical;
+}
+
+.reward-input {
+    border: 1px dashed lightgray;
+    padding: 16px;
+    margin-bottom: 16px;
+    border-radius: 4px;
+}
+
+.reward-input input {
+    margin-bottom: 16px;
+}
+
+.remove-reward {
+    padding: 8px 16px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.remove-reward:hover {
+    background-color: darkred;
+}
+
+#add-reward {
+    padding: 10px 24px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    align-self: flex-start;
+}
+
+#add-reward:hover {
+    background-color: darkgreen;
+}
+
+.submit-button {
+    padding: 13px 32px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    align-self: center;
+}
+
+.submit-button:hover {
+    background-color: darkgreen;
+}
+
+footer {
+    text-align: center;
+    padding: 16px;
+    background-color: #f9f9f9;
+    color: darkgray;
+}
