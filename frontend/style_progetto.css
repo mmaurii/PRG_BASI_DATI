@@ -1,0 +1,351 @@
+/* Reset di base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+/* Navbar (riutilizzata) */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 32px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: green;
+}
+
+.search-bar {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    max-width: 500px;
+    width: 40vw;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 8px 16px;
+    border: 1px solid lightgray;
+    border-radius: 4px 0 0 4px;
+    font-size: 16px;
+    outline: none;
+}
+
+.search-bar input:focus {
+    border-color: green;
+}
+
+.search-button {
+    padding: 8px 16px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: darkgreen;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 32px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: black;
+    font-weight: 500;
+}
+
+.nav-links a:hover {
+    color: green;
+}
+
+/* Sezione progetto */
+.project-header {
+    max-width: 1200px;
+    margin: 32px auto;
+    padding: 0 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.project-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.project-info {
+    text-align: left;
+}
+
+.project-info h1 {
+    font-size: 40px;
+    margin-bottom: 16px;
+}
+
+.subtitle {
+    font-size: 19px;
+    color: grey;
+    margin-bottom: 32px;
+}
+
+.progress-bar {
+    height: 10px;
+    background-color: lightgray;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.progress {
+    height: 100%;
+    background-color: green;
+}
+
+.funding-stats {
+    display: flex;
+    justify-content: space-between;
+    max-width: 400px;
+    margin-bottom: 32px;
+}
+
+.funding-stats div {
+    text-align: center;
+}
+
+.amount {
+    font-size: 24px;
+    font-weight: bold;
+    color: black;
+}
+
+.funding-stats p {
+    font-size: 14px;
+    color: grey;
+}
+
+.support-button {
+    padding: 13px 32px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.support-button:hover {
+    background-color: darkgreen;
+}
+
+/* Dettagli progetto */
+.project-details {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px;
+    display: flex;
+    gap: 32px;
+}
+
+.project-description {
+    flex: 2;
+}
+
+.project-description h2 {
+    font-size: 29px;
+    margin-bottom: 16px;
+}
+
+.project-description p {
+    color: grey;
+}
+
+.creator-info {
+    flex: 1;
+}
+
+.creator-info h3 {
+    font-size: 24px;
+    margin-bottom: 16px;
+}
+
+.creator-profile {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.creator-profile img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.creator-profile p {
+    color: grey;
+}
+
+/* Ricompense */
+.rewards {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px;
+}
+
+.rewards h2 {
+    font-size: 29px;
+    margin-bottom: 32px;
+}
+
+.reward-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 32px;
+}
+
+.reward-card {
+    background-color: white;
+    border: 1px solid lightgray;
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+}
+
+.reward-card h3 {
+    font-size: 21px;
+    color: green;
+    margin-bottom: 8px;
+}
+
+.reward-card p {
+    color: grey;
+    margin-bottom: 16px;
+}
+
+.select-reward {
+    padding: 10px 24px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.select-reward:hover {
+    background-color: darkgreen;
+}
+
+/* Sezione commenti */
+.comments {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px;
+}
+
+.comments h2 {
+    font-size: 29px;
+    margin-bottom: 32px;
+}
+
+.comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.comment-form textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 16px;
+    border: 1px solid lightgray;
+    border-radius: 4px;
+    font-size: 16px;
+    resize: vertical;
+    outline: none;
+}
+
+.comment-form textarea:focus {
+    border-color: green;
+}
+
+.submit-comment {
+    padding: 10px 24px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    align-self: flex-start;
+}
+
+.submit-comment:hover {
+    background-color: darkgreen;
+}
+
+.comment-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.comment {
+    background-color: white;
+    border: 1px solid lightgray;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.comment-user {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.comment-user img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.comment-user p {
+    font-size: 14px;
+    color: grey;
+}
+
+.comment p {
+    color: black;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 16px;
+    background-color: #f9f9f9;
+    color: grey;
+}

@@ -106,7 +106,7 @@ main {
 .start-button {
     padding: 13px 32px;
     background-color: green;
-    color: #fff;
+    color: white;
     border: none;
     border-radius: 5px;
     font-size: 18px;
@@ -137,7 +137,7 @@ main {
 
 .card {
     display: block;
-    background-color: #fff;
+    background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     overflow: hidden;
@@ -164,12 +164,12 @@ main {
 
 .card p {
     padding: 0 16px;
-    color: #666;
+    color: grey;
 }
 
 .progress-bar {
     height: 10px;
-    background-color: #e0e0e0;
+    background-color: lightgray;
     margin: 16px;
     border-radius: 5px;
     overflow: hidden;
@@ -183,7 +183,7 @@ main {
 .card p:last-child {
     padding: 0 16px 16px;
     font-size: 14px;
-    color: #333;
+    color: black;
 }
 
 footer {

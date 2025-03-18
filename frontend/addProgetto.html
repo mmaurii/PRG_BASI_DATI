@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crea un Nuovo Progetto</title>
+    <link rel="stylesheet" href="style_addProgetto.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">BOSTARTER</div>
+        <div class="search-bar">
+            <input type="text" placeholder="Cerca progetti...">
+            <button class="search-button">Cerca</button>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#">Esplora</a></li>
+            <li><a href="#">Avvia un progetto</a></li>
+            <li><a id="login" href="#">Accedi</a></li>
+            <li><a id="logout" href="#">logout</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="new-project">
+            <h1>Crea il tuo Progetto</h1>
+            <p class="subtitle">Condividi la tua idea con il mondo e raccogli il supporto necessario.</p>
+            <form class="project-form">
+                <!-- Informazioni base -->
+                <div class="form-section">
+                    <h2>Informazioni Base</h2>
+                    <label for="title">Titolo del Progetto</label>
+                    <input type="text" id="title" name="title" placeholder="Inserisci il titolo" required>
+
+                    <label for="short-description">Descrizione Breve</label>
+                    <textarea id="short-description" name="short-description" placeholder="Una breve descrizione" required></textarea>
+
+                    <label for="story">Storia del Progetto</label>
+                    <textarea id="story" name="story" placeholder="Racconta la storia completa del tuo progetto" required></textarea>
+
+                    <label for="image">Immagine del Progetto</label>
+                    <input type="file" id="image" name="image" accept="image/*" required>
+                </div>
+
+                <div class="form-section">
+                    <h2>Obiettivo di Finanziamento</h2>
+                    <label for="goal">Importo Obiettivo (€)</label>
+                    <input type="number" id="goal" name="goal" min="1" placeholder="Es. 1000" required>
+
+                    <label for="duration">Durata della Campagna (giorni)</label>
+                    <input type="number" id="duration" name="duration" min="1" max="60" placeholder="Es. 30" required>
+                </div>
+
+                <div class="form-section">
+                    <h2>Ricompense</h2>
+                    <div id="rewards-container">
+                        <div class="reward-input">
+                            <label for="reward-title-1">Titolo</label>
+                            <input type="text" id="reward-title-1" name="reward-title[]" placeholder="Es. Grazie!" required>
+                            <label for="reward-image-1">Foto della Ricompensa</label>
+                            <input type="file" id="reward-image-1" name="reward-image[]" accept="image/*" required>
+                            <button type="button" class="remove-reward">Rimuovi</button>
+                        </div>
+                    </div>
+                    <button type="button" id="add-reward">Aggiungi Ricompensa</button>
+                </div>
+
+                <!-- Pulsante invio -->
+                <button type="submit" class="submit-button">Crea Progetto</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>FOOTER</p>
+    </footer>
+</body>
+</html>
