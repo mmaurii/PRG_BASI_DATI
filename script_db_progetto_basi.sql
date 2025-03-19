@@ -183,12 +183,11 @@ drop PROCEDURE if exists setLivelloCompetenza;
 DELIMITER |
 CREATE PROCEDURE setLivelloCompetenza (IN inputLivello int, IN inputCompetenza VARCHAR(255), IN inputMail varchar(255), OUT isSet bool) 
 BEGIN
+	set isSet = false;
 	if (inputLivello>=0 and inputLivello <=5) then
-		insert into possiede (mail, competenza, livello)
+		insert into POSSIEDE (mail, competenza, livello)
         values (inputMail, inputCompetenza, inputLivello);
 		set isSet = true;
-    else
-		set isSet = false;
     end if;
 END;
 |

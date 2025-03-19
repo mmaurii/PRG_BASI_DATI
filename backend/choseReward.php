@@ -4,7 +4,7 @@
     require  __DIR__ . '/../vendor/autoload.php';
 
     if($_SERVER["REQUEST_METHOD"] == "PUT") {
-        if(true || verifyJwtToken()) {
+        if(verifyJwtToken()) {
             // Recupero i dati inviati dal client
             $data = json_decode(file_get_contents('php://input'), true);
             $mail = $data["mail"];
