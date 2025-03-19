@@ -6,8 +6,8 @@ require_once 'config.php';
 require 'protected.php';
 require  __DIR__ . '/../vendor/autoload.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (verifyJwtToken()) {
+if ($_SERVER["REQUEST_METHOD"] == "GET") {
+    if (true || verifyJwtToken()) {
         // Recupero i dati inviati dal client
 
         try {

@@ -1,7 +1,13 @@
+let projectName;
+
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('login').addEventListener('click', login);
     document.getElementById('logout').addEventListener('click', logout);
     document.querySelector('.submit-comment').addEventListener('click', sendComment);
+
+    const params = new URLSearchParams(window.location.search);
+    projectName = params.get('name');
+    console.log(projectName); // Get the 'name' parameter from URL
 
 })
 function sendComment(){
