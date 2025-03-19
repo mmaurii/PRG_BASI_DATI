@@ -670,6 +670,17 @@ INSERT INTO FINANZIAMENTO (mail, nome, dataF, importo) VALUES
 ('sara.neri@email.com', 'Social Network Creativo', '2025-02-10', 40000),
 ('giovanni.ferri@email.com', 'Dispositivo IoT per Piante', '2025-03-08', 2200);
 
+INSERT INTO F_R (mail, nome, dataF, codR) VALUES
+('mario.rossi@email.com', 'Smart Home Hub', '2025-02-20', 'RWD01'),
+('luca.bianchi@email.com', 'App Fitness Tracker', '2025-01-12', 'RWD02'),
+('anna.verdi@email.com', 'Drone Fotografico', '2025-03-05', 'RWD03'),
+('sara.neri@email.com', 'Piattaforma E-Learning', '2025-02-22', 'RWD04'),
+('giovanni.ferri@email.com', 'Sistema AI Chatbot', '2025-01-28', 'RWD05'),
+('mario.rossi@email.com', 'Smartwatch Personalizzabile', '2025-02-15', 'RWD06'),
+('luca.bianchi@email.com', 'App Finanziaria', '2025-03-01', 'RWD07'),
+('anna.verdi@email.com', 'Stampante 3D Portatile', '2025-01-25', 'RWD08');
+
+
 INSERT INTO POSSIEDE (mail, competenza, livello) VALUES
 ('mario.rossi@email.com', 'Programmazione', 4),
 ('mario.rossi@email.com', 'Gestione Progetti', 3),
@@ -760,6 +771,7 @@ SELECT * FROM ADMIN;
 SELECT * FROM PROGETTO;
 SELECT * FROM FINANZIAMENTO;
 SELECT * FROM REWARD;
+SELECT * FROM F_R;
 SELECT * FROM FOTO;
 SELECT * FROM COMMENTO;
 SELECT * FROM COMPONENTE;

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Progetto 1</title>
     <link rel="stylesheet" href="style_progetto.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
     <nav class="navbar">
@@ -16,7 +17,7 @@
         <ul class="nav-links">
             <li><a href="#">Esplora</a></li>
             <li><a href="#">Avvia un progetto</a></li>
-            <li><a id="login" href="#">Accedi</a></li>
+            <li><a id="login" href="login.html">Accedi</a></li>
             <li><a id="logout" href="#">logout</a></li>
         </ul>
     </nav>
@@ -83,7 +84,7 @@
         <section class="comments">
             <h2>Commenti</h2>
             <div class="comment-form">
-                <textarea placeholder="Scrivi un commento..."></textarea>
+                <textarea placeholder="Scrivi un commento..." id="textArea"></textarea>
                 <button class="submit-comment">Invia</button>
             </div>
             <ul class="comment-list">
@@ -115,5 +116,6 @@
     <footer>
         <p>FOOTER</p>
     </footer>
+    <script defer src="script_progetto.js"></script>
 </body>
 </html>
