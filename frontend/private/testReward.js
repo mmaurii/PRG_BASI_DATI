@@ -42,10 +42,16 @@ function test(event) {
             headers: { "Authorization": `Bearer ${token}` }
         })
             .then(response => {
-                console.log(response.data); // Load the protected content
+                if (response.data.result) {
+                    console.log(response.data.result);
+                } else if (response.data.error) {
+                    console.error(response.data.error);
+                } else {
+                    console.error('Risposta non corretta dal server.');
+                }
             })
             .catch(error => {
-                console.error("Access denied:", error.response ? error.response.data : error.message);
+                console.error("Access denied:", error.response ? error.response.data.error : error.message);
                 //window.location.href = "login.html"; // Redirect if unauthorized
             });
     }

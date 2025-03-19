@@ -216,8 +216,12 @@ BEGIN
         SET MESSAGE_TEXT = 'inputNome doesn\'t exists or is not an open project';
     END IF;
         
-	insert into FINANZIAMENTO (mail, nome, dataF, importo, codR)
-	values (inputMail, inputNome, inputData, inputImporto, inputCodR);
+	insert into FINANZIAMENTO (mail, nome, dataF, importo)
+	values (inputMail, inputNome, inputData, inputImporto);
+        
+	if (inputCodR is not null) then
+		call choseReward(inputMail, inputNome, inputData, inputCodR);
+	END IF;
 END;
 |
 DELIMITER ;
@@ -232,19 +236,14 @@ BEGIN
         SET MESSAGE_TEXT = 'inputCodR cannot be null';
     END IF;
 
-	if not exists(select * from PROGETTO where nome = inputNome) then
+	if exists(select 1 from FINANZIAMENTO F JOIN REWARD R ON (F.nome = R.nomeP) 
+				where (F.nome=inputNome and F.mail=inputMail and F.dataF = inputData and R.cod = inputCodR )) then
+		insert into F_R (mail, nome, dataF, codR)
+		values (inputMail, inputNome, inputData, inputCodR);
+    else
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'inputNome doesn\'t exists';
+        SET MESSAGE_TEXT = 'invalid input parameter';
     END IF;
-    
-	if not exists(select * from REWARD where (cod = inputCodR) and (nomeP = inputNome)) then
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'inputCodR doesn\'t exists';
-    END IF;
-    
-	update FINANZIAMENTO 
-	set codR=inputCodR
-    where (mail = inputMail) and (nome = inputNome) and (dataF = inputData);
 END;
 |
 DELIMITER ;

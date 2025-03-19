@@ -7,7 +7,7 @@ require 'protected.php';
 require  __DIR__ . '/../vendor/autoload.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (true || verifyJwtToken()) {
+    if (true||verifyJwtToken()) {
         // Recupero i dati inviati dal client
 
         try {
@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Fetch all results
             $results = $stmt->fetchAll();
 
-            echo json_encode($results);
+            echo json_encode(["result"=>$results]);
         } catch (PDOException $e) {
             echo json_encode(["error" => "Query SQL non riuscita. Errore: " . $e->getMessage()]);
             exit();

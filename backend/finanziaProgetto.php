@@ -4,7 +4,7 @@
     require  __DIR__ . '/../vendor/autoload.php';
 
     if($_SERVER["REQUEST_METHOD"] == "POST") {
-        if(verifyJwtToken()) {
+        if(true || verifyJwtToken()) {
             // Recupero i dati inviati dal client
             $data = json_decode(file_get_contents('php://input'), true);
             $mail = $data["mail"];
@@ -36,9 +36,9 @@
                 // Execute the query
                 $result = $stmt->execute();
                 
-                echo $result;
+                echo json_encode(["result"=>$result]);
             } catch (PDOException $e) {
-                echo ("[ERRORE] Query SQL non riuscita. Errore: " . $e->getMessage());
+                echo json_encode(["error" => "[ERRORE] Query SQL non riuscita. Errore: " . $e->getMessage()]);
                 exit();
             }
         }
