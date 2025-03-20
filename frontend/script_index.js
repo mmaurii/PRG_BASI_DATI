@@ -1,5 +1,6 @@
 let progetti;
 let btnLogin, btnLogout, projectContainer;
+const token = localStorage.getItem("jwtToken");
 
 document.addEventListener('DOMContentLoaded', function() {
     btnLogin = document.getElementById('login');
@@ -31,7 +32,10 @@ async function initInterface(){
 }
 
 async function getProgetti(){
-    await axios.get("../backend/getProgetti.php")
+    await axios.get("../backend/getProgetti.php",{
+        headers: {
+            "Authorization": `Bearer ${token}` // Header Authorization
+        }})
         .then(response => {
             if (response.data.result) {
                 this.progetti = response.data.result;

@@ -1,7 +1,4 @@
 <?php
-
-use LDAP\Result;
-
 require_once 'config.php';
 require 'protected.php';
 require  __DIR__ . '/../vendor/autoload.php';
@@ -14,6 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             $pdo = new PDO('mysql:host=' . servername . ';dbname=' . dbName, dbUsername, dbPassword);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $pdo->exec("SET NAMES 'utf8mb4'");
         } catch (PDOException $e) {
             echo ("[ERRORE] Connessione al DB non riuscita. Errore: " . $e->getMessage());
             exit();

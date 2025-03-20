@@ -15,6 +15,7 @@
             try {
                 $pdo = new PDO('mysql:host='.servername.';dbname='.dbName, dbUsername, dbPassword);
                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $pdo->exec("SET NAMES 'utf8mb4'");
             } catch (PDOException $e) {
                 echo ("[ERRORE] Connessione al DB non riuscita. Errore: " . $e->getMessage());
                 exit();

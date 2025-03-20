@@ -166,11 +166,11 @@ DELIMITER |
 CREATE PROCEDURE singUp (IN inputMail varchar(255),IN inputNickname varchar(255), IN inputPassword varchar(255), IN inputNome varchar(255), IN inputCognome varchar(255), IN inputAnnoN YEAR, IN inputLuogo varchar(255), OUT isSingUp bool) 
 BEGIN
 	if exists(select mail, password
-				FROM UTENTE
+				FROM utente
 				WHERE (mail=inputMail)) then
 		set isSingUp = false;
     else
-		insert into UTENTE (mail, nickname, password, nome, cognome, annoN, luogo)
+		insert into utente (mail, nickname, password, nome, cognome, annoN, luogo)
         values (inputMail, inputNickname, inputPassword, inputNome, inputCognome, inputAnnoN, inputLuogo);
 		set isSingUp = true;
     end if;
@@ -407,6 +407,7 @@ END;
 |
 DELIMITER ;
 
+/*Procedure di appoggio*/
 /*ottenere il ruolo dell'utente, se admin, amministratore, entrambi o nessuno dei due*/
 DROP PROCEDURE IF EXISTS getUserRole;
 DELIMITER |
@@ -431,6 +432,35 @@ BEGIN
 END 
 |
 DELIMITER ;
+
+/*restituisce i dati del progetto*/
+DROP PROCEDURE IF EXISTS getProjectByName;
+DELIMITER |
+CREATE PROCEDURE getProjectByName(IN projectName VARCHAR(255))
+BEGIN
+    SELECT * FROM PROGETTO WHERE nome = projectName;
+END
+|
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS GetCommentsByProgetto;
+DELIMITER |
+CREATE PROCEDURE GetCommentsByProgetto(IN nome_progetto VARCHAR(255))
+BEGIN
+    SELECT 
+        testo,
+        data,
+        risposta,
+        mail,
+        nome
+    FROM 
+        COMMENTO
+    WHERE 
+        nome = nome_progetto;
+END 
+|
+DELIMITER ;
+
 
 /* DEFINIZIONE DELLE VIEW */
 
