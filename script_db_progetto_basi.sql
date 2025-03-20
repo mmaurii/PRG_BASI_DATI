@@ -407,6 +407,7 @@ END;
 |
 DELIMITER ;
 
+/*Procedure di appoggio*/
 /*ottenere il ruolo dell'utente, se admin, amministratore, entrambi o nessuno dei due*/
 DROP PROCEDURE IF EXISTS getUserRole;
 DELIMITER |
@@ -431,6 +432,35 @@ BEGIN
 END 
 |
 DELIMITER ;
+
+/*restituisce i dati del progetto*/
+DROP PROCEDURE IF EXISTS getProjectByName;
+DELIMITER |
+CREATE PROCEDURE getProjectByName(IN projectName VARCHAR(255))
+BEGIN
+    SELECT * FROM PROGETTO WHERE nome = projectName;
+END
+|
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS GetCommentsByProgetto;
+DELIMITER |
+CREATE PROCEDURE GetCommentsByProgetto(IN nome_progetto VARCHAR(255))
+BEGIN
+    SELECT 
+        testo,
+        data,
+        risposta,
+        mail,
+        nome
+    FROM 
+        COMMENTO
+    WHERE 
+        nome = nome_progetto;
+END 
+|
+DELIMITER ;
+
 
 /* DEFINIZIONE DELLE VIEW */
 

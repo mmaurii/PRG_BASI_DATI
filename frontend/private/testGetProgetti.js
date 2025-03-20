@@ -10,8 +10,7 @@ function test(event) {
     if (!token) {
         window.location.href = "login.html"; // Redirect if no token
     } else {
-        _={};
-        axios.post("../../backend/getProgetti.php",_, {
+        axios.get("../../backend/getProgetti.php", {
             headers: { "Authorization": `Bearer ${token}` }
         })
             .then(response => {
