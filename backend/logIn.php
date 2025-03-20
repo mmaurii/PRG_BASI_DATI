@@ -13,15 +13,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Recupero i dati inviati dal client
     $data = json_decode(file_get_contents('php://input'), true);
-    $username = $data["mail"];
+    $mail = $data["mail"];
     $password = $data["password"];
 
     // Connessione al DB
     try {
         $pdo = new PDO('mysql:host='.servername.';dbname='.dbName, dbUsername, dbPassword);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $pdo->exec("SET NAMES 'utf8mb4'");
-        $pdo->exec("SET NAMES 'utf8mb4'");
+        $pdo->exec(mysqlCharachter);
+        $pdo->exec(mysqlCharachter);
     } catch (PDOException $e) {
         echo json_encode(["error" => "[ERRORE] Connessione al DB non riuscita: " . $e->getMessage()]);
         exit();
@@ -29,9 +29,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
         // Esegui la procedura per verificare le credenziali
-        $sql = "CALL logIn(:username, :password, @outputVar)";
+        $sql = "CALL logIn(:mail, :password, @outputVar)";
         $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+        $stmt->bindParam(':mail', $mail, PDO::PARAM_STR);
         $stmt->bindParam(':password', $password, PDO::PARAM_STR);
         $stmt->execute();
 
@@ -48,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         try {
             // Chiama la procedura per ottenere il ruolo dell'utente
             $stmt = $pdo->prepare("CALL getUserRole(:mail, @userRole)");
-            $stmt->bindParam(':mail', $username, PDO::PARAM_STR);
+            $stmt->bindParam(':mail', $mail, PDO::PARAM_STR);
             $stmt->execute();
         
             // Recupera il valore dell'output della procedura
@@ -61,8 +61,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 "aud" => "bostarter.com",
                 "iat" => $issuedAt,
                 "exp" => $expirationTime,
-                "user_id" => $username,
-                "username" => $username,
+                "user_id" => $mail,
+                "username" => $mail,
                 "ruolo" => $userRole 
             ];
         

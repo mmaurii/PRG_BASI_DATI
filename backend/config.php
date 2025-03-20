@@ -5,6 +5,8 @@ const dbUsername = "prova";         // Nome utente MySQL (modifica se necessario
 const dbPassword = "MyNewPass1!";   // Password dell'utente MySQL (se impostata)
 const dbName = "BOSTARTER";  // Il nome del database
 
+const mysqlCharachter = "SET NAMES 'utf8mb4'";
+
 // key for JWT connection
 //define('JWTKEY', bin2hex(random_bytes(32))); 
 const JWTKEY = "f86c6682c64bda78122fb8382544a0656302f7082dc0b2c25300125846ab946c"; // Keep this secret!

@@ -29,8 +29,7 @@ async function createAccount(event) {
    //verifico che non ci sia già un utente con lo stesso nome
    // Hash della password (utilizzando la libreria SubtleCrypto disponibile nei browser moderni)
    try {
-/*       const hashedPassword = await hashPassword(password);
- */      const hashedPassword = password;
+      const hashedPassword = await hashPassword(password);
 
       // Prepara i dati da inviare al server
       const registerData = {
@@ -78,8 +77,9 @@ async function login(event) {
 
    // Hash della password (utilizzando la libreria SubtleCrypto disponibile nei browser moderni)
    try {
+//      const hashedPassword = await hashPassword(password);
       const hashedPassword = password;
-
+      
       // Prepara i dati da inviare al server
       const loginData = {
          mail: username,
