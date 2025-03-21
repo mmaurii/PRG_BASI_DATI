@@ -26,17 +26,32 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                 $sql = "CALL getProjectByName(:progetto)";
                 $stmt = $pdo->prepare($sql);
 
-                // Associazione del parametro
                 $stmt->bindParam(':progetto', $projectName, PDO::PARAM_STR);
 
-                // Esecuzione della query
                 $stmt->execute();
                 
-                // Recupera il risultato
                 $result = $stmt->fetch();
 
-                // Restituisce il risultato in formato JSON
+                $stmt->closeCursor();
+
                 if ($result) {
+                    // Query per ottenere il totale finanziato dalla vista
+                    $sqlView = "SELECT totale_finanziato FROM TotaleFinanziamenti WHERE nome = :progetto";
+                    $stmtView = $pdo->prepare($sqlView);
+
+                    $stmtView->bindParam(':progetto', $projectName, PDO::PARAM_STR);
+
+                    $stmtView->execute();
+                    
+                    $resultView = $stmtView->fetch();
+
+                    if ($resultView) {
+                        $result['totale_finanziato'] = $resultView['totale_finanziato'];
+                    } else {
+                        $result['totale_finanziato'] = 0;
+                    }
+
+                    // Restituisce il risultato con il dato aggiunto in formato JSON
                     echo json_encode(["result" => $result]);
                 } else {
                     echo json_encode(["error" => "Progetto non trovato"]);

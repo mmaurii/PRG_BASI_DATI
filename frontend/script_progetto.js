@@ -37,7 +37,11 @@ async function initInterface(){
         document.querySelector(".subtitle").innerText = projectData.descrizione;
         document.querySelector("#creator-name").innerText = projectData.mailC;
         document.querySelector("#days-left").innerText = giorniRimasti;
+        document.querySelector("#amount").innerText = projectData.totale_finanziato;
         document.querySelector("#budget").innerText = "raccolti di " + projectData.budget;
+        document.querySelector("#percentuale").innerText = Math.floor((projectData.totale_finanziato/projectData.budget)*100) + "%";
+        document.querySelector(".progress").style.width = Math.floor((projectData.totale_finanziato / projectData.budget) * 100) + "%";
+
 
         await getComments();
 
@@ -87,6 +91,7 @@ async function getProject(){
         .then(response => {
             if (response.data.result) {
                 projectData = response.data.result;
+                console.log(response.data.result);
             } else if (response.data.error) {
                 console.error(response.data.error);
             } else {
