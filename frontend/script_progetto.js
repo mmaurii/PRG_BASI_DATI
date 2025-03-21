@@ -1,23 +1,34 @@
-let projectName, username, projectData, comments;
+let projectName, username, projectData, comments, role;
 const token = localStorage.getItem("jwtToken");
 
 const currentDate = new Date();
 let mysqlDate = currentDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
+    await initInterface();
+    
     document.getElementById('login').addEventListener('click', login);
     document.getElementById('logout').addEventListener('click', logout);
     document.querySelector('.submit-comment').addEventListener('click', sendComment);
-
-    initInterface();
-
+    document.querySelectorAll(".reply-button").forEach(function(button) {
+        button.addEventListener('click', function() {
+            showReplyForm(button);
+        });
+    });
+    document.querySelectorAll(".send-reply").forEach(function(sendButton) {
+        sendButton.addEventListener('click', sendReply);
+    });
 })
 
 async function initInterface(){
     try {
         const params = new URLSearchParams(window.location.search);
         projectName = params.get('name');
-
+        if(token){
+            username = getUsernameFromToken(token);
+            role = getRoleFromToken(token);
+        }
+        
         await getProject();
     
         let giorniRimasti = getGiorniRimasti(mysqlDate,projectData.dataLimite);
@@ -33,6 +44,8 @@ async function initInterface(){
         comments.forEach(element => {
             templateComment(element.testo,element.data,element.mail)
         });
+
+        
 
         console.log('Progetto caricato con successo');
     } catch (error) {
@@ -84,12 +97,31 @@ async function getProject(){
             console.error("Access denied:", error.response ? error.response.data.error : error.message);
         });
 }
+function showReplyForm(button){
+    var replyForm = button.nextElementSibling;
+    replyForm.firstElementChild.value = "";
+
+    if(replyForm.style.display == "block"){
+        replyForm.style.display = "none";
+    }
+    else{
+        replyForm.style.display = "block";
+    }
+    // Nasconde altri moduli di risposta aperti
+    var allReplyForms = document.querySelectorAll(".reply-form");
+    allReplyForms.forEach(function(form) {
+        if (form !== replyForm) {
+            form.style.display = "none";
+        }
+    });
+}
+function sendReply(){
+    console.log("risposta inviata")
+}
 
 function sendComment(){
-    let text = document.querySelector("#textArea").value;
+    let text = document.querySelector("#textComment").value;
     if(text){
-        username = getUsernameFromToken(token);
-
         if (!token) {
             window.location.href = "login.html"; // Redirect if no token
         } else {
@@ -113,11 +145,12 @@ function sendComment(){
                 });
         }
     }
-    document.querySelector("#textArea").value = ""
+    document.querySelector("#textComment").value = ""
 }
 
 function logout(){
     localStorage.removeItem("jwtToken"); // Remove the token
+    location.reload();
 }
 
 function login(){
@@ -125,29 +158,74 @@ function login(){
 }
 
 function templateComment(text,mysqlDate,creatore){
+    /*
+    esempio template del commento:
+    <li class="comment" data-comment-id="3">
+        <div class="comment-user">
+            <img src="" alt="">
+            <p><strong>Utente3</strong> - 3 ore fa</p>
+        </div>
+        <p>Ottima idea, ho già contribuito con €50!</p>
+        <div class="reply-section">
+            <button class="reply-button creator-only">Rispondi</button>
+            <div class="reply-form">
+                <textarea class="reply-text" placeholder="Scrivi una risposta..."></textarea>
+                <button class="send-reply">Invia</button>
+            </div>
+        </div>
+        
+    </li>
+    */
     let container = document.querySelector(".comment-list")
     
     let li = document.createElement("li")
     li.classList.add("comment")
     container.appendChild(li)
 
-    let div = document.createElement("div")
-    div.classList.add("comment-user")
-    li.appendChild(div)
+    let divCommentUser = document.createElement("div")
+    divCommentUser.classList.add("comment-user")
+    li.appendChild(divCommentUser)
 
     let img = document.createElement("img")
     let autore = document.createElement("p")
-    autore.innerHTML = "<strong>"+ creatore +"</strong>"
     let data = document.createTextNode(" "+mysqlDate)
     
+    autore.innerHTML = "<strong>"+ creatore +"</strong>"
     autore.appendChild(data)
-    div.appendChild(img)
-    div.appendChild(autore)
-
+    divCommentUser.appendChild(img)
+    divCommentUser.appendChild(autore)
 
     let textComment = document.createElement("p")
     textComment.innerText = text
     li.appendChild(textComment)
+
+    let divReplaySection = document.createElement("div")
+    divReplaySection.classList.add("reply-section")
+    li.appendChild(divReplaySection)
+
+    let buttonRispondi = document.createElement("button")
+    buttonRispondi.classList.add("reply-button")
+    buttonRispondi.classList.add("creator-only")
+    if(role == "creator" || role == "admin_creator"){
+        buttonRispondi.style.display = "block";
+    }
+    buttonRispondi.innerText = "Rispondi"
+    divReplaySection.appendChild(buttonRispondi)
+
+    let divForm = document.createElement("div")
+    divForm.classList.add("reply-form")
+    divReplaySection.appendChild(divForm)
+
+    let textRisposta = document.createElement("textarea")
+    textRisposta.classList.add("reply-text")
+    textRisposta.placeholder = "Scrivi una risposta..."
+    divForm.appendChild(textRisposta)
+
+    let buttonInvia = document.createElement("button")
+    buttonInvia.classList.add("send-reply")
+    buttonInvia.innerText = "Invia"
+    divForm.appendChild(buttonInvia)
+
 }
 
 function getUsernameFromToken(token) {
@@ -155,6 +233,16 @@ function getUsernameFromToken(token) {
         const payloadBase64 = token.split('.')[1]; // Estrae la parte payload del JWT
         const payloadDecoded = JSON.parse(atob(payloadBase64)); // Decodifica da Base64 a JSON
         return payloadDecoded.username || null; // Restituisce lo username
+    } catch (error) {
+        console.error("Errore nella decodifica del token:", error);
+        return null;
+    }
+}
+function getRoleFromToken(token) {
+    try {
+        const payloadBase64 = token.split('.')[1]; // Estrae la parte payload del JWT
+        const payloadDecoded = JSON.parse(atob(payloadBase64)); // Decodifica da Base64 a JSON
+        return payloadDecoded.ruolo || null; // Restituisce lo username
     } catch (error) {
         console.error("Errore nella decodifica del token:", error);
         return null;

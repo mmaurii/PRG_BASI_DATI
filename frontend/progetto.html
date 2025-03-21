@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>caricamento...</title>
     <link rel="stylesheet" href="style_progetto.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
     <nav class="navbar">
@@ -84,44 +85,11 @@
         <section class="comments">
             <h2>Commenti</h2>
             <div class="comment-form">
-                <textarea placeholder="Scrivi un commento..."></textarea>
+                <textarea placeholder="Scrivi un commento..." id="textComment"></textarea>
                 <button class="submit-comment">Invia</button>
             </div>
             <ul class="comment-list">
-                <li class="comment" data-comment-id="1">
-                    <div class="comment-user">
-                        <img src="" alt="">
-                        <p><strong>Utente1</strong> - 2 giorni fa</p>
-                    </div>
-                    <p>Questo progetto è fantastico! Non vedo l'ora di vedere il risultato finale.</p>
-                    <div class="reply">
-                        <div class="comment-user">
-                            <img src="" alt="">
-                            <p><strong>Nome Creatore</strong> - 1 giorno fa</p>
-                        </div>
-                        <p>Grazie per il supporto! Stiamo lavorando sodo per realizzarlo.</p>
-                    </div>
-                </li>
-                <li class="comment" data-comment-id="2">
-                    <div class="comment-user">
-                        <img src="" alt="">
-                        <p><strong>Utente2</strong> - 1 giorno fa</p>
-                    </div>
-                    <p>Domanda: ci sarà una versione in italiano del prodotto?</p>
-                    <div class="reply-section">
-                        <button class="reply-button creator-only">Rispondi</button>
-                    </div>
-                </li>
-                <li class="comment" data-comment-id="3">
-                    <div class="comment-user">
-                        <img src="" alt="">
-                        <p><strong>Utente3</strong> - 3 ore fa</p>
-                    </div>
-                    <p>Ottima idea, ho già contribuito con €50!</p>
-                    <div class="reply-section">
-                        <button class="reply-button creator-only">Rispondi</button>
-                    </div>
-                </li>
+                
             </ul>
         </section>
     </main>
