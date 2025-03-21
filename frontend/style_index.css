@@ -131,7 +131,7 @@ main {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 32px;
-    max-width: 1200px;
+    max-width: 1500px;
     margin: 0 auto;
 }
 
@@ -165,6 +165,7 @@ main {
 .card p {
     padding: 0 16px;
     color: grey;
+    height: 10%;
 }
 
 .progress-bar {

@@ -22,9 +22,9 @@ async function initInterface(){
                         <h3>${element.nome}</h3>
                         <p>${element.descrizione}</p>
                         <div class="progress-bar">
-                            <div class="progress" style="width: 75%;"></div>
+                            <div class="progress" style="width: ${Math.floor((element.totale_finanziato/element.budget)*100)}%;"></div>
                         </div>
-                        <p>75% finanziato - €7,500 raccolti</p>
+                        <p>${Math.floor((element.totale_finanziato/element.budget)*100)}% finanziato - €${element.totale_finanziato} raccolti</p>
                     </a>`;
 
         projectContainer.innerHTML += boilerplate;
@@ -39,6 +39,7 @@ async function getProgetti(){
         .then(response => {
             if (response.data.result) {
                 this.progetti = response.data.result;
+                console.log(response.data.result);
             } else if (response.data.error) {
                 console.error(response.data.error);
             } else {

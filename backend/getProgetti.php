@@ -18,16 +18,32 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         }
 
         try {
-            // Preparing the SQL query to call the procedure with an output parameter
+            // Chiamiamo la stored procedure per ottenere tutti i progetti
             $sql = "CALL getProgetti()";
             $stmt = $pdo->prepare($sql);
-
-            // Execute the query
             $stmt->execute();
-            // Fetch all results
-            $results = $stmt->fetchAll();
 
-            echo json_encode(["result"=>$results]);
+            // Recuperiamo tutti i progetti
+            $progetti = $stmt->fetchAll();
+            $stmt->closeCursor();  // Chiudiamo il cursore della prima query per evitare conflitti
+
+            // Aggiungiamo il totale dei finanziamenti per ciascun progetto
+            foreach ($progetti as &$progetto) {
+                // Eseguiamo la query sulla vista per ottenere il totale dei finanziamenti
+                $sqlTotaleFinanziato = "SELECT totale_finanziato FROM TotaleFinanziamenti WHERE nome = :nomeProgetto";
+                $stmtTotale = $pdo->prepare($sqlTotaleFinanziato);
+                $stmtTotale->bindParam(':nomeProgetto', $progetto['nome']);
+                $stmtTotale->execute();
+
+                // Recuperiamo il totale dei finanziamenti
+                $totale = $stmtTotale->fetchColumn();
+                $progetto['totale_finanziato'] = $totale;  // Aggiungiamo il totale al progetto
+                $stmtTotale->closeCursor(); // Chiudiamo il cursore della seconda query
+            }
+
+            // Restituiamo i progetti con il totale dei finanziamenti
+            echo json_encode(["result" => $progetti]);
+
         } catch (PDOException $e) {
             echo json_encode(["error" => "Query SQL non riuscita. Errore: " . $e->getMessage()]);
             exit();
