@@ -506,8 +506,8 @@ CREATE TRIGGER aggiornaAffidabilitaOnProgetto
 after INSERT ON PROGETTO
 FOR EACH ROW
 BEGIN
-	DECLARE numProgetti INT DEFAULT 0;
-	DECLARE numProgettiFinanziati INT DEFAULT 0;
+	DECLARE numProgetti FLOAT DEFAULT 0;
+	DECLARE numProgettiFinanziati FLOAT DEFAULT 0;
 	/* Recupero il numero attuale di progetti dell'utente*/
 	select nr_progetti from CREATORE where mail=new.mailC INTO numProgetti;
 
@@ -519,7 +519,7 @@ BEGIN
 	IF numProgettiFinanziati > 0 THEN
         IF numProgetti > 0 THEN
             UPDATE CREATORE 
-            SET affidabilita = numProgetti / numProgettiFinanziati 
+            SET affidabilita = ROUND(numProgettiFinanziati / numProgetti, 2)
             WHERE mail = NEW.mailC;
         END IF;
     END IF;
@@ -532,7 +532,7 @@ DROP TRIGGER IF EXISTS aggiornaAffidabilitaOnFinanziamento;
 DELIMITER |
 CREATE TRIGGER aggiornaAffidabilitaOnFinanziamento 
 AFTER INSERT ON FINANZIAMENTO 
-FOR EACH ROW
+FOR EACH ROW    
 BEGIN
 	DECLARE numProgetti INT DEFAULT 0;
 	DECLARE numProgettiFinanziati INT DEFAULT 0;
@@ -547,7 +547,7 @@ BEGIN
 	IF numProgettiFinanziati > 0 THEN
         IF numProgetti > 0 THEN
             UPDATE CREATORE 
-            SET affidabilita = numProgetti / numProgettiFinanziati 
+            SET affidabilita = ROUND(numProgettiFinanziati / numProgetti, 2)
             WHERE mail = NEW.mail;
         END IF;
     END IF;
