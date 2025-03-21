@@ -10,14 +10,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     document.getElementById('login').addEventListener('click', login);
     document.getElementById('logout').addEventListener('click', logout);
     document.querySelector('.submit-comment').addEventListener('click', sendComment);
-    document.querySelectorAll(".reply-button").forEach(function(button) {
-        button.addEventListener('click', function() {
-            showReplyForm(button);
-        });
-    });
-    document.querySelectorAll(".send-reply").forEach(function(sendButton) {
-        sendButton.addEventListener('click', sendReply);
-    });
+
 })
 
 async function initInterface(){
@@ -46,7 +39,8 @@ async function initInterface(){
         await getComments();
 
         comments.forEach(element => {
-            templateComment(element.testo,element.data,element.mail)
+            console.log(element)
+            templateComment(element.testo,element.data,element.mail, element.id)
         });
 
         
@@ -120,8 +114,33 @@ function showReplyForm(button){
         }
     });
 }
-function sendReply(){
-    console.log("risposta inviata")
+function sendReply(text){
+    if(text.value){
+        if (!token) {
+            window.location.href = "login.html"; // Redirect if no token
+        } else {
+            /*
+            // Prepara i dati da inviare al server
+            const data = {
+                id: comments,
+                risposta: text.value,
+            };
+
+            axios.post("http://localhost/prg_basi_dati/backend/addResponseToComment.php", data, {
+                headers: { "Authorization": `Bearer ${token}` }
+            })
+                .then(response => {
+                    console.log(response.data); // Load the protected content
+                })
+                .catch(error => {
+                    console.error("Access denied:", error.response ? error.response.data : error.message);
+                });
+                */
+        }
+        text.value = "";
+        console.log("risposta inviata")
+    }
+
 }
 
 function sendComment(){
@@ -162,7 +181,7 @@ function login(){
     window.location.href = './login.html'; // Reindirizza a una nuova pagina
 }
 
-function templateComment(text,mysqlDate,creatore){
+function templateComment(text,mysqlDate,creatore,id){
     /*
     esempio template del commento:
     <li class="comment" data-comment-id="3">
@@ -185,6 +204,7 @@ function templateComment(text,mysqlDate,creatore){
     
     let li = document.createElement("li")
     li.classList.add("comment")
+    li.classList.add("comment"+id)
     container.appendChild(li)
 
     let divCommentUser = document.createElement("div")
@@ -231,6 +251,13 @@ function templateComment(text,mysqlDate,creatore){
     buttonInvia.innerText = "Invia"
     divForm.appendChild(buttonInvia)
 
+    buttonRispondi.addEventListener('click', function() {
+        showReplyForm(buttonRispondi);
+    });
+    buttonInvia.addEventListener('click', function() {
+        sendReply(textRisposta);
+    });
+    
 }
 
 function getUsernameFromToken(token) {
