@@ -464,6 +464,13 @@ DELIMITER ;
 
 /* DEFINIZIONE DELLE VIEW */
 
+/* Visualizzare valore finanziamento totale per ogni progetto */
+CREATE VIEW TotaleFinanziamenti AS
+SELECT P.nome, SUM(F.importo) AS totale_finanziato
+FROM PROGETTO P JOIN FINANZIAMENTO F ON P.nome = F.nome
+GROUP BY P.nome;
+
+
 /* Visualizzare la classifica degli utenti creatori, in base al loro valore di affidabilità. Mostrare solo il nickname dei primi 3 utenti. */
 DROP VIEW if exists viewClassifica;
 CREATE VIEW viewClassifica(mail, affidabilita) AS
