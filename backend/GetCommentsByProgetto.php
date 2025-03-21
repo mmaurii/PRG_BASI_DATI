@@ -14,7 +14,8 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             $pdo->exec(mysqlCharachter);
         } catch (PDOException $e) {
-            echo ("[ERRORE] Connessione al DB non riuscita. Errore: " . $e->getMessage());
+                    return json_encode(["error" => "[ERRORE] Connessione al DB non riuscita. Errore: ".$e->getMessage()]);
+
             exit();
         }
 

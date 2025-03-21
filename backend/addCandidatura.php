@@ -36,6 +36,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Execute the query
         $stmt->execute();
 
+        $text = "timeStamp: " . date('Y-m-d H:i:s').";mail: " . $mail . ";id: " . $id . ";queryType: INSERT;query: " . $sql . ";result: " . $result;
+        $resp = writeLog($text);
+
         echo json_encode(["success" => "Candidatura inserita con successo"]);
     } catch (PDOException $e) {
         echo json_encode(["error" => "[ERRORE] Inserimento candidatura non riuscito. Errore: " . $e->getMessage()]);

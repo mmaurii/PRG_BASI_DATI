@@ -17,7 +17,7 @@ function test(event) {
             nomeProgetto: "Drone Fotografico",
             dataFinanziamento: "2025-03-17",
             importoFinanziamento: 5000,
-            codiceReward: "RWD03",
+            codiceReward: null,
         };
 
         axios.post("../../backend/finanziaProgetto.php", data, {

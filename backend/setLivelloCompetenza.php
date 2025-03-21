@@ -16,7 +16,8 @@
                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $pdo->exec(mysqlCharachter);
             } catch (PDOException $e) {
-                echo ("[ERRORE] Connessione al DB non riuscita. Errore: " . $e->getMessage());
+                        return json_encode(["error" => "[ERRORE] Connessione al DB non riuscita. Errore: ".$e->getMessage()]);
+
                 exit();
             }
 
@@ -36,6 +37,9 @@
                 // Recupera il valore dell'output della procedura
                 $result = $pdo->query("SELECT @isSet AS isSuccess");
                 $isSuccess = $result->fetch(PDO::FETCH_ASSOC)['isSuccess'];
+
+                $text = "timeStamp: " . date('Y-m-d H:i:s').";mail: " . $mail . ";competenza: " . $competenza . ";queryType: INSERT;query: " . $sql . ";result: " . $result;
+                $resp = writeLog($text);
 
                 echo json_encode(["result"=>$isSuccess]);
             } catch (PDOException $e) {

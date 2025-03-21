@@ -2,37 +2,34 @@
 require_once 'config.php';
 require  __DIR__ . '/../vendor/autoload.php';
 
-try {
-    // Connect to MongoDB
-    $client = new MongoDB\Client("mongodb://" . servername . ":27017");
+function writeLog($text): string
+{
+    try {
+        // Connect to MongoDB
+        $conn = new MongoDB\Client("mongodb://" . servername . ":27017");
 
-    // Select database and collection
-    $db = $client->BOSTARTER;
-    $collection = $db->EVENTO;
+        // Select database and collection
+        $db = $conn->selectDatabase(dbName);
+        $collection = $db->selectCollection("EVENTO");
 
-    // Fetch all documents
-    $cursor = $collection->find();
 
-    // Convert to array and display JSON response
-    $results = iterator_to_array($cursor);
-    //echo json_encode($results, JSON_PRETTY_PRINT);
+        $document = array(
+            "testo" => $text
+        );
 
-    // Inizio dell'elenco HTML
-    echo "<h2>Elenco degli inserimenti:</h2>";
-    echo "<ul>";
+        // Insert document
+        $result = $collection->insertOne($document);
 
-    // Controlla se ci sono risultati
-    if (!empty($results)) {
-        // Itera sui documenti della collezione
-        foreach ($results as $document) {
-            echo "<li><strong>" . htmlspecialchars($document["testo"]) . "</strong></li>";
+        if ($result->getInsertedCount() == 1) {
+            return json_encode(["result" => true]);
+        } else {
+            return json_encode(["result" => false]);
         }
-    } else {
-        echo "<li>Nessun risultato trovato</li>";
+    } catch (InvalidArgumentException $e) {
+        return json_encode(["error" => "[ERRORE] I parametri di input sono sbagliati. Errore: " . $e->getMessage()]);
+    } catch (Exception $e) {
+        return json_encode(["error" => "[ERRORE] Connessione al DB non riuscita. Errore: " . $e->getMessage()]);
     }
-
-
-    echo "</ul>";
-} catch (Exception $e) {
-    echo "Error: " . $e->getMessage();
 }
+
+?>

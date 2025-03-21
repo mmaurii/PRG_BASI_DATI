@@ -512,7 +512,8 @@ BEGIN
 	select nr_progetti from CREATORE where mail=new.mailC INTO numProgetti;
 
 	/* Recupero il numero attuale di progetti finanziati*/
-	select count(*) from FINANZIAMENTO where nome=new.nome INTO numProgettiFinanziati;
+	select count(DISTINCT F.nome) from FINANZIAMENTO F join PROGETTO P ON(F.nome=P.nome)
+    where (P.mailC=new.mailC) INTO numProgettiFinanziati;
     
     /* Solo se il progetto ha finanziamenti, aggiorno l'affidabilità */
 	IF numProgettiFinanziati > 0 THEN
@@ -533,32 +534,26 @@ CREATE TRIGGER aggiornaAffidabilitaOnFinanziamento
 AFTER INSERT ON FINANZIAMENTO 
 FOR EACH ROW
 BEGIN
-    DECLARE numProgetti INT DEFAULT 0;
-    DECLARE numProgettiFinanziati INT DEFAULT 0;
+	DECLARE numProgetti INT DEFAULT 0;
+	DECLARE numProgettiFinanziati INT DEFAULT 0;
+	/* Recupero il numero attuale di progetti dell'utente*/
+	select nr_progetti from CREATORE where mail=new.mail INTO numProgetti;
 
-    /* Recupero il numero attuale di progetti dell'utente */
-    SELECT c.nr_progetti
-    INTO numProgetti
-    FROM CREATORE c
-    JOIN PROGETTO p ON p.mailC = c.mail
-    WHERE p.nome = NEW.nome;
-
-    /* Recupero il numero attuale di progetti finanziati */
-    SELECT COUNT(*)
-    INTO numProgettiFinanziati
-    FROM FINANZIAMENTO
-    WHERE nome = NEW.nome;
-
-    /* Evita divisioni per zero */
-    IF numProgettiFinanziati > 0 THEN
-        UPDATE CREATORE 
-        SET affidabilita = numProgetti / numProgettiFinanziati
-        WHERE mail = (SELECT p.mailC FROM PROGETTO p WHERE p.nome = NEW.nome LIMIT 1);
+	/* Recupero il numero attuale di progetti finanziati*/
+	select count(DISTINCT F.nome) from FINANZIAMENTO F join PROGETTO P ON(F.nome=P.nome)
+    where (P.mailC=new.mail) INTO numProgettiFinanziati;
+    
+    /* Solo se il progetto ha finanziamenti, aggiorno l'affidabilità */
+	IF numProgettiFinanziati > 0 THEN
+        IF numProgetti > 0 THEN
+            UPDATE CREATORE 
+            SET affidabilita = numProgetti / numProgettiFinanziati 
+            WHERE mail = NEW.mail;
+        END IF;
     END IF;
 END;
 |
 DELIMITER ;
-
 
 
 /* Utilizzare un trigger per cambiare lo stato di un progetto. Lo stato di un progetto diventa CHIUSO quando ha raggiunto un valore complessivo di finanziamenti pari al budget richiesto. */

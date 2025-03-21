@@ -49,6 +49,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Execute the query
         $stmt->execute();
 
+        $text = "timeStamp: " . date('Y-m-d H:i:s').";nomeProgetto: " . $nome . ";queryType: INSERT;query: " . $sql . ";result: " . $result;
+        $resp = writeLog($text);
+
         echo json_encode(["success" => "Progetto inserito con successo"]);
     } catch (PDOException $e) {
         echo json_encode(["error" => "[ERRORE] Impossibile inserire il progetto. Errore: " . $e->getMessage()]);

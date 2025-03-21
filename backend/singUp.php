@@ -48,6 +48,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result = $pdo->query("SELECT @outputVar AS outputValue");
         $isSingUp = $result->fetch(PDO::FETCH_ASSOC)['outputValue'];
 
+        $text = "timeStamp: " . date('Y-m-d H:i:s').";mail: " . $mail . ";queryType: INSERT;query: " . $sql . ";result: " . $result;
+        $resp = writeLog($text);
+
         echo json_encode(["result"=>$isSingUp]);
     } catch (PDOException $e) {
         echo json_encode(["error" => "[ERRORE] Query SQL non riuscita: " . $e->getMessage()]);

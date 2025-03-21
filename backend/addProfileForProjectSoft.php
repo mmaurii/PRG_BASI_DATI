@@ -15,7 +15,8 @@
                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $pdo->exec(mysqlCharachter);
             } catch (PDOException $e) {
-                echo ("[ERRORE] Connessione al DB non riuscita. Errore: " . $e->getMessage());
+                        return json_encode(["error" => "[ERRORE] Connessione al DB non riuscita. Errore: ".$e->getMessage()]);
+
                 exit();
             }
 
@@ -31,6 +32,9 @@
                 // Execute the query
                 $result = $stmt->execute();
                 
+                $text = "timeStamp: " . date('Y-m-d H:i:s').";queryType: INSERT;query: " . $sql . ";result: " . $result;
+                $resp = writeLog($text);
+    
                 echo $result;
             } catch (PDOException $e) {
                 echo ("[ERRORE] Query SQL non riuscita. Errore: " . $e->getMessage());

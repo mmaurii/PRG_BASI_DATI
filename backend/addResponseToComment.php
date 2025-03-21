@@ -15,7 +15,8 @@
                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $pdo->exec(mysqlCharachter);
             } catch (PDOException $e) {
-                echo ("[ERRORE] Connessione al DB non riuscita. Errore: " . $e->getMessage());
+                        return json_encode(["error" => "[ERRORE] Connessione al DB non riuscita. Errore: ".$e->getMessage()]);
+
                 exit();
             }
 
