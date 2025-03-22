@@ -272,7 +272,7 @@ DELIMITER ;
 /* Inserimento di un commento relativo ad un progetto */
 DROP PROCEDURE IF EXISTS addComment;
 DELIMITER |
-CREATE PROCEDURE addComment(IN inputMail VARCHAR(255), IN inputNomeProgetto VARCHAR(255), IN inputTesto TEXT, IN inputData DATE)
+CREATE PROCEDURE addComment(IN inputMail VARCHAR(255), IN inputNomeProgetto VARCHAR(255), IN inputTesto TEXT, IN inputData DATE, OUT outputId INT)
 BEGIN
     if not exists(select * from PROGETTO where nome = inputNomeProgetto) then
         SIGNAL SQLSTATE '45000'
@@ -280,6 +280,7 @@ BEGIN
     END IF;
     insert into COMMENTO (data, testo, mail, nome)
 	values (inputData, inputTesto, inputMail, inputNomeProgetto);
+    SET outputId = LAST_INSERT_ID();
 END;
 |
 DELIMITER ;
@@ -448,6 +449,7 @@ DELIMITER |
 CREATE PROCEDURE GetCommentsByProgetto(IN nome_progetto VARCHAR(255))
 BEGIN
     SELECT 
+		id,
         testo,
         data,
         risposta,

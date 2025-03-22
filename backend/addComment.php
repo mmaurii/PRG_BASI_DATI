@@ -23,24 +23,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         try {
-            // Preparazione della query per chiamare la stored procedure
-            $sql = "CALL addComment(:mail, :nomeProgetto, :testo, :dataCommento)";
+            // Preparazione della query per chiamare la stored procedure con parametro di output
+            $sql = "CALL addComment(:mail, :nomeProgetto, :testo, :dataCommento, @newId)";
             $stmt = $pdo->prepare($sql);
-
-            // Binding dei parametri
+        
+            // Binding dei parametri di input
             $stmt->bindParam(':mail', $mail, PDO::PARAM_STR);
             $stmt->bindParam(':nomeProgetto', $nomeProgetto, PDO::PARAM_STR);
             $stmt->bindParam(':testo', $testo, PDO::PARAM_STR);
             $stmt->bindParam(':dataCommento', $dataCommento, PDO::PARAM_STR);
-
+        
             // Esecuzione della query
-            $result = $stmt->execute();
-            echo $result;
-            echo json_encode(["success" => "Commento aggiunto con successo"]);
+            $stmt->execute();
+        
+            // Recupero dell'ID generato
+            $idResult = $pdo->query("SELECT @newId AS id")->fetch(PDO::FETCH_ASSOC);
+        
+            // Restituisci il risultato
+            echo json_encode([
+                "success" => "Commento aggiunto con successo",
+                "comment_id" => $idResult['id']
+            ]);
         } catch (PDOException $e) {
             echo json_encode(["error" => "[ERRORE] Query SQL non riuscita. Errore: " . $e->getMessage()]);
             exit();
-        }
+        }        
     }else {
         echo json_encode(["error" => "jwtToken not valid"]);
     }

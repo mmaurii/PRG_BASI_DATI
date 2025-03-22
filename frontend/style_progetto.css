@@ -409,6 +409,29 @@ body {
     display: none;
 }
 
+.reply-container {
+    display: flex;
+    justify-content: space-between;  /* Spazia gli elementi uno a sinistra e uno a destra */
+    align-items: center;  /* Centra verticalmente gli elementi */
+    margin-top: 12px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-left: 4px solid green;
+    border-radius: 4px;
+}
+
+.styled-reply {
+    font-style: italic;
+    color: black;
+    margin-right: 16px; /* Distanza tra il testo della risposta e il nome dell'autore */
+}
+
+.creator-reference {
+    font-size: 14px;
+    color: grey;
+    font-style: italic;
+    text-align: right; /* Assicura che il testo sia allineato a destra */
+}
 
 
 body.is-creator .creator-only {

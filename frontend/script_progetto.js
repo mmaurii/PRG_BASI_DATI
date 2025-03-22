@@ -39,11 +39,8 @@ async function initInterface(){
         await getComments();
 
         comments.forEach(element => {
-            console.log(element)
             templateComment(element.testo,element.data,element.mail, element.id)
         });
-
-        
 
         console.log('Progetto caricato con successo');
     } catch (error) {
@@ -114,31 +111,49 @@ function showReplyForm(button){
         }
     });
 }
-function sendReply(text){
+function sendReply(text,idComment, divReply, btnReply){
     if(text.value){
         if (!token) {
             window.location.href = "login.html"; // Redirect if no token
         } else {
-            /*
             // Prepara i dati da inviare al server
             const data = {
-                id: comments,
+                id: idComment,
                 risposta: text.value,
             };
 
-            axios.post("http://localhost/prg_basi_dati/backend/addResponseToComment.php", data, {
+            axios.put("http://localhost/prg_basi_dati/backend/addResponseToComment.php", data, {
                 headers: { "Authorization": `Bearer ${token}` }
             })
                 .then(response => {
                     console.log(response.data); // Load the protected content
+                    divReply.style.display = "none"
+                    btnReply.style.display = "none"
+
+                    let textReply = document.createElement("p")
+                    textReply.classList.add("styled-reply");
+                    textReply.innerHTML = `<strong>Risposta:</strong> ${text.value}`;
+
+                    let creatorReference = document.createElement("span");
+                    creatorReference.classList.add("creator-reference");
+                    creatorReference.textContent = projectData.mailC;
+
+                    let replyContainer = document.createElement("div");
+                    replyContainer.classList.add("reply-container");
+
+                    replyContainer.appendChild(textReply);
+                    replyContainer.appendChild(creatorReference);
+
+                    btnReply.parentNode.appendChild(replyContainer);
+                    
+                    text.value = "";
                 })
                 .catch(error => {
                     console.error("Access denied:", error.response ? error.response.data : error.message);
                 });
-                */
+                
         }
-        text.value = "";
-        console.log("risposta inviata")
+        
     }
 
 }
@@ -161,7 +176,7 @@ function sendComment(){
                 headers: { "Authorization": `Bearer ${token}` }
             })
                 .then(response => {
-                    templateComment(text,mysqlDate,username);
+                    templateComment(text,mysqlDate,username,response.data.comment_id);
                     console.log(response.data); // Load the protected content
                 })
                 .catch(error => {
@@ -204,7 +219,6 @@ function templateComment(text,mysqlDate,creatore,id){
     
     let li = document.createElement("li")
     li.classList.add("comment")
-    li.classList.add("comment"+id)
     container.appendChild(li)
 
     let divCommentUser = document.createElement("div")
@@ -241,6 +255,28 @@ function templateComment(text,mysqlDate,creatore,id){
     divForm.classList.add("reply-form")
     divReplaySection.appendChild(divForm)
 
+    //verifica se il commento ha risposta
+    let comment = comments.find(c => c.id === id);
+    if(comment && comment.risposta){    //se chiamato da init comment è true in quanto dentro allla lista comments e si poi si verifica se ha la risposta, se invece chiamato da addComment sicuro non avrà risposta e sicuro non sarà dentro alla lista
+        divForm.style.display = "none"
+        buttonRispondi.style.display = "none"
+        
+        let textReply = document.createElement("p")
+        textReply.classList.add("styled-reply");
+        textReply.innerHTML = `<strong>Risposta:</strong> ${comment.risposta}`;
+
+        let creatorReference = document.createElement("span");
+        creatorReference.classList.add("creator-reference");
+        creatorReference.textContent = projectData.mailC;
+
+        let replyContainer = document.createElement("div");
+        replyContainer.classList.add("reply-container");
+
+        replyContainer.appendChild(textReply);
+        replyContainer.appendChild(creatorReference);
+        
+        divReplaySection.appendChild(replyContainer)
+    }
     let textRisposta = document.createElement("textarea")
     textRisposta.classList.add("reply-text")
     textRisposta.placeholder = "Scrivi una risposta..."
@@ -255,7 +291,7 @@ function templateComment(text,mysqlDate,creatore,id){
         showReplyForm(buttonRispondi);
     });
     buttonInvia.addEventListener('click', function() {
-        sendReply(textRisposta);
+        sendReply(textRisposta,id,divForm,buttonRispondi);
     });
     
 }

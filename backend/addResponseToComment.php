@@ -31,8 +31,10 @@
 
                 // Execute the query
                 $result = $stmt->execute();
-                
-                echo $result;
+                echo json_encode([
+                    "success" => "risposta aggiunto con successo",
+                    "result" => $result
+                ]);
             } catch (PDOException $e) {
                 echo ("[ERRORE] Query SQL non riuscita. Errore: " . $e->getMessage());
                 exit();
