@@ -444,6 +444,18 @@ END
 |
 DELIMITER ;
 
+/*restituisce le foto del progetto*/
+DROP PROCEDURE IF EXISTS getFotoByProgetto;
+DELIMITER |
+CREATE PROCEDURE getFotoByProgetto(IN progettoNome VARCHAR(255))
+BEGIN
+    SELECT foto 
+    FROM FOTO 
+    WHERE nomeP = progettoNome;
+END
+|
+DELIMITER ;
+
 DROP PROCEDURE IF EXISTS GetCommentsByProgetto;
 DELIMITER |
 CREATE PROCEDURE GetCommentsByProgetto(IN nome_progetto VARCHAR(255))
