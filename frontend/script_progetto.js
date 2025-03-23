@@ -245,9 +245,14 @@ function templateComment(text,mysqlDate,creatore,id){
     let buttonRispondi = document.createElement("button")
     buttonRispondi.classList.add("reply-button")
     buttonRispondi.classList.add("creator-only")
+    /*
     if(role == "creator" || role == "admin_creator"){
         buttonRispondi.style.display = "block";
     }
+    */
+    if (username === projectData.mailC) {  // Controlla se l'utente è il creatore del progetto
+        buttonRispondi.style.display = "block";
+    }    
     buttonRispondi.innerText = "Rispondi"
     divReplaySection.appendChild(buttonRispondi)
 
