@@ -46,10 +46,9 @@ async function initInterface() {
     // Aggiungi il contenuto finale all'interno del container del progetto
     projectContainer.innerHTML = htmlContent;
 }
-
 async function getFotoProgetto(element) {
     try {
-        const response = await axios.get("http://localhost/prg_basi_dati/backend/getFotoByProgetto.php", {
+        const response = await axios.get("../backend/getFotoByProgetto.php", {
             params: {
                 progetto: element.nome // Parametri della query string
             },

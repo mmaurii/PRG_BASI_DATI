@@ -45,7 +45,7 @@ CREATE TABLE PROGETTO (
 
 CREATE TABLE FOTO (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    foto MEDIUMBLOB,
+    foto varchar(255),
     nomeP VARCHAR(255) not null,
     FOREIGN KEY (nomeP) REFERENCES PROGETTO(nome)
 )engine= innodb;
@@ -70,7 +70,7 @@ CREATE TABLE COMPONENTE (
 
 CREATE TABLE REWARD (
     cod VARCHAR(255) PRIMARY KEY,
-    foto BLOB,
+    foto varchar(255),
     descrizione text,
     nomeP VARCHAR(255) not null,
     FOREIGN KEY (nomeP) REFERENCES PROGETTO(nome)
@@ -251,7 +251,7 @@ DELIMITER ;
 /* creo una procedura per l'aggiunta delle reward per un progetto */
 drop PROCEDURE if exists addReward;
 DELIMITER |
-CREATE PROCEDURE addReward (IN inputCod varchar(255), IN inputFoto blob, IN inputDescrizione text, IN inputNomeP VARCHAR(255))  
+CREATE PROCEDURE addReward (IN inputCod varchar(255), IN inputFoto varchar(255), IN inputDescrizione text, IN inputNomeP VARCHAR(255))  
 BEGIN
     IF (inputNomeP IS NULL) THEN
 		SIGNAL SQLSTATE '45000' 
@@ -665,13 +665,13 @@ INSERT INTO PROGETTO (nome, descrizione, dataInserimento, budget, dataLimite, st
 ('Dispositivo IoT per Piante', 'Un sensore intelligente per monitorare le piante domestiche.', '2025-03-05', 5000, '2025-07-20', 'aperto', 'giovanni.ferri@email.com', 'Hardware');
 
 INSERT INTO FOTO (foto, nomeP) VALUES
-(0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Smart Home Hub'),
-(0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Smart Home Hub'),
-(0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Smart Home Hub'),
-(0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'App Fitness Tracker'),
-(0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Drone Fotografico'),
-(0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Piattaforma E-Learning'),
-(0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Sistema AI Chatbot');
+("http://13.61.196.206/foto/smart-home-hub.jpg", 'Smart Home Hub'),
+("", 'Smart Home Hub'),
+("", 'Smart Home Hub'),
+("http://13.61.196.206/foto/App_Fitness_Tracker.jpg", 'App Fitness Tracker'),
+("http://13.61.196.206/foto/Drone_Fotografico.jpg", 'Drone Fotografico'),
+("http://13.61.196.206/foto/Piattaforma_E-Learning.jpg", 'Piattaforma E-Learning'),
+("http://13.61.196.206/foto/Sistema_AI_Chatbot.jpg", 'Sistema AI Chatbot');
 
 INSERT INTO COMMENTO (data, testo, risposta, mail, nome) VALUES
 ('2025-03-01', 'Questo progetto è molto interessante, non vedo l\'ora di vedere i progressi!', NULL, 'luca.bianchi@email.com', 'Smart Home Hub'),
@@ -693,16 +693,16 @@ INSERT INTO COMPONENTE (nomeC, descrizione, prezzo, qt) VALUES
 ('Cinturino Smartwatch', 'Cinturino in silicone per smartwatch personalizzabili.', 10, 300);
 
 INSERT INTO REWARD (cod, foto, descrizione, nomeP) VALUES
-('RWD01', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Un kit per l\'automazione della casa, incluso il modulo Wi-Fi e sensori di movimento.', 'Smart Home Hub'),
-('RWD02', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Un abbonamento premium con funzionalità avanzate per tracciare i progressi e le prestazioni.', 'App Fitness Tracker'),
-('RWD03', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Accessori premium per il drone, inclusi nuovi filtri e una batteria di lunga durata.', 'Drone Fotografico'),
-('RWD04', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Un corso online gratuito sulla creazione di contenuti e corsi interattivi sulla piattaforma.', 'Piattaforma E-Learning'),
-('RWD05', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Un pacchetto di 5 ore di consulenza su come migliorare le prestazioni del tuo chatbot.', 'Sistema AI Chatbot'),
-('RWD06', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Un smartwatch personalizzabile con display intercambiabile.', 'Smartwatch Personalizzabile'),
-('RWD07', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Un accessorio aggiuntivo per l\'app, inclusi nuovi strumenti di analisi finanziaria.', 'App Finanziaria'),
-('RWD08', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Un kit portatile di stampante 3D, con filamento incluso.', 'Stampante 3D Portatile'),
-('RWD09', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Un pacchetto di supporto dedicato agli artisti con strumenti creativi avanzati.', 'Social Network Creativo'),
-('RWD10', 0x89504E470D0A1A0A0000000D4948445200000200000002000806000000D2D4A7E20000001974455874536F6674776172650031362E30312E323620636F6D6D656E742F736572766572000000000049454E44AE426082, 'Un sensore IoT per monitorare l\'umidità delle piante e ricevere notifiche.', 'Dispositivo IoT per Piante');
+('RWD01', "", 'Un kit per l\'automazione della casa, incluso il modulo Wi-Fi e sensori di movimento.', 'Smart Home Hub'),
+('RWD02', "", 'Un abbonamento premium con funzionalità avanzate per tracciare i progressi e le prestazioni.', 'App Fitness Tracker'),
+('RWD03', "", 'Accessori premium per il drone, inclusi nuovi filtri e una batteria di lunga durata.', 'Drone Fotografico'),
+('RWD04', "", 'Un corso online gratuito sulla creazione di contenuti e corsi interattivi sulla piattaforma.', 'Piattaforma E-Learning'),
+('RWD05', "", 'Un pacchetto di 5 ore di consulenza su come migliorare le prestazioni del tuo chatbot.', 'Sistema AI Chatbot'),
+('RWD06', "", 'Un smartwatch personalizzabile con display intercambiabile.', 'Smartwatch Personalizzabile'),
+('RWD07', "", 'Un accessorio aggiuntivo per l\'app, inclusi nuovi strumenti di analisi finanziaria.', 'App Finanziaria'),
+('RWD08', "", 'Un kit portatile di stampante 3D, con filamento incluso.', 'Stampante 3D Portatile'),
+('RWD09', "", 'Un pacchetto di supporto dedicato agli artisti con strumenti creativi avanzati.', 'Social Network Creativo'),
+('RWD10', "", 'Un sensore IoT per monitorare l\'umidità delle piante e ricevere notifiche.', 'Dispositivo IoT per Piante');
 
 INSERT INTO FINANZIAMENTO (mail, nome, dataF, importo) VALUES
 ('mario.rossi@email.com', 'Smart Home Hub', '2025-02-20', 2000),

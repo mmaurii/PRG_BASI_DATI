@@ -81,7 +81,7 @@ async function initInterface(){
 }
 
 async function getPictures(){
-    await axios.get("http://localhost/prg_basi_dati/backend/getFotoByProgetto.php", {
+    await axios.get("../backend/getFotoByProgetto.php", {
         params: {
             progetto: projectName // Parametri della query string
         },
@@ -177,7 +177,7 @@ function sendReply(text,idComment, divReply, btnReply){
                 risposta: text.value,
             };
 
-            axios.put("http://localhost/prg_basi_dati/backend/addResponseToComment.php", data, {
+            axios.put("../backend/addResponseToComment.php", data, {
                 headers: { "Authorization": `Bearer ${token}` }
             })
                 .then(response => {
@@ -227,7 +227,7 @@ function sendComment(){
                 data: mysqlDate
             };
 
-            axios.post("http://localhost/prg_basi_dati/backend/addComment.php", data, {
+            axios.post("../backend/addComment.php", data, {
                 headers: { "Authorization": `Bearer ${token}` }
             })
                 .then(response => {
