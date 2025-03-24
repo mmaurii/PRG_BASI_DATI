@@ -1,66 +1,16 @@
 // import {create} from "axios";
-let usernameField, passwordField, pErrorMsg;
+let mailField, passwordField, pErrorMsg;
 
 document.addEventListener('DOMContentLoaded', () => {
    // Seleziona gli elementi dal DOM
    pErrorMsg = document.getElementById("errorMsg");
-   usernameField = document.getElementById('first');
+   mailField = document.getElementById('mail');
    passwordField = document.getElementById('password');
 
    let btnLogin = document.getElementById('login');
-   let btnCreateAccount = document.getElementById('createAccount');
 
    btnLogin.addEventListener('click', login);
-   btnCreateAccount.addEventListener('click', createAccount);
 });
-
-async function createAccount(event) {
-   event.preventDefault();
-   pErrorMsg.innerText = "";
-
-   // Leggi i valori dei campi
-   const username = usernameField.value.trim();
-   const password = passwordField.value;
-
-   if (!validateData(username, password)) {
-      return;
-   }
-
-   //verifico che non ci sia già un utente con lo stesso nome
-   // Hash della password (utilizzando la libreria SubtleCrypto disponibile nei browser moderni)
-   try {
-      const hashedPassword = await hashPassword(password);
-
-      // Prepara i dati da inviare al server
-      const registerData = {
-         username: username,
-         password: hashedPassword, // Invia l'hash invece della password in chiaro
-      };
-
-      // Invia i dati al server tramite una richiesta POST
-      const response = await fetch('http://localhost:3000/register', {
-         method: 'POST',
-         headers: {
-            'Content-Type': 'application/json'
-         },
-         body: JSON.stringify(registerData)
-      });
-
-      // Gestisci la risposta del server
-      if (response.ok) {
-         alert('Account creato con successo! Puoi ora effettuare il login.');
-         usernameField.value = '';
-         passwordField.value = '';
-      } else if (response.status === 400) {
-         let msg = await response.text();
-         pErrorMsg.innerText = msg;
-      }
-
-   } catch (error) {
-      console.error('Errore durante la registrazione:', error);
-      alert('Si è verificato un errore. Riprova più tardi.');
-   }
-}
 
 // Aggiungi un event listener al pulsante di login
 async function login(event) {
@@ -68,10 +18,10 @@ async function login(event) {
    pErrorMsg.innerText = "";
 
    // Leggi i valori dei campi
-   const username = usernameField.value.trim();
+   const username = mailField.value.trim();
    const password = passwordField.value;
 
-   if (!validateData(username, password)) {
+   if (!validate(username, password)) {
       return;
    }
 
@@ -114,7 +64,7 @@ async function login(event) {
          }
 
          // Pulisce i campi di input
-         usernameField.value = '';
+         mailField.value = '';
          passwordField.value = '';
       } else {
          const msg = await response.text();
@@ -142,7 +92,7 @@ function bufferToHex(buffer) {
       .join('');
 }
 
-function validateData(username, password) {
+function validate(username, password) {
    // Controlla che i campi non siano vuoti
    if (!username || !password) {
       pErrorMsg.innerText = 'Inserisci sia il nome utente che la password.';

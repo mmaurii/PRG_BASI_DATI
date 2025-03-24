@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once 'logMongoDB.php';
 require  __DIR__ . '/../vendor/autoload.php';
 
 use Firebase\JWT\JWT;
@@ -17,8 +18,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $data["password"];
     $nome = $data["name"];
     $cognome = $data["surname"];
-    $dataNascita = $data["anno"];
-    $luogo = $data["luogo"];
+    $year = $data["year"];
+    $luogo = $data["city"];
     $nickname = $data["nickname"];
 
     // Connessione al DB
@@ -33,25 +34,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
         // Esegui la procedura per verificare le credenziali
-        $sql = "CALL singUp(:mail, :nickname, :password, :nome, :cognome, :anno, :luogo, @outputVar)";
+        $sql = "CALL signUp(:mail, :nickname, :password, :nome, :cognome, :anno, :luogo, @outputVar)";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':mail', $mail, PDO::PARAM_STR);
-        $stmt->bindParam(':password', $mail, PDO::PARAM_STR);
+        $stmt->bindParam(':password', $password, PDO::PARAM_STR);
         $stmt->bindParam(':nome', $nome, PDO::PARAM_STR);
         $stmt->bindParam(':cognome', $cognome, PDO::PARAM_STR);
-        $stmt->bindParam(':anno', $dataNascita, PDO::PARAM_INT);
+        $stmt->bindParam(':anno', $year, PDO::PARAM_INT);
         $stmt->bindParam(':luogo', $luogo, PDO::PARAM_STR);
         $stmt->bindParam(':nickname', $nickname, PDO::PARAM_STR);
         $stmt->execute();
 
         // Recupera il risultato della procedura
         $result = $pdo->query("SELECT @outputVar AS outputValue");
-        $isSingUp = $result->fetch(PDO::FETCH_ASSOC)['outputValue'];
+        $isSignUp = $result->fetch(PDO::FETCH_ASSOC)['outputValue'];
 
-        $text = "timeStamp: " . date('Y-m-d H:i:s').";mail: " . $mail . ";queryType: INSERT;query: " . $sql . ";result: " . $result;
+        $text = "timeStamp: " . date('Y-m-d H:i:s').";mail: " . $mail . ";queryType: INSERT;query: " . $sql . ";result: " . $isSignUp;
         $resp = writeLog($text);
 
-        echo json_encode(["result"=>$isSingUp]);
+        echo json_encode(["result"=>$isSignUp]);
     } catch (PDOException $e) {
         echo json_encode(["error" => "[ERRORE] Query SQL non riuscita: " . $e->getMessage()]);
         exit();

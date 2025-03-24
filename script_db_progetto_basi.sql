@@ -161,18 +161,18 @@ END;
 DELIMITER ;
 
 /* creo una procedura per la registrazione sulla piattaforma */
-drop PROCEDURE if exists singUp;
+drop PROCEDURE if exists signUp;
 DELIMITER |
-CREATE PROCEDURE singUp (IN inputMail varchar(255),IN inputNickname varchar(255), IN inputPassword varchar(255), IN inputNome varchar(255), IN inputCognome varchar(255), IN inputAnnoN YEAR, IN inputLuogo varchar(255), OUT isSingUp bool) 
+CREATE PROCEDURE signUp (IN inputMail varchar(255),IN inputNickname varchar(255), IN inputPassword varchar(255), IN inputNome varchar(255), IN inputCognome varchar(255), IN inputAnnoN YEAR, IN inputLuogo varchar(255), OUT isSignUp bool) 
 BEGIN
 	if exists(select mail, password
-				FROM utente
+				FROM UTENTE
 				WHERE (mail=inputMail)) then
-		set isSingUp = false;
+		set isSignUp = false;
     else
-		insert into utente (mail, nickname, password, nome, cognome, annoN, luogo)
+		insert into UTENTE (mail, nickname, password, nome, cognome, annoN, luogo)
         values (inputMail, inputNickname, inputPassword, inputNome, inputCognome, inputAnnoN, inputLuogo);
-		set isSingUp = true;
+		set isSignUp = true;
     end if;
 END;
 |

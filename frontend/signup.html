@@ -4,7 +4,8 @@
 <head>
     <title>HTML Login Form</title>
     <link rel="stylesheet" type="text/css" href="style_login.css">
-    <script src="script_singup.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="script_signup.js"></script>
 </head>
 
 <body>
@@ -30,8 +31,8 @@
                 <input type="text" id="surname" name="surname" placeholder="Enter your Surname" required>
             </div>
             <div>
-                <label for="birthDate">Date of Birth:</label>
-                <input type="text" id="birthDate" name="birthDate" placeholder="Enter your Date of Birth" required>
+                <label for="birthYear">Year of Birth:</label>
+                <input type="number" id="birthYear" name="birthYear" placeholder="Enter your Year of Birth" required>
             </div>
             <div>
                 <label for="birthCity">City of Birth:</label>
@@ -42,7 +43,7 @@
                 <input type="text" id="nickname" name="nickname" placeholder="Enter your Nickname" required>
             </div>
             <div class="wrap">
-                <button id="createAccount">Singup</button>
+                <button id="signup">Signup</button>
             </div>
         </section>
     </div>

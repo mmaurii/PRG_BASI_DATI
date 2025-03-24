@@ -19,7 +19,7 @@ function test(event) {
         password: "password",
     };
 
-    axios.post("../../backend/singUp.php", data)
+    axios.post("../../backend/signUp.php", data)
         .then(response => {
             if (response.data.result) {
                 console.log(response.data.result);
