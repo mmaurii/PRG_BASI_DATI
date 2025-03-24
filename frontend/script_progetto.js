@@ -63,7 +63,7 @@ async function initInterface(){
         pictures.forEach(element => {
             let image = document.createElement("img")
             document.querySelector(".project-images").appendChild(image)
-            image.src = "data:image/png;base64,"+element.foto;
+            image.src = element.foto;
         });
         
 

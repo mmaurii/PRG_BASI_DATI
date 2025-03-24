@@ -34,19 +34,8 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                 // Recupera tutti i risultati
                 $results = $stmt->fetchAll();
 
-                foreach ($results as &$row) {
-                    foreach ($row as $key => $value) {
-                        if (is_resource($value) || is_string($value)) {
-                            $row[$key] = base64_encode($value);
-                        }
-                    }
-                }
-                
-                $jsonOutput = json_encode(["result" => $results], JSON_UNESCAPED_UNICODE);
-                if (json_last_error() !== JSON_ERROR_NONE) {
-                    die(json_encode(["error" => "Errore nella codifica JSON: " . json_last_error_msg()]));
-                }
-                echo $jsonOutput;
+                // Rispondi con JSON (bisogna ECHO)
+                echo json_encode(["result" => $results]);
 
             } catch (PDOException $e) {
                 echo json_encode(["error" => "Query SQL non riuscita. Errore: " . $e->getMessage()]);
