@@ -21,6 +21,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $year = $data["year"];
     $luogo = $data["city"];
     $nickname = $data["nickname"];
+    $role = $data["role"];
+    $secureCode = "";
+
+    if($role == "admin"){
+        $secureCode = $data["secureCode"];
+    }
 
     // Connessione al DB
     try {
@@ -34,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
         // Esegui la procedura per verificare le credenziali
-        $sql = "CALL signUp(:mail, :nickname, :password, :nome, :cognome, :anno, :luogo, @outputVar)";
+        $sql = "CALL signUp(:mail, :nickname, :password, :nome, :cognome, :anno, :luogo, :role, :secureCode, @outputVar)";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':mail', $mail, PDO::PARAM_STR);
         $stmt->bindParam(':password', $password, PDO::PARAM_STR);
@@ -43,6 +49,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bindParam(':anno', $year, PDO::PARAM_INT);
         $stmt->bindParam(':luogo', $luogo, PDO::PARAM_STR);
         $stmt->bindParam(':nickname', $nickname, PDO::PARAM_STR);
+        $stmt->bindParam(':role', $role, PDO::PARAM_STR);
+        $stmt->bindParam(':secureCode', $secureCode, PDO::PARAM_STR);
         $stmt->execute();
 
         // Recupera il risultato della procedura

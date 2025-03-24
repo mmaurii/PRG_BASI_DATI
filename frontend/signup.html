@@ -3,6 +3,7 @@
 
 <head>
     <title>HTML Login Form</title>
+    <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="style_login.css">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="script_signup.js"></script>
@@ -16,36 +17,52 @@
         <section>
             <div>
                 <label for="mail">Mail:</label>
-                <input type="text" id="mail" name="mail" placeholder="Enter your Mail" required>
+                <input type="text" id="mail" name="mail" placeholder="Enter your Mail">
             </div>
             <div>
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password" placeholder="Enter your Password" required>
+                <input type="password" id="password" name="password" placeholder="Enter your Password">
             </div>
             <div>
                 <label for="name">Name:</label>
-                <input type="text" id="name" name="name" placeholder="Enter your Name" required>
+                <input type="text" id="name" name="name" placeholder="Enter your Name">
             </div>
             <div>
                 <label for="surname">Surname:</label>
-                <input type="text" id="surname" name="surname" placeholder="Enter your Surname" required>
+                <input type="text" id="surname" name="surname" placeholder="Enter your Surname">
             </div>
             <div>
                 <label for="birthYear">Year of Birth:</label>
-                <input type="number" id="birthYear" name="birthYear" placeholder="Enter your Year of Birth" required>
+                <input type="number" id="birthYear" name="birthYear" placeholder="Enter your Year of Birth">
             </div>
             <div>
                 <label for="birthCity">City of Birth:</label>
-                <input type="text" id="birthCity" name="birthCity" placeholder="Enter your City of Birth" required>
+                <input type="text" id="birthCity" name="birthCity" placeholder="Enter your City of Birth">
             </div>
             <div>
                 <label for="nickname">Nickname:</label>
-                <input type="text" id="nickname" name="nickname" placeholder="Enter your Nickname" required>
+                <input type="text" id="nickname" name="nickname" placeholder="Enter your Nickname">
             </div>
-            <div class="wrap">
-                <button id="signup">Signup</button>
+            <div class="radio">
+                <label for="accountType">Account type:</label>
+                <div>User
+                    <input type="radio" id="accountType" name="accountType" value="user" checked>
+                </div>
+                <div>Admin
+                    <input type="radio" id="accountType" name="accountType" value="admin">
+                </div>
+                <div>Creator
+                    <input type="radio" id="accountType" name="accountType" value="creator">
+                </div>
             </div>
         </section>
+        <div id="secureCodeDiv">
+            <label for="secureCode">Secure code:</label>
+            <input type="text" id="secureCode" name="secureCode" placeholder="Enter your admin secure code">
+        </div>
+        <div class="wrap">
+            <button id="signup">Signup</button>
+        </div>
     </div>
 </body>
 

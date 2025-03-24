@@ -1,5 +1,6 @@
 // import {create} from "axios";
-let mailField, passwordField, pErrorMsg;
+let mailField, passwordField, pErrorMsg, nameField, surnameField, cityField, 
+   yearField, nicknameField, roleFields, secureCodeDiv, secureCodeField, role = "user";
 
 document.addEventListener('DOMContentLoaded', () => {
    // Seleziona gli elementi dal DOM
@@ -11,8 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
    cityField = document.getElementById('birthCity');
    yearField = document.getElementById('birthYear');
    nicknameField = document.getElementById('nickname');
+   roleFields = document.getElementsByName('accountType');
+   secureCodeDiv = document.getElementById('secureCodeDiv');
+   secureCodeField = document.getElementById('secureCode');
    let btnCreateAccount = document.getElementById('signup');
 
+   roleFields.forEach(i=>i.addEventListener('click', checkRole));
    btnCreateAccount.addEventListener('click', createAccount);
 });
 
@@ -45,22 +50,29 @@ async function createAccount(event) {
          surname: surname,
          city: city,
          year: year,
-         nickname: nickname
+         nickname: nickname,
+         role:role
       };
+
+      if(role === "admin"){
+         registerData.secureCode = secureCodeField.value;
+      }
 
       await axios.post("../backend/signUp.php", registerData)
          .then(response => {
-            if (response.data.result) {
+            if (response.data) {
                console.log(response.data.result);
                if (response.data.result === 1) {
                   console.log("Registrazione avvenuta con successo.");
                   window.location.href = "./index.html";
+               } else if(response.data.result === 0){
+                  pErrorMsg.innerText = "Esiste già un account associato a questa mail, usa un'altra mail.";
+               } else if (response.data.error) {
+                  console.error(response.data.error);
+                  pErrorMsg.innerText = response.data.error;
                } else {
-                  console.error("Errore nella registrazione, account non creato.");
+                  console.error('Risposta non corretta dal server.', response);
                }
-            } else if (response.data.error) {
-               console.error(response.data.error);
-               pErrorMsg.innerText = response.data.error;
             } else {
                console.error('Risposta non corretta dal server.', response);
             }
@@ -78,7 +90,7 @@ function validateYear(year) {
    //limit of MYSQL type YEAR(4)
    const lowerBound = 1901;
    const upperBound = 2155;
-   
+
    if (year !== "") {
       let today = new Date();
       if (year > today.getFullYear() || year < lowerBound || year > upperBound) {
@@ -129,4 +141,17 @@ function validate(mail, password, year) {
       return false;
    }
    return true;
+}
+
+function checkRole(event){
+   if (event.target.value === 'admin'){
+      role = "admin";
+      secureCodeDiv.style.display = "block";
+   } else if(event.target.value === 'user'){
+      role = "user";
+      secureCodeDiv.style.display = "none";
+   } else if(event.target.value === 'creator'){
+      role = "creator";
+      secureCodeDiv.style.display = "none";
+   }
 }
