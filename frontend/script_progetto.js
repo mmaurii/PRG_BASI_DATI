@@ -7,6 +7,7 @@ let mysqlDate = currentDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
 document.addEventListener('DOMContentLoaded', async function () {
     await initInterface();
     
+    document.getElementById('finanziamento').addEventListener('click',finanzia);
     document.getElementById('login').addEventListener('click', login);
     document.getElementById('logout').addEventListener('click', logout);
     document.querySelector('.submit-comment').addEventListener('click', sendComment);
@@ -384,4 +385,8 @@ function getGiorniRimasti(dataCorrente, dataLimite) {
     const giorni = Math.floor(differenzaMs / (1000 * 60 * 60 * 24));
 
     return giorni;  // Restituisce la differenza in giorni
+}
+
+function finanzia(event){
+    window.location.href = `./finanziamento.html?name=${projectName}`;
 }
