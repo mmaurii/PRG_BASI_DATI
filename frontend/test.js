@@ -23,25 +23,36 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (error) {
             console.error("Errore nella decodifica del token:", error);
         }
-        /*
+        
         // Prepara i dati da inviare al server
         const data = {
-            nomeUtente: "anna.verdi@email.com",
-            idProfilo: "3",
-            statoCandidatura: "accettata"
+            progetto: "Smart Home Hub",
         };
 
-        axios.put("http://localhost/prg_basi_dati/backend/manageApplicationStatus.php", data, {
-            headers: { "Authorization": `Bearer ${token}` }
+        axios.get("http://localhost/prg_basi_dati/backend/getFotoByProgetto.php", {
+            params: {
+                progetto: "Smart Home Hub" // Parametri della query string
+            },
+            headers: {
+                "Authorization": `Bearer ${token}` // Header Authorization
+            }
         })
             .then(response => {
-                console.log(response.data); // Load the protected content
+                console.log(response.data.result); // Load the protected content
+                let imgElement = document.createElement("img");
+            
+                // Imposta il src dell'immagine con la stringa Base64 (assicurati di specificare il tipo di immagine, es. jpeg, png, ecc.)
+                imgElement.src = "data:image/png;base64," + response.data.result[0].foto
+                ; // Assicurati che il tipo di immagine (png, jpeg) sia corretto
+                
+                // Aggiungi l'immagine al body (o a un altro elemento del DOM)
+                document.body.appendChild(imgElement);
             })
             .catch(error => {
                 console.error("Access denied:", error.response ? error.response.data : error.message);
                 //window.location.href = "login.html"; // Redirect if unauthorized
             });
-        */
+        
     }
     });
 

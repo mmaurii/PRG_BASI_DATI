@@ -82,19 +82,14 @@ body {
     max-width: 1200px;
     margin: 32px auto;
     padding: 0 32px;
-    display: flex;
-    flex-direction: column;
+    display: flex; /* Usa il flex per disporre gli elementi in orizzontale */
     gap: 32px;
-}
-
-.project-image img {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
+    align-items: flex-start; /* Allinea gli oggetti in alto */
 }
 
 .project-info {
     text-align: left;
+    flex: 1; /* Prende lo spazio rimanente */
 }
 
 .project-info h1 {
@@ -177,6 +172,59 @@ body {
 .project-description p {
     color: grey;
 }
+
+.project-image-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    width: 50%; /* L'immagine occupa metà della larghezza */
+    height: 400px; /* Modifica l'altezza come preferisci */
+}
+
+.project-images {
+    display: flex;
+    height: 100%;
+    transition: transform 0.3s ease-in-out;
+
+}
+
+.project-images img {
+    width: 100%; /* Imposta la larghezza dell'immagine al 100% del contenitore */
+    height: 100%; /* Assicura che l'immagine occupi tutta l'altezza del contenitore */
+    object-fit: cover; /* Mantieni la proporzione dell'immagine senza distorcerla */
+    flex-shrink: 0; /* Impedisce che l'immagine venga ridimensionata */
+}
+
+button.scroll-left,
+button.scroll-right {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: 24px;
+    border: none;
+    padding: 10px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    z-index: 1;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Aggiunto effetto ombra per maggiore visibilità */
+}
+
+button.scroll-left {
+    left: 10px; /* Spostato il pulsante verso il bordo */
+}
+
+button.scroll-right {
+    right: 10px; /* Spostato il pulsante verso il bordo */
+}
+
+button.scroll-left:hover,
+button.scroll-right:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
 
 .creator-info {
     flex: 1;

@@ -1,4 +1,4 @@
-let projectName, username, projectData, comments, role;
+let projectName, username, projectData, comments, role, pictures;
 const token = localStorage.getItem("jwtToken");
 
 const currentDate = new Date();
@@ -10,7 +10,31 @@ document.addEventListener('DOMContentLoaded', async function () {
     document.getElementById('login').addEventListener('click', login);
     document.getElementById('logout').addEventListener('click', logout);
     document.querySelector('.submit-comment').addEventListener('click', sendComment);
+    
+    const projectImages = document.querySelector('.project-images');
+    const images = projectImages.querySelectorAll('img');
+    const scrollLeftButton = document.querySelector('.scroll-left');
+    const scrollRightButton = document.querySelector('.scroll-right');
 
+    let currentIndex = 0; // Per tracciare quale immagine è visibile
+
+    // Funzione per spostarsi a sinistra
+    scrollLeftButton.addEventListener('click', () => {
+        if (currentIndex > 0) {
+            currentIndex--; // Decrescere l'indice
+            const newTransformValue = -(currentIndex * 100); // Spostare il contenuto per mostrare l'immagine precedente
+            projectImages.style.transform = `translateX(${newTransformValue}%)`;
+        }
+    });
+
+    // Funzione per spostarsi a destra
+    scrollRightButton.addEventListener('click', () => {
+        if (currentIndex < images.length - 1) {
+            currentIndex++; // Aumentare l'indice
+            const newTransformValue = -(currentIndex * 100); // Spostare il contenuto per mostrare l'immagine successiva
+            projectImages.style.transform = `translateX(${newTransformValue}%)`;
+        }
+    });
 })
 
 async function initInterface(){
@@ -35,6 +59,13 @@ async function initInterface(){
         document.querySelector("#percentuale").innerText = Math.floor((projectData.totale_finanziato/projectData.budget)*100) + "%";
         document.querySelector(".progress").style.width = Math.floor((projectData.totale_finanziato / projectData.budget) * 100) + "%";
 
+        await getPictures();
+        pictures.forEach(element => {
+            let image = document.createElement("img")
+            document.querySelector(".project-images").appendChild(image)
+            image.src = "data:image/png;base64,"+element.foto;
+        });
+        
 
         await getComments();
 
@@ -48,6 +79,30 @@ async function initInterface(){
     }
 
 }
+
+async function getPictures(){
+    await axios.get("http://localhost/prg_basi_dati/backend/getFotoByProgetto.php", {
+        params: {
+            progetto: projectName // Parametri della query string
+        },
+        headers: {
+            "Authorization": `Bearer ${token}` // Header Authorization
+        }
+    })
+        .then(response => {
+            if(response.data.result.length !== 0){
+            //console.log(response.data.result); // Load the protected content
+            pictures = response.data.result;
+            }else{
+                console.log("foto non disponibile per il progetto")
+            }
+        })
+        .catch(error => {
+            console.error("Access denied:", error.response ? error.response.data : error.message);
+            //window.location.href = "login.html"; // Redirect if unauthorized
+        });
+}
+
 async function getComments(){
     await axios.get("../backend/GetCommentsByProgetto.php", {
         params: {
@@ -201,7 +256,6 @@ function templateComment(text,mysqlDate,creatore,id){
     esempio template del commento:
     <li class="comment" data-comment-id="3">
         <div class="comment-user">
-            <img src="" alt="">
             <p><strong>Utente3</strong> - 3 ore fa</p>
         </div>
         <p>Ottima idea, ho già contribuito con €50!</p>
@@ -225,13 +279,11 @@ function templateComment(text,mysqlDate,creatore,id){
     divCommentUser.classList.add("comment-user")
     li.appendChild(divCommentUser)
 
-    let img = document.createElement("img")
     let autore = document.createElement("p")
     let data = document.createTextNode(" "+mysqlDate)
     
     autore.innerHTML = "<strong>"+ creatore +"</strong>"
     autore.appendChild(data)
-    divCommentUser.appendChild(img)
     divCommentUser.appendChild(autore)
 
     let textComment = document.createElement("p")
