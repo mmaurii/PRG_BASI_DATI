@@ -1,14 +1,16 @@
 let progetti, picture;
-let btnLogin, btnLogout, projectContainer;
+let btnLogin, btnLogout, projectContainer, btnSignup;
 const token = localStorage.getItem("jwtToken");
 
 document.addEventListener('DOMContentLoaded', function() {
     btnLogin = document.getElementById('login');
     btnLogout = document.getElementById('logout');
+    btnSignup = document.getElementById('signup');
     projectContainer = document.getElementById('projectContainer');
 
     btnLogout.addEventListener('click', logout);
     btnLogin.addEventListener('click', login);
+    btnSignup.addEventListener('click', signup);
 
     initInterface();
 });
@@ -76,9 +78,14 @@ async function getProgetti(){
 }
 
 function login(){
-    window.location.href = './login.html'; // Reindirizza a una nuova pagina
+    window.location.href = './login.html';
 }
 
 function logout(){
     localStorage.removeItem("jwtToken"); // Remove the token
+}
+
+function signup(){
+    logout();
+    window.location.href = './signup.html';
 }
