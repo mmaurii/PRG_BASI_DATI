@@ -38,7 +38,7 @@ function test(event) {
             codiceReward: "RWD03",
         };
 
-        axios.put("http://localhost/prg_basi_dati/backend/choseReward.php", data, {
+        axios.put("../backend/choseReward.php", data, {
             headers: { "Authorization": `Bearer ${token}` }
         })
             .then(response => {

@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
             progetto: "Smart Home Hub",
         };
 
-        axios.get("http://localhost/prg_basi_dati/backend/getFotoByProgetto.php", {
+        axios.get("../backend/getFotoByProgetto.php", {
             params: {
                 progetto: "Smart Home Hub" // Parametri della query string
             },

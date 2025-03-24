@@ -35,7 +35,7 @@ async function initInterface(){
     }
 }
 async function getFotoProgetto(element){
-    await axios.get("http://localhost/prg_basi_dati/backend/getFotoByProgetto.php", {
+    await axios.get("../backend/getFotoByProgetto.php", {
         params: {
             progetto: element.nome // Parametri della query string
         },
