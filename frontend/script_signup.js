@@ -55,6 +55,10 @@ async function createAccount(event) {
       };
 
       if(role === "admin"){
+         if(secureCodeField.value === ""){
+            pErrorMsg.innerText = "Inserisci il codice di sicurezza.";
+            return;
+         }
          registerData.secureCode = secureCodeField.value;
       }
 
