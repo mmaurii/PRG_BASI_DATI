@@ -16,12 +16,29 @@
         <section>
             <label for="mail">Mail:</label>
             <input type="text" id="mail" name="mail" placeholder="Enter your Mail" required>
+        
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" placeholder="Enter your Password" required>
+        
+            <div class="radio">
+                <label for="accountType">Account type:</label>
+                <div>User
+                    <input type="radio" id="accountTypeUser" name="accountType" value="user" checked>
+                </div>
+                <div>Admin
+                    <input type="radio" id="accountTypeAdmin" name="accountType" value="admin">
+                </div>
+            </div>
+        
+            <div id="adminCodeField" style="display: none;">
+                <label for="codSicurezza">Security Code:</label>
+                <input type="text" id="codSicurezza" name="codSicurezza" placeholder="Enter Security Code">
+            </div>
+        
             <div class="wrap">
                 <button id="login">Login</button>
             </div>
-        </section>
+        </section>              
     </div>
 </body>
 </html>

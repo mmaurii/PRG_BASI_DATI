@@ -41,7 +41,7 @@ label {
 input {
     display: block;
     width: 95%;
-    margin-bottom: 15px;
+    margin-bottom: 8px;
     padding: 10px;
     box-sizing: border-box;
     border: 1px solid #ddd;
@@ -75,11 +75,11 @@ button {
     color: darkred;
     font-weight: bold;
     font-size: medium;
+    margin: 5px;
 }
 
 section {
     display: flex;
-    flex-direction: column;
     flex-wrap: wrap;
     justify-content: start;
     align-items: stretch;
@@ -99,11 +99,20 @@ section > div {
 .radio {
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: left;
     align-items: center;
     flex-wrap: wrap;
+    column-gap: 40px;
 }
 
 #secureCodeDiv {
     display: none;
+}
+
+h3 {
+    margin-top: 0px;
+}
+
+h1 {
+    margin-bottom: 5px;
 }

@@ -1,79 +1,88 @@
-// import {create} from "axios";
-let mailField, passwordField, pErrorMsg;
+let mailField, passwordField, pErrorMsg, codSicurezzaField, accountTypeRadios;
 
 document.addEventListener('DOMContentLoaded', () => {
-   // Seleziona gli elementi dal DOM
-   pErrorMsg = document.getElementById("errorMsg");
-   mailField = document.getElementById('mail');
-   passwordField = document.getElementById('password');
+    pErrorMsg = document.getElementById("errorMsg");
+    mailField = document.getElementById('mail');
+    passwordField = document.getElementById('password');
+    codSicurezzaField = document.getElementById('codSicurezza');
+    accountTypeRadios = document.getElementsByName('accountType');
+    let adminCodeField = document.getElementById('adminCodeField');
+    let btnLogin = document.getElementById('login');
 
-   let btnLogin = document.getElementById('login');
+    // Controlla quando cambia il tipo di account
+    accountTypeRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            if (document.querySelector('input[name="accountType"]:checked').value === 'admin') {
+                adminCodeField.style.display = 'block';
+            } else {
+                adminCodeField.style.display = 'none';
+            }
+        });
+    });
 
-   btnLogin.addEventListener('click', login);
+    btnLogin.addEventListener('click', login);
 });
 
 // Aggiungi un event listener al pulsante di login
 async function login(event) {
-   event.preventDefault(); // Previene il comportamento predefinito del bottone
+   event.preventDefault();
    pErrorMsg.innerText = "";
 
-   // Leggi i valori dei campi
    const username = mailField.value.trim();
    const password = passwordField.value;
+   const accountType = document.querySelector('input[name="accountType"]:checked').value;
+   const codSicurezza = codSicurezzaField.value.trim();
 
-   if (!validate(username, password)) {
-      return;
+   if (!validate(username, password, accountType, codSicurezza)) {
+       return;
    }
 
-   // Hash della password (utilizzando la libreria SubtleCrypto disponibile nei browser moderni)
    try {
-//      const hashedPassword = await hashPassword(password);
-      const hashedPassword = password;
-      
-      // Prepara i dati da inviare al server
-      const loginData = {
-         mail: username,
-         password: hashedPassword,
-      };
+       const hashedPassword = password;
+       
+       let loginData = {
+           mail: username,
+           password: hashedPassword,
+       };
 
-      // Invia i dati al server tramite una richiesta POST
-      const response = await fetch('../backend/login.php', {
-         method: 'POST',
-         headers: {
-            'Content-Type': 'application/json',
-         },
-         credentials: 'include',
-         body: JSON.stringify(loginData),
-      });
+       let loginUrl = '../backend/login.php';
 
-      // Verifica se la risposta è corretta (status 200-299)
-      if (response.ok) {
-         const result = await response.json(); // Risponde con un oggetto JSON
-
-         // Gestione del login
-         if (result.token) {
-            localStorage.setItem('jwtToken', JSON.stringify(result));
-            console.log(JSON.stringify(result));
-
-            // Reindirizza a una nuova pagina
-            window.location.href = './index.html';
-         } else if (result.error) {
-            pErrorMsg.innerText = result.error;
-         } else {
-            pErrorMsg.innerText = 'Risposta non corretta dal server.';
+       if (accountType === 'admin')
+         {
+           loginData.codSicurezza = codSicurezza;
+           loginUrl = '../backend/loginAdmin.php';
          }
 
-         // Pulisce i campi di input
-         mailField.value = '';
-         passwordField.value = '';
-      } else {
-         const msg = await response.text();
-         pErrorMsg.innerText = msg;
-      }
-   } catch (error) {
-      console.error('Errore durante il login:', error);
-   }
+       const response = await fetch(loginUrl, {
+           method: 'POST',
+           headers: {
+               'Content-Type': 'application/json',
+           },
+           credentials: 'include',
+           body: JSON.stringify(loginData),
+       });
 
+       if (response.ok) {
+           const result = await response.json();
+
+           if (result.token) {
+               localStorage.setItem('jwtToken', JSON.stringify(result));
+               console.log(JSON.stringify(result));
+
+               window.location.href = accountType = './index.html';
+           } else {
+               pErrorMsg.innerText = result.error || 'Login failed.';
+           }
+
+           mailField.value = '';
+           passwordField.value = '';
+           codSicurezzaField.value = '';
+       } else {
+           pErrorMsg.innerText = await response.text();
+       }
+   } catch (error) {
+       console.error('Errore durante il login:', error);
+   }
 }
 
 
@@ -92,17 +101,21 @@ function bufferToHex(buffer) {
       .join('');
 }
 
-function validate(username, password) {
-   // Controlla che i campi non siano vuoti
+function validate(username, password, accountType, codSicurezza) {
    if (!username || !password) {
-      pErrorMsg.innerText = 'Inserisci sia il nome utente che la password.';
-      return false;
+       pErrorMsg.innerText = 'Inserisci sia la mail che la password.';
+       return false;
    }
 
-   // Esegui una validazione base (esempio: lunghezza minima)
    if (password.length < 5) {
-      pErrorMsg.innerText = 'La password deve contenere almeno 5 caratteri.';
-      return false;
+       pErrorMsg.innerText = 'La password deve contenere almeno 5 caratteri.';
+       return false;
    }
+
+   if (accountType === 'admin' && !codSicurezza) {
+       pErrorMsg.innerText = 'Il codice di sicurezza è obbligatorio per gli amministratori.';
+       return false;
+   }
+
    return true;
 }
