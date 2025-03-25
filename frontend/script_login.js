@@ -69,7 +69,7 @@ async function login(event) {
                localStorage.setItem('jwtToken', JSON.stringify(result));
                console.log(JSON.stringify(result));
 
-               window.location.href = accountType = './index.html';
+               window.location.href = './index.html';
            } else {
                pErrorMsg.innerText = result.error || 'Login failed.';
            }
