@@ -1,20 +1,32 @@
-let projectName, username, projectData, comments, role, pictures;
+let projectName, username, projectData, comments, role, pictures, wrapperFinanziamento, btnCloseFinanziamento,
+    mailFinanziatore, overlay, btnFinanzia, rewards, rewardViewers, selectedReward="", btnUnselectReward, logo;
 
 const currentDate = new Date();
 let mysqlDate = currentDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
 
 document.addEventListener('DOMContentLoaded', async function () {
-    await initInterface();
-    
-    document.getElementById('finanziamento').addEventListener('click',finanzia);
-    document.getElementById('login').addEventListener('click', login);
-    document.getElementById('logout').addEventListener('click', logout);
-    document.querySelector('.submit-comment').addEventListener('click', sendComment);
-    
+    logo = document.querySelector('.logo');
+    btnUnselectReward = document.querySelector('.unselect-reward');
+    rewardViewers = Array.from(document.getElementsByClassName('reward-viewer'));
+    btnFinanzia = document.getElementById('finanzia');
+    overlay = document.getElementById('overlay');
+    mailFinanziatore = document.getElementById('mail');
+    wrapperFinanziamento = document.querySelector('.wrapper-finanziamento');
+    btnCloseFinanziamento = document.getElementById('close-finanziamento');
     const projectImages = document.querySelector('.project-images');
     const images = projectImages.querySelectorAll('img');
     const scrollLeftButton = document.querySelector('.scroll-left');
     const scrollRightButton = document.querySelector('.scroll-right');
+    document.getElementById('finanziamento').addEventListener('click', displayFinanziamento);
+/*     document.getElementById('login').addEventListener('click', login);
+    document.getElementById('logout').addEventListener('click', logout);
+ */    document.querySelector('.submit-comment').addEventListener('click', sendComment);
+    btnCloseFinanziamento.addEventListener('click', closeFinanziamento);
+    btnFinanzia.addEventListener('click', addFinanziamento);
+    btnUnselectReward.addEventListener('click', setUnselectReward);
+/*     logo.addEventListener('click', redirectHome);
+ */
+    await initInterface();
 
     let currentIndex = 0; // Per tracciare quale immagine è visibile
 
@@ -37,18 +49,18 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
 })
 
-async function initInterface(){
+async function initInterface() {
     try {
         const params = new URLSearchParams(window.location.search);
         projectName = params.get('name');
-        if(token){
+        if (token) {
             username = getUsernameFromToken(token);
             role = getRoleFromToken(token);
         }
-        
+
         await getProject();
-    
-        let giorniRimasti = getGiorniRimasti(mysqlDate,projectData.dataLimite);
+
+        let giorniRimasti = getGiorniRimasti(mysqlDate, projectData.dataLimite);
         document.title = projectName;
         document.querySelector(".project-title").innerText = projectName;
         document.querySelector(".subtitle").innerText = projectData.descrizione;
@@ -56,7 +68,7 @@ async function initInterface(){
         document.querySelector("#days-left").innerText = giorniRimasti;
         document.querySelector("#amount").innerText = projectData.totale_finanziato;
         document.querySelector("#budget").innerText = "raccolti di " + projectData.budget;
-        document.querySelector("#percentuale").innerText = Math.floor((projectData.totale_finanziato/projectData.budget)*100) + "%";
+        document.querySelector("#percentuale").innerText = Math.floor((projectData.totale_finanziato / projectData.budget) * 100) + "%";
         document.querySelector(".progress").style.width = Math.floor((projectData.totale_finanziato / projectData.budget) * 100) + "%";
 
         await getPictures();
@@ -65,22 +77,49 @@ async function initInterface(){
             document.querySelector(".project-images").appendChild(image)
             image.src = element.foto;
         });
-        
 
         await getComments();
-
         comments.forEach(element => {
-            templateComment(element.testo,element.data,element.mail, element.id)
+            templateComment(element.testo, element.data, element.mail, element.id)
         });
 
-        console.log('Progetto caricato con successo');
+        await getRewards();
+        loadRewards();
     } catch (error) {
         console.error('Errore nel caricamento del progetto:', error);
     }
 
 }
 
-async function getPictures(){
+async function getRewards() {
+    try {
+        await axios.get("../backend/getRewards.php", {
+            params: {
+                nomeProgetto: projectName // Parametri della query string
+            },
+            headers: {
+                "Authorization": `Bearer ${token}` // Header Authorization
+            }
+        })
+            .then(response => {
+                if (response.data.result) {
+                    rewards = response.data.result;
+                    console.log(response.data.result);
+                } else if (response.data.error) {
+                    console.error(response.data.error);
+                } else {
+                    console.error('Risposta non corretta dal server.');
+                }
+            })
+            .catch(error => {
+                console.error("Errore nel recupero delle rewards:", error.response ? error.response.data.error : error.message);
+            });
+    } catch (error) {
+        console.error('Errore nel caricamento delle rewards:', error);
+    }
+}
+
+async function getPictures() {
     await axios.get("../backend/getFotoByProgetto.php", {
         params: {
             progetto: projectName // Parametri della query string
@@ -90,10 +129,10 @@ async function getPictures(){
         }
     })
         .then(response => {
-            if(response.data.result.length !== 0){
-            //console.log(response.data.result); // Load the protected content
-            pictures = response.data.result;
-            }else{
+            if (response.data.result.length !== 0) {
+                //console.log(response.data.result); // Load the protected content
+                pictures = response.data.result;
+            } else {
                 console.log("foto non disponibile per il progetto")
             }
         })
@@ -103,37 +142,37 @@ async function getPictures(){
         });
 }
 
-async function getComments(){
-    await axios.get("../backend/GetCommentsByProgetto.php", {
+async function getComments() {
+    await axios.get("../backend/getCommentsByProgetto.php", {
         params: {
             progetto: projectName // Parametri della query string
         },
         headers: {
             "Authorization": `Bearer ${token}` // Header Authorization
         }
-    })    
-    .then(response => {
-        if (response.data.result) {
-            comments = response.data.result;
-        } else if (response.data.error) {
-            console.error(response.data.error);
-        } else {
-            console.error('Risposta non corretta dal server.');
+    })
+        .then(response => {
+            if (response.data.result) {
+                comments = response.data.result;
+            } else if (response.data.error) {
+                console.error(response.data.error);
+            } else {
+                console.error('Risposta non corretta dal server.');
+            }
+        })
+        .catch(error => {
+            console.error("Access denied:", error.response ? error.response.data.error : error.message);
+        });
+}
+async function getProject() {
+    await axios.get("../backend/getProjectByName.php", {
+        params: {
+            progetto: projectName // Parametri della query string
+        },
+        headers: {
+            "Authorization": `Bearer ${token}` // Header Authorization
         }
     })
-    .catch(error => {
-        console.error("Access denied:", error.response ? error.response.data.error : error.message);
-    });
-}
-async function getProject(){
-        await axios.get("../backend/getProjectByName.php", {
-            params: {
-                progetto: projectName // Parametri della query string
-            },
-            headers: {
-                "Authorization": `Bearer ${token}` // Header Authorization
-            }
-        })    
         .then(response => {
             if (response.data.result) {
                 projectData = response.data.result;
@@ -148,26 +187,26 @@ async function getProject(){
             console.error("Access denied:", error.response ? error.response.data.error : error.message);
         });
 }
-function showReplyForm(button){
+function showReplyForm(button) {
     var replyForm = button.nextElementSibling;
     replyForm.firstElementChild.value = "";
 
-    if(replyForm.style.display == "block"){
+    if (replyForm.style.display == "block") {
         replyForm.style.display = "none";
     }
-    else{
+    else {
         replyForm.style.display = "block";
     }
     // Nasconde altri moduli di risposta aperti
     var allReplyForms = document.querySelectorAll(".reply-form");
-    allReplyForms.forEach(function(form) {
+    allReplyForms.forEach(function (form) {
         if (form !== replyForm) {
             form.style.display = "none";
         }
     });
 }
-function sendReply(text,idComment, divReply, btnReply){
-    if(text.value){
+function sendReply(text, idComment, divReply, btnReply) {
+    if (text.value) {
         if (!token) {
             window.location.href = "login.html"; // Redirect if no token
         } else {
@@ -200,22 +239,22 @@ function sendReply(text,idComment, divReply, btnReply){
                     replyContainer.appendChild(creatorReference);
 
                     btnReply.parentNode.appendChild(replyContainer);
-                    
+
                     text.value = "";
                 })
                 .catch(error => {
                     console.error("Access denied:", error.response ? error.response.data : error.message);
                 });
-                
+
         }
-        
+
     }
 
 }
 
-function sendComment(){
+function sendComment() {
     let text = document.querySelector("#textComment").value;
-    if(text){
+    if (text) {
         if (!token) {
             window.location.href = "login.html"; // Redirect if no token
         } else {
@@ -231,7 +270,7 @@ function sendComment(){
                 headers: { "Authorization": `Bearer ${token}` }
             })
                 .then(response => {
-                    templateComment(text,mysqlDate,username,response.data.comment_id);
+                    templateComment(text, mysqlDate, username, response.data.comment_id);
                     console.log(response.data); // Load the protected content
                 })
                 .catch(error => {
@@ -242,7 +281,7 @@ function sendComment(){
     document.querySelector("#textComment").value = ""
 }
 
-function templateComment(text,mysqlDate,creatore,id){
+function templateComment(text, mysqlDate, creatore, id) {
     /*
     esempio template del commento:
     <li class="comment" data-comment-id="3">
@@ -261,7 +300,7 @@ function templateComment(text,mysqlDate,creatore,id){
     </li>
     */
     let container = document.querySelector(".comment-list")
-    
+
     let li = document.createElement("li")
     li.classList.add("comment")
     container.appendChild(li)
@@ -271,9 +310,9 @@ function templateComment(text,mysqlDate,creatore,id){
     li.appendChild(divCommentUser)
 
     let autore = document.createElement("p")
-    let data = document.createTextNode(" "+mysqlDate)
-    
-    autore.innerHTML = "<strong>"+ creatore +"</strong>"
+    let data = document.createTextNode(" " + mysqlDate)
+
+    autore.innerHTML = "<strong>" + creatore + "</strong>"
     autore.appendChild(data)
     divCommentUser.appendChild(autore)
 
@@ -295,7 +334,7 @@ function templateComment(text,mysqlDate,creatore,id){
     */
     if (username === projectData.mailC) {  // Controlla se l'utente è il creatore del progetto
         buttonRispondi.style.display = "block";
-    }    
+    }
     buttonRispondi.innerText = "Rispondi"
     divReplaySection.appendChild(buttonRispondi)
 
@@ -305,10 +344,10 @@ function templateComment(text,mysqlDate,creatore,id){
 
     //verifica se il commento ha risposta
     let comment = comments.find(c => c.id === id);
-    if(comment && comment.risposta){    //se chiamato da init comment è true in quanto dentro allla lista comments e si poi si verifica se ha la risposta, se invece chiamato da addComment sicuro non avrà risposta e sicuro non sarà dentro alla lista
+    if (comment && comment.risposta) {    //se chiamato da init comment è true in quanto dentro allla lista comments e si poi si verifica se ha la risposta, se invece chiamato da addComment sicuro non avrà risposta e sicuro non sarà dentro alla lista
         divForm.style.display = "none"
         buttonRispondi.style.display = "none"
-        
+
         let textReply = document.createElement("p")
         textReply.classList.add("styled-reply");
         textReply.innerHTML = `<strong>Risposta:</strong> ${comment.risposta}`;
@@ -322,7 +361,7 @@ function templateComment(text,mysqlDate,creatore,id){
 
         replyContainer.appendChild(textReply);
         replyContainer.appendChild(creatorReference);
-        
+
         divReplaySection.appendChild(replyContainer)
     }
     let textRisposta = document.createElement("textarea")
@@ -335,13 +374,13 @@ function templateComment(text,mysqlDate,creatore,id){
     buttonInvia.innerText = "Invia"
     divForm.appendChild(buttonInvia)
 
-    buttonRispondi.addEventListener('click', function() {
+    buttonRispondi.addEventListener('click', function () {
         showReplyForm(buttonRispondi);
     });
-    buttonInvia.addEventListener('click', function() {
-        sendReply(textRisposta,id,divForm,buttonRispondi);
+    buttonInvia.addEventListener('click', function () {
+        sendReply(textRisposta, id, divForm, buttonRispondi);
     });
-    
+
 }
 
 function getUsernameFromToken(token) {
@@ -377,6 +416,115 @@ function getGiorniRimasti(dataCorrente, dataLimite) {
     return giorni;  // Restituisce la differenza in giorni
 }
 
-function finanzia(event){
-    window.location.href = `./finanziamento.html?name=${projectName}`;
+function displayFinanziamento(event) {
+    //    window.location.href = `./finanziamento.html?name=${projectName}`;
+    username = username ? username : "pippo@gmail.com";
+    if (username) {
+        overlay.style.display = "block";
+        wrapperFinanziamento.style.display = "flex";
+        mailFinanziatore.innerText = username;
+
+        if(selectedReward!==""&& selectReward){
+            rewardDOMNodes = document.querySelectorAll(".reward");
+            rewardDOMNodes.forEach(reward => {
+                if(reward.querySelector("img")?.getAttribute("cod") == selectedReward){
+                    reward.classList.add("selected");
+                }
+            });
+        }
+
+
+    } else {
+        alert("Devi essere loggato per poter finanziare il progetto");
+    }
+}
+
+function closeFinanziamento(event) {
+    // Pulisce i campi dell'interfaccia
+    importo = document.getElementById('importo').value = "";
+    setUnselectReward();
+    // Nasconde l'interfaccia di finanziamento
+    overlay.style.display = "none";
+    wrapperFinanziamento.style.display = "none";
+}
+
+function addFinanziamento(event) {
+    importo = document.getElementById('importo').value;
+    
+    if(importo == "" || isNaN(importo) || importo <= 0){
+        alert("Inserire un importo valido");
+        return;
+    }
+
+    if(username==null || projectName==null || importo==null || username=="" || projectName=="" || importo==""){
+        alert("Errore nei dati inseriti");
+        return;
+    }
+
+    // Prepara i dati da inviare al server
+    const data = {
+        mail: username,
+        nomeProgetto: projectName,
+        dataFinanziamento: mysqlDate,
+        importoFinanziamento: importo,
+        codiceReward : selectedReward
+    };
+
+    axios.post("../backend/finanziaProgetto.php", data, {
+        headers: { "Authorization": `Bearer ${token}` }
+    })
+    .then(response => {
+        if (response.data.result) {
+            console.log(response.data.result);
+        } else if (response.data.error) {
+            console.error(response.data.error);
+        } else {
+            console.error('Risposta non corretta dal server.');
+        }
+        closeFinanziamento(event);
+    })
+    .catch(error => {
+        console.error("Access denied:", error.response ? error.response.data.error : error.message);
+    });
+
+}
+
+function loadRewards() {
+    //cleaning the rewards container
+    rewardViewers.forEach(element => {
+        element.innerHTML = "";
+    });
+
+    //read all rewards and append them to all the containers
+    rewards.forEach(reward => {
+        let rewardNode = `<div class="reward" tabindex="0" onclick="selectReward(event)">
+                            <a>
+                                <img src="${reward.foto}" cod="${reward.cod}" alt="foto reward: ${reward.cod}">
+                            </a>
+                            <p>${reward.descrizione}</p>
+                        </div>`;
+
+        rewardViewers.forEach(element => {
+            element.innerHTML += rewardNode;
+        });
+    });
+}
+
+function selectReward(event) {
+    setUnselectReward();
+    targetNode = event.target.closest(".reward");
+    targetNode.classList.add("selected");
+    selectedReward = targetNode.querySelector("img")?.getAttribute("cod");
+}
+
+function setUnselectReward(event) {
+    selectedReward = "";
+    rewardDOMNodes = document.querySelectorAll(".reward");
+    rewardDOMNodes.forEach(reward => {
+        reward.classList.remove("selected");
+    });
+}
+
+function redirectHome() {
+    window.location.href = "./index.html";
 }
