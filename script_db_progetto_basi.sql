@@ -357,6 +357,17 @@ END;
 |
 DELIMITER ;
 
+/* Ottenere le varie competenze */
+DROP PROCEDURE IF EXISTS OttieniCompetenze;
+DELIMITER |
+CREATE PROCEDURE OttieniCompetenze()
+BEGIN
+    SELECT competenza FROM SKILL;
+END;
+|
+DELIMITER ;
+
+
 
 /* In fase di autenticazione, oltre a username e password, viene richiesto anche il codice di sicurezza */
 DROP PROCEDURE IF EXISTS logInAdmin;
