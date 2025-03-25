@@ -74,6 +74,7 @@ main {
     list-style: none;
     display: flex;
     gap: 32px;
+    cursor: pointer;
 }
 
 .nav-links a {

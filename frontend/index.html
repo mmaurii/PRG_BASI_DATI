@@ -6,24 +6,12 @@
     <title>BOSTARTER</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="style_index.css">
+    <script src="script_navbar.js"></script>
     <script src="script_index.js"></script>
 </head>
 <body>
     <div class="page-wrapper">
-        <nav class="navbar">
-            <div class="logo">BOSTARTER</div>
-            <div class="search-bar">
-                <input type="text" placeholder="Cerca progetti...">
-                <button class="search-button">Cerca</button>
-            </div>
-            <ul class="nav-links">
-           <!--     <li><a href="#">Esplora</a></li>-->
-                <li><a id="signup">Signup</a></li>
-                <li><a href="#">Avvia un progetto</a></li>
-                <li><a id="login">Accedi</a></li>
-                <li><a id="logout">logout</a></li>
-            </ul>
-        </nav>
+        <div id="navbar"></div>
 
         <main>
             <section class="hero">

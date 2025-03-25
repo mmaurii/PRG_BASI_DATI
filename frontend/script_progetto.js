@@ -1,5 +1,4 @@
 let projectName, username, projectData, comments, role, pictures;
-const token = localStorage.getItem("jwtToken");
 
 const currentDate = new Date();
 let mysqlDate = currentDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
@@ -243,15 +242,6 @@ function sendComment(){
     document.querySelector("#textComment").value = ""
 }
 
-function logout(){
-    localStorage.removeItem("jwtToken"); // Remove the token
-    location.reload();
-}
-
-function login(){
-    window.location.href = './login.html'; // Reindirizza a una nuova pagina
-}
-
 function templateComment(text,mysqlDate,creatore,id){
     /*
     esempio template del commento:
@@ -360,8 +350,8 @@ function getUsernameFromToken(token) {
         const payloadDecoded = JSON.parse(atob(payloadBase64)); // Decodifica da Base64 a JSON
         return payloadDecoded.username || null; // Restituisce lo username
     } catch (error) {
-        console.error("Errore nella decodifica del token:", error);
-        return null;
+        //console.error("Errore nella decodifica del token:", error);
+        return false;
     }
 }
 function getRoleFromToken(token) {
@@ -370,8 +360,8 @@ function getRoleFromToken(token) {
         const payloadDecoded = JSON.parse(atob(payloadBase64)); // Decodifica da Base64 a JSON
         return payloadDecoded.ruolo || null; // Restituisce lo username
     } catch (error) {
-        console.error("Errore nella decodifica del token:", error);
-        return null;
+        //console.error("Errore nella decodifica del token:", error);
+        return false;
     }
 }
 function getGiorniRimasti(dataCorrente, dataLimite) {
