@@ -216,7 +216,7 @@ END;
 |
 DELIMITER ;
 
-/* creo una procedura per la visualizzazione dei progetti disponibili */
+/* creo una procedura per la richiesta dei progetti disponibili */
 drop PROCEDURE if exists getProgetti;
 DELIMITER |
 CREATE PROCEDURE getProgetti () 
@@ -224,6 +224,23 @@ BEGIN
 	select *
     from PROGETTO
     where stato = 'aperto';
+END;
+|
+DELIMITER ;
+
+/* creo una procedura per la richiesta delle rewards associate a un progetto */
+drop PROCEDURE if exists getProgetti;
+DELIMITER |
+CREATE PROCEDURE getProgetti (inputNome VARCHAR(255)) 
+BEGIN
+    if(inputNome is null) then
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'inputNome cannot be null';
+    else
+        select *
+        from REWARD
+        where nomeP = inputNome;
+    end if;
 END;
 |
 DELIMITER ;
