@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once 'logMongoDB.php';
 require  __DIR__ . '/../vendor/autoload.php';
 
 use Firebase\JWT\JWT;
@@ -9,7 +10,6 @@ $issuedAt = time();
 $expirationTime = $issuedAt + 3600;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
     // Recupero i dati inviati dal client
     $data = json_decode(file_get_contents('php://input'), true);
     $nome = $data["nome"];
@@ -20,6 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stato = $data["stato"];
     $mailC = $data["mailC"];
     $tipo = $data["tipo"];
+    $imageUrl = $data["imageUrl"];
 
     // Connessione al DB
     try {
@@ -32,11 +33,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     try {
-        // Preparing the SQL query to call the procedure
+        // Preparazione della query SQL
         $sql = "CALL InserisciProgetto(:nome, :descrizione, :dataInserimento, :budget, :dataLimite, :stato, :mailC, :tipo)";
         $stmt = $pdo->prepare($sql);
 
-        // Binding the input parameters
+        // Binding dei parametri di input
         $stmt->bindParam(':nome', $nome, PDO::PARAM_STR);
         $stmt->bindParam(':descrizione', $descrizione, PDO::PARAM_STR);
         $stmt->bindParam(':dataInserimento', $dataInserimento, PDO::PARAM_STR);
@@ -46,13 +47,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bindParam(':mailC', $mailC, PDO::PARAM_STR);
         $stmt->bindParam(':tipo', $tipo, PDO::PARAM_STR);
 
-        // Execute the query
+        // Esegui la query
         $stmt->execute();
 
-        $text = "timeStamp: " . date('Y-m-d H:i:s').";nomeProgetto: " . $nome . ";queryType: INSERT;query: " . $sql . ";result: " . $result;
-        $resp = writeLog($text);
+        // Aggiungi il file immagine alla tabella FOTO
+        $sql = "INSERT INTO FOTO (foto, nomeP) VALUES (:foto, :nomeP)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':foto', $imageUrl, PDO::PARAM_STR);
+        $stmt->bindParam(':nomeP', $nome, PDO::PARAM_STR);
+        $stmt->execute();
 
-        echo json_encode(["success" => "Progetto inserito con successo"]);
+        echo json_encode(["success" => "Progetto inserito con successo e immagine caricata", "imageUrl" => $imageUrl]);
     } catch (PDOException $e) {
         echo json_encode(["error" => "[ERRORE] Impossibile inserire il progetto. Errore: " . $e->getMessage()]);
         exit();

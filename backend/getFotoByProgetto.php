@@ -7,9 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     if (true || verifyJwtToken()) {
         try {
             // Connessione al database
-            $pdo = new PDO('mysql:host=' . servername . ';dbname=' . dbName, dbUsername, dbPassword);
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $pdo = new PDO('mysql:host=' . servername . ';dbname=' . dbName, dbUsername, dbPassword, [PDO::ATTR_PERSISTENT => true]);
             $pdo->exec(mysqlCharachter);
         } catch (PDOException $e) {
                     return json_encode(["error" => "[ERRORE] Connessione al DB non riuscita. Errore: ".$e->getMessage()]);
