@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 progetto: "Smart Home Hub" // Parametri della query string
             },
             headers: {
-                "Authorization": `Bearer ${token}` // Header Authorization
+                "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
             }
         })
             .then(response => {

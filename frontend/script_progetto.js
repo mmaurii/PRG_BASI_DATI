@@ -442,7 +442,7 @@ function displayFinanziamento(event) {
 function closeFinanziamento(event) {
     // Pulisce i campi dell'interfaccia
     document.getElementById('importo').value = "";
-    setUnselect();
+    setUnselect(event, ".reward");
     selectedReward = "";
     // Nasconde l'interfaccia di finanziamento
     overlay.style.display = "none";

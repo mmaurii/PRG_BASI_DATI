@@ -39,7 +39,7 @@ function test(event) {
         };
 
         axios.put("../backend/choseReward.php", data, {
-            headers: { "Authorization": `Bearer ${token}` }
+            headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
         })
             .then(response => {
                 if (response.data.result) {

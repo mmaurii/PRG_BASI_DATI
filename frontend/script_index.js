@@ -36,7 +36,7 @@ async function getFotoProgetto(element) {
                 progetto: element.nome // Parametri della query string
             },
             headers: {
-                "Authorization": `Bearer ${token}` // Header Authorization
+                "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
             }
         });
 
@@ -57,7 +57,7 @@ async function getProgetti() {
     try {
         const response = await axios.get("../backend/getProgetti.php", {
             headers: {
-                "Authorization": `Bearer ${token}` // Header Authorization
+                "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
             }
         });
 
