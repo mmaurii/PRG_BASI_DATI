@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Competenze</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="style_competenze.css">
+</head>
+<body>
+    <div class="admin-container">
+        <h1>BOSTARTER - Gestione Competenze</h1>
+        <button class="logout-button">Logout</button>
+
+        <section class="add-competence">
+            <h2>Inserisci Competenza</h2>
+            <form id="addCompetenceForm">
+                <div class="form-group">
+                    <label>Nome Competenza</label>
+                    <input type="text" id="competenceName" name="competenceName" placeholder="Inserisci il nome della competenza" required>
+                </div>
+                <button type="submit" class="add-button">Aggiungi</button>
+            </form>
+        </section>
+
+        <section class="competence-list">
+            <h2>Lista Competenze</h2>
+            <ul id="competenceList">
+                
+            </ul>
+        </section>
+    </div>
+    <script src="script_competenze.js"></script>
+</body>
+</html>
