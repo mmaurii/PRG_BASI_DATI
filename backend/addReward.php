@@ -1,10 +1,11 @@
 <?php
 require_once 'config.php';
 require 'protected.php';
+require_once 'logMongoDB.php';
 require  __DIR__ . '/../vendor/autoload.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isCreator() || isCreatorAndAdmin()) {
+    if (true) {
         // Recupero i dati inviati dal client
         $data = json_decode(file_get_contents('php://input'), true);
         $inputCod = $data["codice"];
