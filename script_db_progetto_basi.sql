@@ -358,9 +358,9 @@ END;
 DELIMITER ;
 
 /* Ottenere le varie competenze */
-DROP PROCEDURE IF EXISTS OttieniCompetenze;
+DROP PROCEDURE IF EXISTS getCompetenze;
 DELIMITER |
-CREATE PROCEDURE OttieniCompetenze()
+CREATE PROCEDURE getCompetenze()
 BEGIN
     SELECT competenza FROM SKILL;
 END;
