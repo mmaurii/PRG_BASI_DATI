@@ -1,31 +1,41 @@
-let projectName, username, projectData, comments, role, pictures, wrapperFinanziamento, btnCloseFinanziamento,
-    mailFinanziatore, overlay, btnFinanzia, rewards, rewardViewers, selectedReward="", btnUnselectReward, logo;
+import { isUserLoggedIn, getRoleFromToken } from "./script_navbar.js";
+
+let projectName, mail, projectData, comments, role, pictures, popUpFinanzia, btnClosePopUpFinanziamento,
+    mailFinanziatore, overlay, btnFinanzia, rewards, rewardViewers, selectedReward = "", btnUnselectReward,
+    btnSelectReward, popUpSelectFinanziamento, btnClosePopUpSelectFinanziamento, btnSelectFinanziamento,
+    finanziamentiUtente, finanziamentoViewer, selectedFinanziamento = "", token;
 
 const currentDate = new Date();
-let mysqlDate = currentDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+let today = currentDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
 
 document.addEventListener('DOMContentLoaded', async function () {
-    logo = document.querySelector('.logo');
+    finanziamentoViewer = document.querySelector('.finanziamento-viewer');
+    btnSelectFinanziamento = document.getElementById('btn-select-finanziamento');
+    btnSelectReward = document.querySelector('.select-reward');
     btnUnselectReward = document.querySelector('.unselect-reward');
     rewardViewers = Array.from(document.getElementsByClassName('reward-viewer'));
     btnFinanzia = document.getElementById('finanzia');
     overlay = document.getElementById('overlay');
     mailFinanziatore = document.getElementById('mail');
-    wrapperFinanziamento = document.querySelector('.wrapper-finanziamento');
-    btnCloseFinanziamento = document.getElementById('close-finanziamento');
+    popUpFinanzia = document.querySelector('.popUp.finanzia');
+    popUpSelectFinanziamento = document.querySelector('.popUp.select-finanziamento');
+    btnClosePopUpFinanziamento = document.getElementById('close-finanziamento');
+    btnClosePopUpSelectFinanziamento = document.getElementById('close-selectFinanziamento');
     const projectImages = document.querySelector('.project-images');
     const images = projectImages.querySelectorAll('img');
     const scrollLeftButton = document.querySelector('.scroll-left');
     const scrollRightButton = document.querySelector('.scroll-right');
+
+
     document.getElementById('finanziamento').addEventListener('click', displayFinanziamento);
-/*     document.getElementById('login').addEventListener('click', login);
-    document.getElementById('logout').addEventListener('click', logout);
- */    document.querySelector('.submit-comment').addEventListener('click', sendComment);
-    btnCloseFinanziamento.addEventListener('click', closeFinanziamento);
+    document.querySelector('.submit-comment').addEventListener('click', sendComment);
+    btnClosePopUpFinanziamento.addEventListener('click', closeFinanziamento);
     btnFinanzia.addEventListener('click', addFinanziamento);
-    btnUnselectReward.addEventListener('click', setUnselectReward);
-/*     logo.addEventListener('click', redirectHome);
- */
+    btnUnselectReward.addEventListener('click', setUnselect);
+    btnSelectReward.addEventListener('click', displaySelectFinanziamento);
+    btnClosePopUpSelectFinanziamento.addEventListener('click', closeSelectFinanziamento);
+    btnSelectFinanziamento.addEventListener('click', associateRewardToFinanziamento);
+
     await initInterface();
 
     let currentIndex = 0; // Per tracciare quale immagine è visibile
@@ -53,23 +63,16 @@ async function initInterface() {
     try {
         const params = new URLSearchParams(window.location.search);
         projectName = params.get('name');
-        if (token) {
-            username = getUsernameFromToken(token);
-            role = getRoleFromToken(token);
+        token = JSON.parse(localStorage.getItem("jwtToken"));
+
+        if (isUserLoggedIn()) {
+            mail = getUsernameFromToken(token.token);
+            role = getRoleFromToken(token.token);
         }
 
         await getProject();
 
-        let giorniRimasti = getGiorniRimasti(mysqlDate, projectData.dataLimite);
-        document.title = projectName;
-        document.querySelector(".project-title").innerText = projectName;
-        document.querySelector(".subtitle").innerText = projectData.descrizione;
-        document.querySelector("#creator-name").innerText = projectData.mailC;
-        document.querySelector("#days-left").innerText = giorniRimasti;
-        document.querySelector("#amount").innerText = projectData.totale_finanziato;
-        document.querySelector("#budget").innerText = "raccolti di " + projectData.budget;
-        document.querySelector("#percentuale").innerText = Math.floor((projectData.totale_finanziato / projectData.budget) * 100) + "%";
-        document.querySelector(".progress").style.width = Math.floor((projectData.totale_finanziato / projectData.budget) * 100) + "%";
+        updateDataFinanceInterface();
 
         await getPictures();
         pictures.forEach(element => {
@@ -84,7 +87,7 @@ async function initInterface() {
         });
 
         await getRewards();
-        loadRewards();
+        displayRewards();
     } catch (error) {
         console.error('Errore nel caricamento del progetto:', error);
     }
@@ -98,7 +101,7 @@ async function getRewards() {
                 nomeProgetto: projectName // Parametri della query string
             },
             headers: {
-                "Authorization": `Bearer ${token}` // Header Authorization
+                "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
             }
         })
             .then(response => {
@@ -125,7 +128,7 @@ async function getPictures() {
             progetto: projectName // Parametri della query string
         },
         headers: {
-            "Authorization": `Bearer ${token}` // Header Authorization
+            "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
         }
     })
         .then(response => {
@@ -148,7 +151,7 @@ async function getComments() {
             progetto: projectName // Parametri della query string
         },
         headers: {
-            "Authorization": `Bearer ${token}` // Header Authorization
+            "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
         }
     })
         .then(response => {
@@ -170,7 +173,7 @@ async function getProject() {
             progetto: projectName // Parametri della query string
         },
         headers: {
-            "Authorization": `Bearer ${token}` // Header Authorization
+            "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
         }
     })
         .then(response => {
@@ -217,7 +220,7 @@ function sendReply(text, idComment, divReply, btnReply) {
             };
 
             axios.put("../backend/addResponseToComment.php", data, {
-                headers: { "Authorization": `Bearer ${token}` }
+                headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
             })
                 .then(response => {
                     console.log(response.data); // Load the protected content
@@ -260,17 +263,17 @@ function sendComment() {
         } else {
             // Prepara i dati da inviare al server
             const data = {
-                mail: username,
+                mail: mail,
                 nomeProgetto: projectName,
                 testo: text,
-                data: mysqlDate
+                data: today
             };
 
             axios.post("../backend/addComment.php", data, {
-                headers: { "Authorization": `Bearer ${token}` }
+                headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
             })
                 .then(response => {
-                    templateComment(text, mysqlDate, username, response.data.comment_id);
+                    templateComment(text, today, mail, response.data.comment_id);
                     console.log(response.data); // Load the protected content
                 })
                 .catch(error => {
@@ -332,7 +335,7 @@ function templateComment(text, mysqlDate, creatore, id) {
         buttonRispondi.style.display = "block";
     }
     */
-    if (username === projectData.mailC) {  // Controlla se l'utente è il creatore del progetto
+    if (mail === projectData.mailC) {  // Controlla se l'utente è il creatore del progetto
         buttonRispondi.style.display = "block";
     }
     buttonRispondi.innerText = "Rispondi"
@@ -393,18 +396,9 @@ function getUsernameFromToken(token) {
         return false;
     }
 }
-function getRoleFromToken(token) {
-    try {
-        const payloadBase64 = token.split('.')[1]; // Estrae la parte payload del JWT
-        const payloadDecoded = JSON.parse(atob(payloadBase64)); // Decodifica da Base64 a JSON
-        return payloadDecoded.ruolo || null; // Restituisce lo username
-    } catch (error) {
-        //console.error("Errore nella decodifica del token:", error);
-        return false;
-    }
-}
-function getGiorniRimasti(dataCorrente, dataLimite) {
-    const dataOggi = new Date(dataCorrente);
+
+function getGiorniRimasti(dataLimite) {
+    const dataOggi = new Date(today);
     const dataScadenza = new Date(dataLimite);
 
     // Calcola la differenza in millisecondi
@@ -417,79 +411,97 @@ function getGiorniRimasti(dataCorrente, dataLimite) {
 }
 
 function displayFinanziamento(event) {
-    //    window.location.href = `./finanziamento.html?name=${projectName}`;
-    username = username ? username : "pippo@gmail.com";
-    if (username) {
-        overlay.style.display = "block";
-        wrapperFinanziamento.style.display = "flex";
-        mailFinanziatore.innerText = username;
+    //testare con token scaduto
+    //verifico che il progetto non sia chiuso
+    if (projectData.budget > projectData.totale_finanziato && today <= projectData.dataLimite) {
+        //verifico che ci sia un utenete
+        if (isUserLoggedIn) {
+            //visualizzo l'interfaccia di finanziamento
+            overlay.style.display = "block";
+            popUpFinanzia.style.display = "flex";
+            mailFinanziatore.innerText = mail;
 
-        if(selectedReward!==""&& selectReward){
-            rewardDOMNodes = document.querySelectorAll(".reward");
-            rewardDOMNodes.forEach(reward => {
-                if(reward.querySelector("img")?.getAttribute("cod") == selectedReward){
-                    reward.classList.add("selected");
-                }
-            });
+            if (selectedReward !== "" && selectReward) {
+                rewardDOMNodes = document.querySelectorAll(".reward");
+                rewardDOMNodes.forEach(reward => {
+                    if (reward.querySelector("img")?.getAttribute("cod") == selectedReward) {
+                        reward.classList.add("selected");
+                    }
+                });
+            }
+
+        } else {
+            alert("Devi essere loggato per poter finanziare il progetto");
+            window.location.href = "./login.html";
         }
-
-
     } else {
-        alert("Devi essere loggato per poter finanziare il progetto");
+        alert("Progetto non finanziabile, il progetto è chiuso perchè il budget è stato raggiunto o la data limite è scaduta");
     }
 }
 
 function closeFinanziamento(event) {
     // Pulisce i campi dell'interfaccia
-    importo = document.getElementById('importo').value = "";
-    setUnselectReward();
+    document.getElementById('importo').value = "";
+    setUnselect();
+    selectedReward = "";
     // Nasconde l'interfaccia di finanziamento
     overlay.style.display = "none";
-    wrapperFinanziamento.style.display = "none";
+    popUpFinanzia.style.display = "none";
 }
 
 function addFinanziamento(event) {
-    importo = document.getElementById('importo').value;
-    
-    if(importo == "" || isNaN(importo) || importo <= 0){
+    let importo = document.getElementById('importo').value;
+
+    if (importo == "" || isNaN(importo) || importo <= 0) {
         alert("Inserire un importo valido");
         return;
     }
 
-    if(username==null || projectName==null || importo==null || username=="" || projectName=="" || importo==""){
+    if (mail == null || projectName == null || importo == null || mail == "" || projectName == "" || importo == "") {
         alert("Errore nei dati inseriti");
         return;
     }
 
+    if (importo > projectData.budget - projectData.totale_finanziato) {
+        alert("Importo superiore al budget rimanente, finanziato solo il budget rimanente");
+        importo = projectData.budget - projectData.totale_finanziato;
+
+        //chiudere il progetto
+    }
+
     // Prepara i dati da inviare al server
     const data = {
-        mail: username,
+        mail: mail,
         nomeProgetto: projectName,
-        dataFinanziamento: mysqlDate,
+        dataFinanziamento: today,
         importoFinanziamento: importo,
-        codiceReward : selectedReward
+        codiceReward: selectedReward
     };
 
     axios.post("../backend/finanziaProgetto.php", data, {
-        headers: { "Authorization": `Bearer ${token}` }
+        headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
     })
-    .then(response => {
-        if (response.data.result) {
-            console.log(response.data.result);
-        } else if (response.data.error) {
-            console.error(response.data.error);
-        } else {
-            console.error('Risposta non corretta dal server.');
-        }
-        closeFinanziamento(event);
-    })
-    .catch(error => {
-        console.error("Access denied:", error.response ? error.response.data.error : error.message);
-    });
+        .then(response => {
+            if (response.data.result) {
+                console.log(response.data.result);
+                //aggiorno l'importo totale finanziato
+                projectData.totale_finanziato = parseInt(importo) + parseInt(projectData.totale_finanziato);
+                updateDataFinanceInterface();
+            } else if (response.data.error) {
+                console.error(response.data.error);
+            } else {
+                console.error('Risposta non corretta dal server.');
+            }
+
+            closeFinanziamento(event);
+        })
+        .catch(error => {
+            console.error("Access denied:", error.response ? error.response.data.error : error.message);
+        });
 
 }
 
-function loadRewards() {
+function displayRewards() {
     //cleaning the rewards container
     rewardViewers.forEach(element => {
         element.innerHTML = "";
@@ -497,34 +509,182 @@ function loadRewards() {
 
     //read all rewards and append them to all the containers
     rewards.forEach(reward => {
-        let rewardNode = `<div class="reward" tabindex="0" onclick="selectReward(event)">
+        let rewardNode = document.createElement("div");
+        rewardNode.className = "reward";
+        rewardNode.setAttribute("tabindex", "0");
+        rewardNode.innerHTML = `
                             <a>
                                 <img src="${reward.foto}" cod="${reward.cod}" alt="foto reward: ${reward.cod}">
                             </a>
                             <p>${reward.descrizione}</p>
-                        </div>`;
+                        `;
 
         rewardViewers.forEach(element => {
-            element.innerHTML += rewardNode;
+            let rewardNodeCopy = rewardNode.cloneNode(true);
+            rewardNodeCopy.addEventListener("click", selectReward);
+            element.appendChild(rewardNodeCopy);
         });
     });
 }
 
 function selectReward(event) {
-    setUnselectReward();
-    targetNode = event.target.closest(".reward");
+    setUnselect(event, ".reward");
+
+    let targetNode = event.target.closest(".reward");
     targetNode.classList.add("selected");
     selectedReward = targetNode.querySelector("img")?.getAttribute("cod");
 }
 
-function setUnselectReward(event) {
-    selectedReward = "";
-    rewardDOMNodes = document.querySelectorAll(".reward");
-    rewardDOMNodes.forEach(reward => {
-        reward.classList.remove("selected");
-    });
+function setUnselect(event, queryCSS) {
+    if (queryCSS || queryCSS != "") {
+        let DOMNodes = document.querySelectorAll(queryCSS);
+        DOMNodes.forEach(element => {
+            element.classList.remove("selected");
+        });
+    } else {
+        throw new Error("queryCSS non definito");
+    }
 }
 
-function redirectHome() {
-    window.location.href = "./index.html";
+function updateDataFinanceInterface() {
+    let giorniRimasti = getGiorniRimasti(projectData.dataLimite);
+    document.title = projectName;
+    document.querySelector(".project-title").innerText = projectName;
+    document.querySelector(".subtitle").innerText = projectData.descrizione;
+    document.querySelector("#creator-name").innerText = projectData.mailC;
+    document.querySelector("#days-left").innerText = giorniRimasti;
+    document.querySelector("#amount").innerText = projectData.totale_finanziato;
+    document.querySelector("#budget").innerText = "raccolti di " + projectData.budget;
+    document.querySelector("#percentuale").innerText = Math.floor((projectData.totale_finanziato / projectData.budget) * 100) + "%";
+    document.querySelector(".progress").style.width = Math.floor((projectData.totale_finanziato / projectData.budget) * 100) + "%";
+}
+
+async function displaySelectFinanziamento(event) {
+    if (selectedReward !== "") {
+        if (isUserLoggedIn()) {
+            //visualizzo il popUp
+            overlay.style.display = "block";
+            popUpSelectFinanziamento.style.display = "flex";
+
+            //scarico i dati dei finanziamenti dell'utente che non hanno una reward associata
+            await getFinanziamentiByMail();
+
+            //visualizzo i finanziamenti dell'utente
+            displayFinanziamenti();
+        } else {
+            alert("Devi essere loggato per poter selezionare un finanziamento");
+            window.location.href = "./login.html";
+        }
+    } else {
+        alert("Seleziona una reward per poter procedere con la selezione del finanziamento");
+    }
+}
+
+function closeSelectFinanziamento(event) {
+    // Nasconde l'interfaccia di selezione del finanziamento
+    overlay.style.display = "none";
+    popUpSelectFinanziamento.style.display = "none";
+
+    // Pulisce i campi dell'interfaccia
+    setUnselect(event, ".finanziamento");
+    selectedFinanziamento = "";
+}
+
+async function getFinanziamentiByMail() {
+    try {
+        await axios.get("../backend/getFinanziamentiByUtente.php", {
+            params: {
+                mail: mail // Parametri della query string
+            },
+            headers: {
+                "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
+            }
+        })
+            .then(response => {
+                if (response.data.result) {
+                    finanziamentiUtente = response.data.result;
+                    console.log(response.data.result);
+                } else if (response.data.error) {
+                    console.error(response.data.error);
+                } else {
+                    console.error('Risposta non corretta dal server.', response.data);
+                }
+            })
+            .catch(error => {
+                console.error("Errore nel recupero delle rewards:", error.response ? error.response.data.error : error.message);
+                alert("Errore nel recupero dei finanziamenti");
+            });
+    } catch (error) {
+        console.error('Errore nel caricamento delle rewards:', error);
+        alert("Errore nel caricamento dei finanziamenti");
+    }
+}
+
+function displayFinanziamenti() {
+    //cleaning the finanziamenti container
+    finanziamentoViewer.innerHTML = "";
+
+    //read all finanziamenti and append them to the container
+    finanziamentiUtente.forEach(finanziamento => {
+        let finanziamentoNode = document.createElement("div");
+        finanziamentoNode.className = "finanziamento";
+        finanziamentoNode.setAttribute("tabindex", "0");
+        finanziamentoNode.innerHTML = `
+                                <p>mail: ${finanziamento.mail}</p>
+                                <p>nome progetto: ${finanziamento.nome}</p>
+                                <p>data: ${finanziamento.dataF}</p>
+                                <p>importo: ${finanziamento.importo}</p>
+                            `;
+
+        finanziamentoNode.addEventListener("click", selectFinanziamento);
+        finanziamentoViewer.appendChild(finanziamentoNode);
+    });
+
+}
+
+function selectFinanziamento(event) {
+    setUnselect(event, ".finanziamento");
+
+    let targetNode = event.target.closest(".finanziamento");
+    targetNode.classList.add("selected");
+    let indexSelected = [...targetNode.parentNode.children].indexOf(targetNode);
+    selectedFinanziamento = finanziamentiUtente[indexSelected]
+}
+
+function associateRewardToFinanziamento(event) {
+    if (selectedFinanziamento != "") {
+        // Prepara i dati da inviare al server
+        const data = {
+            mail: selectedFinanziamento.mail,
+            nomeProgetto: selectedFinanziamento.nome,
+            dataFinanziamento: selectedFinanziamento.dataF,
+            codiceReward: selectedReward
+        };
+
+        axios.put("../backend/chooseReward.php", data, {
+            headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
+        })
+            .then(response => {
+                if (response.data) {
+                    if (response.data.result) {
+                        console.log(response.data); // Load the protected content
+                        //aggiorno l'interfaccia
+                        closeSelectFinanziamento(event);
+                        alert("Reward associata con successo al finanziamento");
+                    } else {
+                        console.error(response.data);
+                        alert("Errore nell'associazione della reward al finanziamento");
+                    }
+                } else {
+                    console.error('Risposta non corretta dal server.');
+                    alert("Errore nell'associazione della reward al finanziamento");
+                }
+            })
+            .catch(error => {
+                console.error("Access denied:", error.response ? error.response.data : error.message);
+                alert("Errore nell'associazione della reward al finanziamento");
+            });
+    } else {
+        alert("Seleziona un finanziamento per poter procedere con l'associazione");
+    }
 }

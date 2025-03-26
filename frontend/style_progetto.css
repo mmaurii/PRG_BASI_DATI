@@ -296,7 +296,7 @@ button.scroll-right:hover {
     margin-bottom: 16px;
 }
 
-.unselect-reward {
+.unselect-reward, .select-reward {
     padding: 10px 24px;
     background-color: green;
     color: white;
@@ -305,7 +305,7 @@ button.scroll-right:hover {
     cursor: pointer;
 }
 
-.unselect-reward:hover {
+.unselect-reward:hover, .select-reward:hover {
     background-color: darkgreen;
 }
 
@@ -509,7 +509,7 @@ footer {
 
 
 /* pop up finanziamento */
-.wrapper-finanziamento {
+.popUp {
     display: none;
     position: fixed;
     /* Per centrarlo rispetto alla finestra del browser */
@@ -539,7 +539,7 @@ footer {
     /* Centra orizzontalmente */
 }
 
-.wrapper-finanziamento > .close-btn {
+.popUp > .close-btn {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
@@ -548,17 +548,17 @@ footer {
     height: auto;
 }
 
-#close-finanziamento {
+.close-popUp {
     background: none;
     border: none;
     font-size: 24px;
 }
 
-#close-finanziamento:hover i {
+.close-popUp:hover i {
     color: darkgreen;
 }
 
-.wrapper-finanziamento > div{
+.popUp > div{
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
@@ -569,13 +569,13 @@ footer {
 #importo {
     height: 30px;
     outline: none;
-    border: 1px solid green;
+    border: 2px solid darkgreen;
     border-radius: 5px;
     padding: 0 20px;
     border-radius: 5px;
 }
 
-.wrapper-finanziamento > .footer-finanziamento > button {
+.popUp > .footer-finanziamento > button {
     padding: 10px 24px;
     background-color: green;
     color: white;
@@ -585,7 +585,7 @@ footer {
     cursor: pointer;
 }
 
-.wrapper-finanziamento > .footer-finanziamento > button:hover {
+.popUp > .footer-finanziamento > button:hover {
     background-color: darkgreen;
 }
 
@@ -619,7 +619,7 @@ footer {
     width: 100%;
 }
 
-.reward.selected {
+.reward.selected, .finanziamento.selected {
     box-shadow: 0px 5px 15px rgb(25, 76, 20);
     transition: box-shadow 0.1s ease-in-out;
 }
@@ -629,6 +629,24 @@ footer {
     border-radius: 5px;
     overflow: hidden;
     min-width: 150px;
+}
+
+.finanziamento{
+    display: flex;
+    flex-direction: column;
+    justify-content: top;
+    align-items: left;
+    border-radius: 5px;
+    overflow: hidden;
+    min-width: 150px;
+    width: 80%;
+    margin: 5px;
+    padding: 5px;
+    border: 2px solid darkgreen;
+}
+
+.finanziamento:hover{
+    background-color: rgba(25, 76, 20, 0.4); ;
 }
 
 p{
