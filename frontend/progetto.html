@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>caricamento...</title>
-    <link rel="stylesheet" href="style_progetto.css">
-    <script src="script_navbar.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+        integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="style_progetto.css">
+    <script type="module" defer src="script_progetto.js"></script>
+    <script type="module" defer src="script_navbar.js"></script>
 </head>
+
 <body>
 
     <div id="navbar"></div>
@@ -17,7 +23,7 @@
             <div class="project-image-container">
                 <button class="scroll-left">←</button>
                 <div class="project-images">
-                    
+
                 </div>
                 <button class="scroll-right">→</button>
             </div>
@@ -50,7 +56,9 @@
         <section class="project-details">
             <div class="project-description">
                 <h2>La Storia</h2>
-                <p>Qui va una descrizione dettagliata del progetto. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                <p>Qui va una descrizione dettagliata del progetto. Lorem ipsum dolor sit amet, consectetur adipiscing
+                    elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
             </div>
             <div class="creator-info">
                 <h3>Creatore</h3>
@@ -67,9 +75,9 @@
             <h2>Ricompense</h2>
             <div class="reward-grid">
                 <div class="reward-card">
-                    <p>Grazie!</p>
-                    <p>Un ringraziamento speciale sul nostro sito.</p>
-                    <button class="select-reward">Scegli</button>
+                    <div class="reward-viewer"></div>
+                    <button class="unselect-reward">Unselect</button>
+                    <button class="select-reward">Select</button>
                 </div>
             </div>
         </section>
@@ -82,14 +90,45 @@
                 <button class="submit-comment">Invia</button>
             </div>
             <ul class="comment-list">
-                
+
             </ul>
         </section>
+
+        <!-- pop up per fare un finanziamento-->
+        <section class="popUp finanzia">
+            <div class="close-btn">
+                <button class="close-popUp" id="close-finanziamento"><i class="fas fa-times close"></i></button>
+            </div>
+            <h2 class="full-event-title">Inserisci l'importo desiderato:</h2>
+            <div>
+                <p id="mail"></p>
+                <input type="number" id="importo" placeholder="Inserisci l'importo">
+            </div>
+            <h2 class="full-event-title">Seleziona la reward:</h2>
+            <div class="popUp-main reward-viewer"></div>
+            <div class="footer-finanziamento">
+                <button id="finanzia">Finanzia</button>
+            </div>
+        </section>
+
+        <!-- pop up per selezionare una reward dopo aver già finanziato-->
+        <section class="popUp select-finanziamento">
+            <div class="close-btn">
+                <button class="close-popUp" id="close-selectFinanziamento"><i class="fas fa-times close"></i></button>
+            </div>
+            <h2 class="full-event-title">Seleziona il finanziamento per cui prendere la reward:</h2>
+            <div class="popUp-main finanziamento-viewer"></div>
+            <div class="footer-finanziamento">
+                <button id="btn-select-finanziamento">Select</button>
+            </div>
+        </section>
+
+        <div id="overlay"></div>
     </main>
 
     <footer>
         <p>FOOTER</p>
     </footer>
-    <script defer src="script_progetto.js"></script>
 </body>
+
 </html>

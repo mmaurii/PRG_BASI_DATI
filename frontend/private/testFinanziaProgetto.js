@@ -21,7 +21,7 @@ function test(event) {
         };
 
         axios.post("../../backend/finanziaProgetto.php", data, {
-            headers: { "Authorization": `Bearer ${token}` }
+            headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
         })
             .then(response => {
                 if (response.data.result) {

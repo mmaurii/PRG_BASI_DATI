@@ -1,5 +1,6 @@
 <?php
     require_once 'config.php';
+    require 'logMongoDB.php';
     require 'protected.php';
     require  __DIR__ . '/../vendor/autoload.php';
 
@@ -23,7 +24,7 @@
 
             try {
                 // Preparing the SQL query to call the procedure with an output parameter
-                $sql = "CALL choseReward(:mail, :nomeProgetto, :dataFinanziamento, :codiceReward)";
+                $sql = "CALL chooseReward(:mail, :nomeProgetto, :dataFinanziamento, :codiceReward)";
                 $stmt = $pdo->prepare($sql);
 
                 // Binding the input parameters

@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
             try {
                 // Prepara la chiamata alla stored procedure con il parametro 'progetto'
-                $sql = "CALL GetCommentsByProgetto(:nome_progetto)";
+                $sql = "CALL getCommentsByProgetto(:nome_progetto)";
                 $stmt = $pdo->prepare($sql);
 
                 // Bind del parametro 'nome_progetto'

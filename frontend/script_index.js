@@ -1,4 +1,5 @@
-let projectContainer;
+let projectContainer, progetti;
+let token = JSON.parse(localStorage.getItem("jwtToken"));
 
 document.addEventListener('DOMContentLoaded', function() {
     projectContainer = document.getElementById('projectContainer');
@@ -8,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
 async function initInterface() {
     await getProgetti(); // Recupera i progetti
 
-    let htmlContent = this.progetti.map(element => `
+    let htmlContent = progetti.map(element => `
         <a href="./progetto.html?name=${element.nome}" class="card" data-nome="${element.nome}">
             <img src="loading.jpg" data-src="" alt="" loading="lazy">
             <h3>${element.nome}</h3>
@@ -22,7 +23,7 @@ async function initInterface() {
     projectContainer.innerHTML = htmlContent;
 
     // Carica le immagini in background
-    this.progetti.forEach(async (element, index) => {
+    progetti.forEach(async (element, index) => {
         const picture = await getFotoProgetto(element);
         document.querySelectorAll(".card img")[index].src = picture;
     });
@@ -35,7 +36,7 @@ async function getFotoProgetto(element) {
                 progetto: element.nome // Parametri della query string
             },
             headers: {
-                "Authorization": `Bearer ${token}` // Header Authorization
+                "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
             }
         });
 
@@ -56,12 +57,12 @@ async function getProgetti() {
     try {
         const response = await axios.get("../backend/getProgetti.php", {
             headers: {
-                "Authorization": `Bearer ${token}` // Header Authorization
+                "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
             }
         });
 
         if (response.data.result) {
-            this.progetti = response.data.result;
+            progetti = response.data.result;
             console.log(response.data.result);
         } else if (response.data.error) {
             console.error(response.data.error);

@@ -19,7 +19,7 @@ function test(event) {
         };
 
         axios.post("../../backend/setLivelloCompetenza.php", data, {
-            headers: { "Authorization": `Bearer ${token}` }
+            headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
         })
             .then(response => {
                 if (response.data) {

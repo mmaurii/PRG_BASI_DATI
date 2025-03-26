@@ -245,6 +245,23 @@ END;
 |
 DELIMITER ;
 
+/* creo una procedura che selezioni tutti i finanziamenti di un utente che non hanno una reward associata */
+drop PROCEDURE if exists getFinanziamenti;
+DELIMITER |
+CREATE PROCEDURE getFinanziamenti (inputMail VARCHAR(255))
+BEGIN
+    if(inputMail is null) then
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'inputMail cannot be null';
+    else
+        select F.mail, F.nome, F.dataF, F.importo
+        from FINANZIAMENTO F
+        where F.mail = inputMail and not exists(select 1 from F_R where (F.mail = mail) and (F.nome = nome) and (F.dataF = dataF));
+    end if;
+END;
+|
+DELIMITER ;
+
 /* creo una procedura per il finanziamento di un progetto (aperto). Un utente può finanziare anche il progetto di cui è creatore. */
 drop PROCEDURE if exists finanziaProgetto;
 DELIMITER |
@@ -258,17 +275,17 @@ BEGIN
 	insert into FINANZIAMENTO (mail, nome, dataF, importo)
 	values (inputMail, inputNome, inputData, inputImporto);
         
-	if (inputCodR is not null) then
-		call choseReward(inputMail, inputNome, inputData, inputCodR);
+	if (inputCodR <> '') then
+		call chooseReward(inputMail, inputNome, inputData, inputCodR);
 	END IF;
 END;
 |
 DELIMITER ;
 
 /* creo una procedura per scegliere la reward a valle del finanziamento di un progetto. */
-drop PROCEDURE if exists choseReward;
+drop PROCEDURE if exists chooseReward;
 DELIMITER |
-CREATE PROCEDURE choseReward(IN inputMail VARCHAR(255), IN inputNome VARCHAR(255),IN inputData DATE, IN inputCodR VARCHAR(255))
+CREATE PROCEDURE chooseReward(IN inputMail VARCHAR(255), IN inputNome VARCHAR(255),IN inputData DATE, IN inputCodR VARCHAR(255))
 BEGIN
 	if (inputCodR is null) then
         SIGNAL SQLSTATE '45000'
@@ -507,9 +524,9 @@ END
 |
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS GetCommentsByProgetto;
+DROP PROCEDURE IF EXISTS getCommentsByProgetto;
 DELIMITER |
-CREATE PROCEDURE GetCommentsByProgetto(IN nome_progetto VARCHAR(255))
+CREATE PROCEDURE getCommentsByProgetto(IN nome_progetto VARCHAR(255))
 BEGIN
     SELECT 
 		id,
@@ -753,7 +770,10 @@ INSERT INTO REWARD (cod, foto, descrizione, nomeP) VALUES
 ('RWD07', "", 'Un accessorio aggiuntivo per l\'app, inclusi nuovi strumenti di analisi finanziaria.', 'App Finanziaria'),
 ('RWD08', "", 'Un kit portatile di stampante 3D, con filamento incluso.', 'Stampante 3D Portatile'),
 ('RWD09', "", 'Un pacchetto di supporto dedicato agli artisti con strumenti creativi avanzati.', 'Social Network Creativo'),
-('RWD10', "", 'Un sensore IoT per monitorare l\'umidità delle piante e ricevere notifiche.', 'Dispositivo IoT per Piante');
+('RWD10', 'http://13.61.196.206/foto/pianta.webp', 'Un sensore IoT per monitorare l\'umidità delle piante e ricevere notifiche.', 'Dispositivo IoT per Piante'),
+('RWD11', 'http://13.61.196.206/foto/portaChiavi.webp', 'Un sensore IoT per monitorare l\'umidità delle piante e ricevere notifiche.', 'Dispositivo IoT per Piante'),
+('RWD12', 'http://13.61.196.206/foto/boardGame.webp', 'Un sensore IoT per monitorare l\'umidità delle piante e ricevere notifiche.', 'Dispositivo IoT per Piante'),
+('RWD13', 'http://13.61.196.206/foto/palla.webp', 'Un sensore IoT per monitorare l\'umidità delle piante e ricevere notifiche.', 'Dispositivo IoT per Piante');
 
 INSERT INTO FINANZIAMENTO (mail, nome, dataF, importo) VALUES
 ('mario.rossi@email.com', 'Smart Home Hub', '2025-02-20', 2000),

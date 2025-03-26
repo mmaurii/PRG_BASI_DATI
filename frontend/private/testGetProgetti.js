@@ -11,7 +11,7 @@ function test(event) {
         window.location.href = "login.html"; // Redirect if no token
     } else {
         axios.get("../../backend/getProgetti.php", {
-            headers: { "Authorization": `Bearer ${token}` }
+            headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
         })
             .then(response => {
                 if (response.data.result) {

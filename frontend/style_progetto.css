@@ -79,14 +79,17 @@ body {
     max-width: 1200px;
     margin: 32px auto;
     padding: 0 32px;
-    display: flex; /* Usa il flex per disporre gli elementi in orizzontale */
+    display: flex;
+    /* Usa il flex per disporre gli elementi in orizzontale */
     gap: 32px;
-    align-items: flex-start; /* Allinea gli oggetti in alto */
+    align-items: flex-start;
+    /* Allinea gli oggetti in alto */
 }
 
 .project-info {
     text-align: left;
-    flex: 1; /* Prende lo spazio rimanente */
+    flex: 1;
+    /* Prende lo spazio rimanente */
 }
 
 .project-info h1 {
@@ -175,8 +178,10 @@ body {
     align-items: center;
     position: relative;
     overflow: hidden;
-    width: 50%; /* L'immagine occupa metà della larghezza */
-    height: 400px; /* Modifica l'altezza come preferisci */
+    width: 50%;
+    /* L'immagine occupa metà della larghezza */
+    height: 400px;
+    /* Modifica l'altezza come preferisci */
 }
 
 .project-images {
@@ -187,10 +192,14 @@ body {
 }
 
 .project-images img {
-    width: 100%; /* Imposta la larghezza dell'immagine al 100% del contenitore */
-    height: 100%; /* Assicura che l'immagine occupi tutta l'altezza del contenitore */
-    object-fit: cover; /* Mantieni la proporzione dell'immagine senza distorcerla */
-    flex-shrink: 0; /* Impedisce che l'immagine venga ridimensionata */
+    width: 100%;
+    /* Imposta la larghezza dell'immagine al 100% del contenitore */
+    height: 100%;
+    /* Assicura che l'immagine occupi tutta l'altezza del contenitore */
+    object-fit: cover;
+    /* Mantieni la proporzione dell'immagine senza distorcerla */
+    flex-shrink: 0;
+    /* Impedisce che l'immagine venga ridimensionata */
 }
 
 button.scroll-left,
@@ -206,15 +215,18 @@ button.scroll-right {
     cursor: pointer;
     z-index: 1;
     border-radius: 50%;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Aggiunto effetto ombra per maggiore visibilità */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Aggiunto effetto ombra per maggiore visibilità */
 }
 
 button.scroll-left {
-    left: 10px; /* Spostato il pulsante verso il bordo */
+    left: 10px;
+    /* Spostato il pulsante verso il bordo */
 }
 
 button.scroll-right {
-    right: 10px; /* Spostato il pulsante verso il bordo */
+    right: 10px;
+    /* Spostato il pulsante verso il bordo */
 }
 
 button.scroll-left:hover,
@@ -284,7 +296,7 @@ button.scroll-right:hover {
     margin-bottom: 16px;
 }
 
-.select-reward {
+.unselect-reward, .select-reward {
     padding: 10px 24px;
     background-color: green;
     color: white;
@@ -293,7 +305,7 @@ button.scroll-right:hover {
     cursor: pointer;
 }
 
-.select-reward:hover {
+.unselect-reward:hover, .select-reward:hover {
     background-color: darkgreen;
 }
 
@@ -450,14 +462,17 @@ button.scroll-right:hover {
 .creator-only {
     display: none;
 }
+
 .reply-form {
     display: none;
 }
 
 .reply-container {
     display: flex;
-    justify-content: space-between;  /* Spazia gli elementi uno a sinistra e uno a destra */
-    align-items: center;  /* Centra verticalmente gli elementi */
+    justify-content: space-between;
+    /* Spazia gli elementi uno a sinistra e uno a destra */
+    align-items: center;
+    /* Centra verticalmente gli elementi */
     margin-top: 12px;
     padding: 10px;
     background-color: #f9f9f9;
@@ -468,14 +483,16 @@ button.scroll-right:hover {
 .styled-reply {
     font-style: italic;
     color: black;
-    margin-right: 16px; /* Distanza tra il testo della risposta e il nome dell'autore */
+    margin-right: 16px;
+    /* Distanza tra il testo della risposta e il nome dell'autore */
 }
 
 .creator-reference {
     font-size: 14px;
     color: grey;
     font-style: italic;
-    text-align: right; /* Assicura che il testo sia allineato a destra */
+    text-align: right;
+    /* Assicura che il testo sia allineato a destra */
 }
 
 
@@ -488,4 +505,150 @@ footer {
     padding: 16px;
     background-color: #f9f9f9;
     color: grey;
+}
+
+
+/* pop up finanziamento */
+.popUp {
+    display: none;
+    position: fixed;
+    /* Per centrarlo rispetto alla finestra del browser */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #f9f9f9;
+    /* Sfondo leggermente trasparente */
+    padding: 20px;
+    max-width: 90vw;
+    /* Limita la larghezza al 90% della finestra */
+    max-height: 90vh;
+    /* Limita l'altezza al 90% della finestra */
+    border-radius: 15px;
+    /* Bordi arrotondati */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    /* Ombra elegante */
+    overflow: auto;
+    /* Aggiunge lo scroll se il contenuto è troppo grande */
+    z-index: 1000;
+    /* Assicura che sia sopra gli altri elementi */
+    color: black;
+    flex-direction: column;
+    justify-content: top;
+    /* Centra verticalmente */
+    align-items: left;
+    /* Centra orizzontalmente */
+}
+
+.popUp > .close-btn {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    height: auto;
+}
+
+.close-popUp {
+    background: none;
+    border: none;
+    font-size: 24px;
+}
+
+.close-popUp:hover i {
+    color: darkgreen;
+}
+
+.popUp > div{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#importo {
+    height: 30px;
+    outline: none;
+    border: 2px solid darkgreen;
+    border-radius: 5px;
+    padding: 0 20px;
+    border-radius: 5px;
+}
+
+.popUp > .footer-finanziamento > button {
+    padding: 10px 24px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.popUp > .footer-finanziamento > button:hover {
+    background-color: darkgreen;
+}
+
+/* Overlay to block interface */
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent */
+    display: none; /* Initially hidden */
+    z-index: 999; /* Lower than .wrapper */
+}
+
+.reward-viewer{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: stretch;
+    flex-wrap: wrap;
+    margin: 10px;
+    gap: 10px;
+}
+
+.reward > a {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    width: 100%;
+}
+
+.reward.selected, .finanziamento.selected {
+    box-shadow: 0px 5px 15px rgb(25, 76, 20);
+    transition: box-shadow 0.1s ease-in-out;
+}
+
+.reward{
+    width: 10vw;
+    border-radius: 5px;
+    overflow: hidden;
+    min-width: 150px;
+}
+
+.finanziamento{
+    display: flex;
+    flex-direction: column;
+    justify-content: top;
+    align-items: left;
+    border-radius: 5px;
+    overflow: hidden;
+    min-width: 150px;
+    width: 80%;
+    margin: 5px;
+    padding: 5px;
+    border: 2px solid darkgreen;
+}
+
+.finanziamento:hover{
+    background-color: rgba(25, 76, 20, 0.4); ;
+}
+
+p{
+    word-wrap: break-word;
 }
