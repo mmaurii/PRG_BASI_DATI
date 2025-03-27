@@ -229,9 +229,9 @@ END;
 DELIMITER ;
 
 /* creo una procedura per la richiesta delle rewards associate a un progetto */
-drop PROCEDURE if exists getProgetti;
+drop PROCEDURE if exists getReWards;
 DELIMITER |
-CREATE PROCEDURE getProgetti (inputNome VARCHAR(255)) 
+CREATE PROCEDURE getReWards (inputNome VARCHAR(255)) 
 BEGIN
     if(inputNome is null) then
         SIGNAL SQLSTATE '45000'
@@ -733,13 +733,13 @@ INSERT INTO PROGETTO (nome, descrizione, dataInserimento, budget, dataLimite, st
 ('Dispositivo IoT per Piante', 'Un sensore intelligente per monitorare le piante domestiche.', '2025-03-05', 5000, '2025-07-20', 'aperto', 'giovanni.ferri@email.com', 'Hardware');
 
 INSERT INTO FOTO (foto, nomeP) VALUES
-("http://13.61.196.206/foto/smart-home-hub.jpg", 'Smart Home Hub'),
-("", 'Smart Home Hub'),
-("", 'Smart Home Hub'),
-("http://13.61.196.206/foto/App_Fitness_Tracker.jpg", 'App Fitness Tracker'),
-("http://13.61.196.206/foto/Drone_Fotografico.jpg", 'Drone Fotografico'),
-("http://13.61.196.206/foto/Piattaforma_E-Learning.jpg", 'Piattaforma E-Learning'),
-("http://13.61.196.206/foto/Sistema_AI_Chatbot.jpg", 'Sistema AI Chatbot');
+("http://13.61.196.206/foto/smart-home-hub.webp", 'Smart Home Hub'),
+("http://13.61.196.206/foto/Smart-Home-Hub3.webp", 'Smart Home Hub'),
+("http://13.61.196.206/foto/Smart-Home-Hub2.webp", 'Smart Home Hub'),
+("http://13.61.196.206/foto/App_Fitness_Tracker.webp", 'App Fitness Tracker'),
+("http://13.61.196.206/foto/Drone_Fotografico.webp", 'Drone Fotografico'),
+("http://13.61.196.206/foto/Piattaforma_E-Learning.webp", 'Piattaforma E-Learning'),
+("http://13.61.196.206/foto/Sistema_AI_Chatbot.webp", 'Sistema AI Chatbot');
 
 INSERT INTO COMMENTO (data, testo, risposta, mail, nome) VALUES
 ('2025-03-01', 'Questo progetto è molto interessante, non vedo l\'ora di vedere i progressi!', NULL, 'luca.bianchi@email.com', 'Smart Home Hub'),
