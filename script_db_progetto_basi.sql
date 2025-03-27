@@ -544,6 +544,27 @@ END
 DELIMITER ;
 
 
+DROP PROCEDURE IF EXISTS getProfiliByProgetto;
+DELIMITER |
+CREATE PROCEDURE getProfiliByProgetto(IN progettoNome VARCHAR(255))
+BEGIN
+    SELECT * FROM PROFILO WHERE nomeS = progettoNome;
+END
+|
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS getCompetenzeByProfile;
+DELIMITER |
+CREATE PROCEDURE getCompetenzeByProfile(IN p_idProfilo INT)
+BEGIN
+    SELECT competenza, livello
+    FROM S_P
+    WHERE idProfilo = p_idProfilo;
+END
+|
+DELIMITER ;
+
+
 /* DEFINIZIONE DELLE VIEW */
 
 /* Visualizzare valore finanziamento totale per ogni progetto */

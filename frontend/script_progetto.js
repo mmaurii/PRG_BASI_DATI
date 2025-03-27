@@ -1,9 +1,9 @@
 import { isUserLoggedIn, getRoleFromToken } from "./script_navbar.js";
 
-let projectName, mail, projectData, comments, role, pictures, popUpFinanzia, btnClosePopUpFinanziamento,
+let projectName, mail, projectData, comments, role, pictures, profili, popUpFinanzia, btnClosePopUpFinanziamento,
     mailFinanziatore, overlay, btnFinanzia, rewards, rewardViewers, selectedReward = "", btnUnselectReward,
     btnSelectReward, popUpSelectFinanziamento, btnClosePopUpSelectFinanziamento, btnSelectFinanziamento,
-    finanziamentiUtente, finanziamentoViewer, selectedFinanziamento = "", token;
+    finanziamentiUtente, finanziamentoViewer, selectedFinanziamento = "", profilGrid, competenze, token;
 
 const currentDate = new Date();
 let today = currentDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     popUpSelectFinanziamento = document.querySelector('.popUp.select-finanziamento');
     btnClosePopUpFinanziamento = document.getElementById('close-finanziamento');
     btnClosePopUpSelectFinanziamento = document.getElementById('close-selectFinanziamento');
-
+    profilGrid = document.querySelector(".profile-grid")
 
     btnClosePopUpFinanziamento.addEventListener('click', closeFinanziamento);
     btnFinanzia.addEventListener('click', addFinanziamento);
@@ -93,8 +93,15 @@ async function initInterface() {
         });
 
         await getRewards();
-        console.log(rewards)
         displayRewards();
+
+        await getProfiliByProgetto();
+        profili.forEach(async (element) => {
+            await getCompetenzeByProfile(element.id);
+
+            templateProfile(element.nome)
+        });
+        
 
         console.log("progetto caricato con successo!")
     } catch (error) {
@@ -102,7 +109,51 @@ async function initInterface() {
     }
 
 }
+async function getCompetenzeByProfile(element){
+    await axios.get("../backend/getCompetenzeByProfile.php", {
+        params: {
+            profilo: element // Parametri della query string
+        },
+        headers: {
+            "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
+        }
+    })
+        .then(response => {
+            if (response.data.result) {
+                competenze = response.data.result;
+            } else if (response.data.error) {
+                console.error(response.data.error);
+            } else {
+                console.error('Risposta non corretta dal server.');
+            }
+        })
+        .catch(error => {
+            console.error("Access denied:", error.response ? error.response.data.error : error.message);
+        });
+}
 
+async function getProfiliByProgetto() {
+    await axios.get("../backend/getProfiliByProgetto.php", {
+        params: {
+            progetto: projectName // Parametri della query string
+        },
+        headers: {
+            "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
+        }
+    })
+        .then(response => {
+            if (response.data.result) {
+                profili = response.data.result;
+            } else if (response.data.error) {
+                console.error(response.data.error);
+            } else {
+                console.error('Risposta non corretta dal server.');
+            }
+        })
+        .catch(error => {
+            console.error("Access denied:", error.response ? error.response.data.error : error.message);
+        });
+}
 async function getRewards() {
     try {
         await axios.get("../backend/getRewards.php", {
@@ -291,6 +342,74 @@ function sendComment() {
         }
     }
     document.querySelector("#textComment").value = ""
+}
+
+function templateProfile(name) {
+    /*
+    esempio template del profilo:
+        <div class="profile-card">
+            <h3>Mario Rossi</h3>
+            <h4>Competenze richieste</h4>
+            <ul class="competence-list">
+                <li class="competence-item">
+                    <span class="competence-name">JavaScript</span>
+                    <span class="competence-level">Livello: Avanzato</span>
+                </li>
+                <li class="competence-item">
+                    <span class="competence-name">HTML & CSS</span>
+                    <span class="competence-level">Livello: Intermedio</span>
+                </li>
+                <li class="competence-item">
+                    <span class="competence-name">React</span>
+                    <span class="competence-level">Livello: Base</span>
+                </li>
+            </ul>
+            <button class="apply-button">Candidati</button>
+        </div>
+    */
+    let profileCard = document.createElement("div");
+    profileCard.classList.add("profile-card");
+
+    let profileName = document.createElement("h3");
+    profileName.innerText = name;
+    profileCard.appendChild(profileName);
+
+    let TitoloCompetenza = document.createElement("h4");
+    TitoloCompetenza.innerText = "Competenze richieste";
+    profileCard.appendChild(TitoloCompetenza);
+
+    let ulCompetenza = document.createElement("ul");
+    ulCompetenza.classList.add("competence-list");
+
+    competenze.forEach(element => {
+        console.log(element);
+
+        let li = document.createElement("li");
+        li.classList.add("competence-item");
+
+        let spanCompetenza = document.createElement("span");
+        spanCompetenza.textContent = `${element.competenza}`;
+        spanCompetenza.classList.add("competence-name");
+
+        let spanLivello = document.createElement("span");
+        spanLivello.textContent = `Livello: ${element.livello}`;
+        spanLivello.classList.add("competence-level");
+
+        li.appendChild(spanCompetenza);
+        li.appendChild(spanLivello);
+        ulCompetenza.appendChild(li);
+    });
+
+    
+    profileCard.appendChild(ulCompetenza);
+
+    
+    let applyButton = document.createElement("button");
+    applyButton.textContent = "Candidati";
+    applyButton.classList.add("apply-button");
+    profileCard.appendChild(applyButton);
+
+    profilGrid.appendChild(profileCard);
 }
 
 function templateComment(text, mysqlDate, creatore, id) {
