@@ -13,13 +13,18 @@ async function fetchCompetenze() {
     try {
         // Effettua la richiesta GET per ottenere le competenze
         const response = await axios.get("../backend/getCompetenze.php", {
+            params: {
+                mail:""
+            },
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
             }
         });
 
-        if (response.data.competencies) {
-            popolaLista(response.data);
+        console.log(response.data);
+
+        if (response.data.result) {
+            popolaLista(response.data.result);
         } else {
             console.error("Errore durante il recupero delle competenze.");
         }
@@ -29,12 +34,12 @@ async function fetchCompetenze() {
 }
 
 // Funzione per popolare la lista delle competenze
-function popolaLista(data) {
+function popolaLista(competencies) {
     const competenceList = document.getElementById('competenceList');
     competenceList.innerHTML = '';
 
-    if (data.competencies && data.competencies.length > 0) {
-        data.competencies.forEach(competenza => {
+    if (competencies.length > 0) {
+        competencies.forEach(competenza => {
             const listItem = document.createElement('li');
             listItem.classList.add('competence-item');
             listItem.innerHTML = `<h3>${competenza.competenza}</h3>`;
