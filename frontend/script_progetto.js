@@ -9,8 +9,6 @@ const currentDate = new Date();
 let today = currentDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
 
 document.addEventListener('DOMContentLoaded', async function () {
-    await initInterface();
-
     finanziamentoViewer = document.querySelector('.finanziamento-viewer');
     btnSelectFinanziamento = document.getElementById('btn-select-finanziamento');
     btnSelectReward = document.querySelector('.select-reward');
@@ -23,6 +21,18 @@ document.addEventListener('DOMContentLoaded', async function () {
     popUpSelectFinanziamento = document.querySelector('.popUp.select-finanziamento');
     btnClosePopUpFinanziamento = document.getElementById('close-finanziamento');
     btnClosePopUpSelectFinanziamento = document.getElementById('close-selectFinanziamento');
+
+
+    btnClosePopUpFinanziamento.addEventListener('click', closeFinanziamento);
+    btnFinanzia.addEventListener('click', addFinanziamento);
+    btnUnselectReward.addEventListener('click', setUnselect);
+    btnSelectReward.addEventListener('click', displaySelectFinanziamento);
+    btnClosePopUpSelectFinanziamento.addEventListener('click', closeSelectFinanziamento);
+    btnSelectFinanziamento.addEventListener('click', associateRewardToFinanziamento);
+
+    await initInterface();
+
+    
     const projectImages = document.querySelector('.project-images');
     const images = projectImages.querySelectorAll('img');
     const scrollLeftButton = document.querySelector('.scroll-left');
@@ -31,12 +41,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     document.getElementById('finanziamento').addEventListener('click', displayFinanziamento);
     document.querySelector('.submit-comment').addEventListener('click', sendComment);
-    btnClosePopUpFinanziamento.addEventListener('click', closeFinanziamento);
-    btnFinanzia.addEventListener('click', addFinanziamento);
-    btnUnselectReward.addEventListener('click', setUnselect);
-    btnSelectReward.addEventListener('click', displaySelectFinanziamento);
-    btnClosePopUpSelectFinanziamento.addEventListener('click', closeSelectFinanziamento);
-    btnSelectFinanziamento.addEventListener('click', associateRewardToFinanziamento);
+    
 
     let currentIndex = 0; // Per tracciare quale immagine è visibile
 
@@ -75,7 +80,6 @@ async function initInterface() {
         updateDataFinanceInterface();
 
         await getPictures();
-        console.log(pictures)
         if(pictures){
             pictures.forEach(element => {
                 let image = document.createElement("img")
@@ -89,7 +93,10 @@ async function initInterface() {
         });
 
         await getRewards();
+        console.log(rewards)
         displayRewards();
+
+        console.log("progetto caricato con successo!")
     } catch (error) {
         console.error('Errore nel caricamento del progetto:', error);
     }
@@ -109,7 +116,7 @@ async function getRewards() {
             .then(response => {
                 if (response.data.result) {
                     rewards = response.data.result;
-                    console.log(response.data.result);
+                    //console.log(response.data.result);
                 } else if (response.data.error) {
                     console.error(response.data.error);
                 } else {
