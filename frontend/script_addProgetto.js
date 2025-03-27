@@ -133,7 +133,7 @@ document.querySelector('.project-form').addEventListener('submit', function(even
                 // Invia ogni ricompensa a addreward.php
                 rewardsData.forEach(reward => {
                     axios.post("../backend/addReward.php", {
-                        codice: reward.inputCod,
+                        //codice: reward.inputCod,
                         foto: reward.inputFoto,
                         descrizione: reward.inputDescrizione,
                         progetto: reward.inputNomeP

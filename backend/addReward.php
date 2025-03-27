@@ -8,7 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (true) {
         // Recupero i dati inviati dal client
         $data = json_decode(file_get_contents('php://input'), true);
-        $inputCod = $data["codice"];
+        //$inputCod = $data["codice"];
         $inputFoto = $data["foto"];
         $inputDescrizione = $data["descrizione"];
         $inputNomeP = $data["progetto"];
@@ -24,11 +24,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         try {
             // Preparing the SQL query to call the procedure with an output parameter
-            $sql = "CALL addReward(:inputCod, :inputFoto, :inputDescrizione, :inputNomeP)";
+            $sql = "CALL addReward(:inputFoto, :inputDescrizione, :inputNomeP)";
             $stmt = $pdo->prepare($sql);
 
             // Binding the input parameters
-            $stmt->bindParam(':inputCod', $inputCod, PDO::PARAM_STR);
+            //$stmt->bindParam(':inputCod', $inputCod, PDO::PARAM_STR);
             $stmt->bindParam(':inputFoto', $inputFoto, PDO::PARAM_STR);
             $stmt->bindParam(':inputDescrizione', $inputDescrizione, PDO::PARAM_LOB);
             $stmt->bindParam(':inputNomeP', $inputNomeP, PDO::PARAM_STR);
@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Execute the query
             $result = $stmt->execute();
 
-            $text = "timeStamp: " . date('Y-m-d H:i:s').";inputCod: " . $inputCod . ";queryType: INSERT;query: " . $sql . ";result: " . $result;
+            $text = "timeStamp: " . date('Y-m-d H:i:s').";queryType: INSERT;query: " . $sql . ";result: " . $result;
             $resp = writeLog($text);
 
             echo $result;

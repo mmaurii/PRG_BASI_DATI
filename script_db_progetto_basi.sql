@@ -69,7 +69,7 @@ CREATE TABLE COMPONENTE (
 )engine= innodb;
 
 CREATE TABLE REWARD (
-    cod VARCHAR(255) PRIMARY KEY,
+    cod INT AUTO_INCREMENT PRIMARY KEY,
     foto varchar(255),
     descrizione text,
     nomeP VARCHAR(255) not null,
@@ -134,7 +134,7 @@ CREATE TABLE F_R (
     mail VARCHAR(255),
     nome VARCHAR(255),
     dataF DATE,
-    codR VARCHAR(255),
+    codR INT,
 	PRIMARY KEY (mail, nome, dataF, codR),
     FOREIGN KEY (mail, nome, dataF) REFERENCES FINANZIAMENTO(mail, nome, dataF),
     FOREIGN KEY (codR) REFERENCES REWARD(cod)
@@ -308,7 +308,7 @@ DELIMITER ;
 /* creo una procedura per l'aggiunta delle reward per un progetto */
 drop PROCEDURE if exists addReward;
 DELIMITER |
-CREATE PROCEDURE addReward (IN inputCod varchar(255), IN inputFoto varchar(255), IN inputDescrizione text, IN inputNomeP VARCHAR(255))  
+CREATE PROCEDURE addReward (IN inputFoto varchar(255), IN inputDescrizione text, IN inputNomeP VARCHAR(255))  
 BEGIN
     IF (inputNomeP IS NULL) THEN
 		SIGNAL SQLSTATE '45000' 
@@ -320,8 +320,8 @@ BEGIN
         SET MESSAGE_TEXT = 'Errore: nomeP non esiste come progetto';
     end if;
     
-    INSERT INTO REWARD (cod, foto, descrizione, nomeP) 
-    VALUES (inputCod, inputFoto, inputDescrizione, inputNomeP);
+    INSERT INTO REWARD (foto, descrizione, nomeP) 
+    VALUES (inputFoto, inputDescrizione, inputNomeP);
 END;
 |
 DELIMITER ;
@@ -781,20 +781,20 @@ INSERT INTO COMPONENTE (nomeC, descrizione, prezzo, qt) VALUES
 ('Pannello Solare', 'Pannello solare per alimentare dispositivi elettronici in ambienti esterni.', 150, 60),
 ('Cinturino Smartwatch', 'Cinturino in silicone per smartwatch personalizzabili.', 10, 300);
 
-INSERT INTO REWARD (cod, foto, descrizione, nomeP) VALUES
-('RWD01', "", 'Un kit per l\'automazione della casa, incluso il modulo Wi-Fi e sensori di movimento.', 'Smart Home Hub'),
-('RWD02', "", 'Un abbonamento premium con funzionalità avanzate per tracciare i progressi e le prestazioni.', 'App Fitness Tracker'),
-('RWD03', "", 'Accessori premium per il drone, inclusi nuovi filtri e una batteria di lunga durata.', 'Drone Fotografico'),
-('RWD04', "", 'Un corso online gratuito sulla creazione di contenuti e corsi interattivi sulla piattaforma.', 'Piattaforma E-Learning'),
-('RWD05', "", 'Un pacchetto di 5 ore di consulenza su come migliorare le prestazioni del tuo chatbot.', 'Sistema AI Chatbot'),
-('RWD06', "", 'Un smartwatch personalizzabile con display intercambiabile.', 'Smartwatch Personalizzabile'),
-('RWD07', "", 'Un accessorio aggiuntivo per l\'app, inclusi nuovi strumenti di analisi finanziaria.', 'App Finanziaria'),
-('RWD08', "", 'Un kit portatile di stampante 3D, con filamento incluso.', 'Stampante 3D Portatile'),
-('RWD09', "", 'Un pacchetto di supporto dedicato agli artisti con strumenti creativi avanzati.', 'Social Network Creativo'),
-('RWD10', 'http://13.61.196.206/foto/pianta.webp', 'Un sensore IoT per monitorare l\'umidità delle piante e ricevere notifiche.', 'Dispositivo IoT per Piante'),
-('RWD11', 'http://13.61.196.206/foto/portaChiavi.webp', 'Un sensore IoT per monitorare l\'umidità delle piante e ricevere notifiche.', 'Dispositivo IoT per Piante'),
-('RWD12', 'http://13.61.196.206/foto/boardGame.webp', 'Un sensore IoT per monitorare l\'umidità delle piante e ricevere notifiche.', 'Dispositivo IoT per Piante'),
-('RWD13', 'http://13.61.196.206/foto/palla.webp', 'Un sensore IoT per monitorare l\'umidità delle piante e ricevere notifiche.', 'Dispositivo IoT per Piante');
+INSERT INTO REWARD (foto, descrizione, nomeP) VALUES
+("", 'Un kit per l\'automazione della casa, incluso il modulo Wi-Fi e sensori di movimento.', 'Smart Home Hub'),
+("", 'Un abbonamento premium con funzionalità avanzate per tracciare i progressi e le prestazioni.', 'App Fitness Tracker'),
+("", 'Accessori premium per il drone, inclusi nuovi filtri e una batteria di lunga durata.', 'Drone Fotografico'),
+("", 'Un corso online gratuito sulla creazione di contenuti e corsi interattivi sulla piattaforma.', 'Piattaforma E-Learning'),
+("", 'Un pacchetto di 5 ore di consulenza su come migliorare le prestazioni del tuo chatbot.', 'Sistema AI Chatbot'),
+("", 'Un smartwatch personalizzabile con display intercambiabile.', 'Smartwatch Personalizzabile'),
+("", 'Un accessorio aggiuntivo per l\'app, inclusi nuovi strumenti di analisi finanziaria.', 'App Finanziaria'),
+("", 'Un kit portatile di stampante 3D, con filamento incluso.', 'Stampante 3D Portatile'),
+("", 'Un pacchetto di supporto dedicato agli artisti con strumenti creativi avanzati.', 'Social Network Creativo'),
+('http://13.61.196.206/foto/pianta.webp', 'Un sensore IoT per monitorare l\'umidità delle piante e ricevere notifiche.', 'Dispositivo IoT per Piante'),
+('http://13.61.196.206/foto/portaChiavi.webp', 'Un sensore IoT per monitorare l\'umidità delle piante e ricevere notifiche.', 'Dispositivo IoT per Piante'),
+('http://13.61.196.206/foto/boardGame.webp', 'Un sensore IoT per monitorare l\'umidità delle piante e ricevere notifiche.', 'Dispositivo IoT per Piante'),
+('http://13.61.196.206/foto/palla.webp', 'Un sensore IoT per monitorare l\'umidità delle piante e ricevere notifiche.', 'Dispositivo IoT per Piante');
 
 INSERT INTO FINANZIAMENTO (mail, nome, dataF, importo) VALUES
 ('mario.rossi@email.com', 'Smart Home Hub', '2025-02-20', 2000),
@@ -809,14 +809,14 @@ INSERT INTO FINANZIAMENTO (mail, nome, dataF, importo) VALUES
 ('giovanni.ferri@email.com', 'Dispositivo IoT per Piante', '2025-03-08', 2200);
 
 INSERT INTO F_R (mail, nome, dataF, codR) VALUES
-('mario.rossi@email.com', 'Smart Home Hub', '2025-02-20', 'RWD01'),
-('luca.bianchi@email.com', 'App Fitness Tracker', '2025-01-12', 'RWD02'),
-('anna.verdi@email.com', 'Drone Fotografico', '2025-03-05', 'RWD03'),
-('sara.neri@email.com', 'Piattaforma E-Learning', '2025-02-22', 'RWD04'),
-('giovanni.ferri@email.com', 'Sistema AI Chatbot', '2025-01-28', 'RWD05'),
-('mario.rossi@email.com', 'Smartwatch Personalizzabile', '2025-02-15', 'RWD06'),
-('luca.bianchi@email.com', 'App Finanziaria', '2025-03-01', 'RWD07'),
-('anna.verdi@email.com', 'Stampante 3D Portatile', '2025-01-25', 'RWD08');
+('mario.rossi@email.com', 'Smart Home Hub', '2025-02-20', '1'),
+('luca.bianchi@email.com', 'App Fitness Tracker', '2025-01-12', '2'),
+('anna.verdi@email.com', 'Drone Fotografico', '2025-03-05', '3'),
+('sara.neri@email.com', 'Piattaforma E-Learning', '2025-02-22', '4'),
+('giovanni.ferri@email.com', 'Sistema AI Chatbot', '2025-01-28', '5'),
+('mario.rossi@email.com', 'Smartwatch Personalizzabile', '2025-02-15', '6'),
+('luca.bianchi@email.com', 'App Finanziaria', '2025-03-01', '7'),
+('anna.verdi@email.com', 'Stampante 3D Portatile', '2025-01-25', '8');
 
 
 INSERT INTO POSSIEDE (mail, competenza, livello) VALUES

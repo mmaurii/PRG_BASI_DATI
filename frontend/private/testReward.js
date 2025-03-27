@@ -35,7 +35,7 @@ function test(event) {
             mail: "anna.verdi@email.com",
             nomeProgetto: "Drone Fotografico",
             dataFinanziamento: "2025-03-05",
-            codiceReward: "RWD03",
+            codiceReward: "3",
         };
 
         axios.put("../backend/choseReward.php", data, {
