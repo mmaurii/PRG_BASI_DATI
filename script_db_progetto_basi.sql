@@ -377,14 +377,16 @@ DELIMITER ;
 /* Ottenere le varie competenze */
 DROP PROCEDURE IF EXISTS getCompetenze;
 DELIMITER |
-CREATE PROCEDURE getCompetenze()
+CREATE PROCEDURE getCompetenze(inputMail VARCHAR(255))
 BEGIN
-    SELECT competenza FROM SKILL;
+    if(inputMail ='') then
+        SELECT competenza FROM SKILL;
+    else
+        SELECT * FROM POSSIEDE WHERE mail = inputMail;
+    end if;
 END;
 |
 DELIMITER ;
-
-
 
 /* In fase di autenticazione, oltre a username e password, viene richiesto anche il codice di sicurezza */
 DROP PROCEDURE IF EXISTS logInAdmin;
