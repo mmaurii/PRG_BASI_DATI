@@ -8,8 +8,7 @@
             // Recupero i dati inviati dal client
             $data = json_decode(file_get_contents('php://input'), true);
             $mail = $data["mail"];
-            $livello = $data["livello"];
-            $competenza = $data["competenza"];
+            $competenza = $data["competenze"];
 
             try {
                 $pdo = new PDO('mysql:host='.servername.';dbname='.dbName, dbUsername, dbPassword);

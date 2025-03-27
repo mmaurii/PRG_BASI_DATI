@@ -6,7 +6,7 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
-    
+
     // Connessione al DB
     try {
         $pdo = new PDO('mysql:host=' . servername . ';dbname=' . dbName, dbUsername, dbPassword);
@@ -18,6 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     }
 
     try {
+        // Verifica se il parametro 'progetto' è presente nei parametri GET
         if (isset($_GET['mail'])) {
             $mail = $_GET['mail'];
 
@@ -48,4 +49,3 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 } else {
     echo json_encode(["error" => "HTTP method not allowed"]);
 }
-?>
