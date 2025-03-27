@@ -9,6 +9,8 @@ const currentDate = new Date();
 let today = currentDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
 
 document.addEventListener('DOMContentLoaded', async function () {
+    await initInterface();
+
     finanziamentoViewer = document.querySelector('.finanziamento-viewer');
     btnSelectFinanziamento = document.getElementById('btn-select-finanziamento');
     btnSelectReward = document.querySelector('.select-reward');
@@ -35,8 +37,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     btnSelectReward.addEventListener('click', displaySelectFinanziamento);
     btnClosePopUpSelectFinanziamento.addEventListener('click', closeSelectFinanziamento);
     btnSelectFinanziamento.addEventListener('click', associateRewardToFinanziamento);
-
-    await initInterface();
 
     let currentIndex = 0; // Per tracciare quale immagine è visibile
 
@@ -69,18 +69,20 @@ async function initInterface() {
             mail = getUsernameFromToken(token.token);
             role = getRoleFromToken(token.token);
         }
-
+        
         await getProject();
 
         updateDataFinanceInterface();
 
         await getPictures();
-        pictures.forEach(element => {
-            let image = document.createElement("img")
-            document.querySelector(".project-images").appendChild(image)
-            image.src = element.foto;
-        });
-
+        console.log(pictures)
+        if(pictures){
+            pictures.forEach(element => {
+                let image = document.createElement("img")
+                document.querySelector(".project-images").appendChild(image)
+                image.src = element.foto;
+            });
+        }
         await getComments();
         comments.forEach(element => {
             templateComment(element.testo, element.data, element.mail, element.id)
