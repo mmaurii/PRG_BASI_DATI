@@ -4,7 +4,7 @@ let projectName, mail, projectData, comments, role, pictures, profili, competenz
     mailFinanziatore, overlay, btnFinanzia, rewards, rewardViewers, selectedReward = "", btnUnselectReward,
     btnSelectReward, popUpSelectFinanziamento, btnClosePopUpSelectFinanziamento, btnSelectFinanziamento, btnShowPopUpAggiungiProfilo,
     popUpAggiungiProfilo, btnClosePopUpAggiungiProfilo, btnAddProfilo, competenzeUser,
-    finanziamentiUtente, finanziamentoViewer, selectedFinanziamento = "", profilGrid, competenzePerProfilo, token;
+    finanziamentiUtente, finanziamentoViewer, selectedFinanziamento = "", profileGrid, competenzePerProfilo, token;
 
 const currentDate = new Date();
 let today = currentDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     popUpSelectFinanziamento = document.querySelector('.popUp.select-finanziamento');
     btnClosePopUpFinanziamento = document.getElementById('close-finanziamento');
     btnClosePopUpSelectFinanziamento = document.getElementById('close-selectFinanziamento');
-    profilGrid = document.querySelector(".profile-grid")
+    profileGrid = document.querySelector(".profile-grid")
     btnShowPopUpAggiungiProfilo = document.querySelector(".add-profile-button");
     popUpAggiungiProfilo = document.querySelector(".popUp.aggiungi-profilo");
     btnClosePopUpAggiungiProfilo = document.getElementById('close-aggiungiProfilo'); // Potresti voler usare un altro ID per il pulsante di chiusura
@@ -219,7 +219,7 @@ function prova(name, comp, liv) {
     applyButton.classList.add("apply-button");
     profileCard.appendChild(applyButton);
 
-    profilGrid.appendChild(profileCard);
+    profileGrid.appendChild(profileCard);
 }
 async function popola_s_p(id, comp, liv) {
     const data = {
@@ -622,7 +622,7 @@ function templateProfile(element) {
 
     profileCard.appendChild(applyButton);
 
-    profilGrid.appendChild(profileCard);
+    profileGrid.appendChild(profileCard);
 }
 
 function templateComment(text, mysqlDate, creatore, id) {
@@ -741,31 +741,35 @@ function getGiorniRimasti(dataLimite) {
 }
 
 function displayFinanziamento(event) {
-    //testare con token scaduto
-    //verifico che il progetto non sia chiuso
-    if (projectData.budget > projectData.totale_finanziato && today <= projectData.dataLimite) {
-        //verifico che ci sia un utenete
-        if (isUserLoggedIn) {
-            //visualizzo l'interfaccia di finanziamento
-            overlay.style.display = "block";
-            popUpFinanzia.style.display = "flex";
-            mailFinanziatore.innerText = mail;
+    if (isUserLoggedIn()) {
+        //verifico che il progetto non sia chiuso
+        if (projectData.budget > projectData.totale_finanziato && today <= projectData.dataLimite) {
+            //verifico che ci sia un utenete
+            if (isUserLoggedIn) {
+                //visualizzo l'interfaccia di finanziamento
+                overlay.style.display = "block";
+                popUpFinanzia.style.display = "flex";
+                mailFinanziatore.innerText = mail;
 
-            if (selectedReward !== "" && selectReward) {
-                rewardDOMNodes = document.querySelectorAll(".reward");
-                rewardDOMNodes.forEach(reward => {
-                    if (reward.querySelector("img")?.getAttribute("cod") == selectedReward) {
-                        reward.classList.add("selected");
-                    }
-                });
+                if (selectedReward !== "") {
+                    let rewardDOMNodes = document.querySelectorAll(".reward");
+                    rewardDOMNodes.forEach(reward => {
+                        if (reward.querySelector("img")?.getAttribute("cod") == selectedReward) {
+                            reward.classList.add("selected");
+                        }
+                    });
+                }
+
+            } else {
+                alert("Devi essere loggato per poter finanziare il progetto");
+                window.location.href = "./login.html";
             }
-
         } else {
-            alert("Devi essere loggato per poter finanziare il progetto");
-            window.location.href = "./login.html";
+            alert("Progetto non finanziabile, il progetto è chiuso perchè il budget è stato raggiunto o la data limite è scaduta");
         }
     } else {
-        alert("Progetto non finanziabile, il progetto è chiuso perchè il budget è stato raggiunto o la data limite è scaduta");
+        alert("Devi essere loggato per poter finanziare il progetto");
+        window.location.href = "./login.html";
     }
 }
 
