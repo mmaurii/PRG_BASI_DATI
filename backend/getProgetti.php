@@ -35,12 +35,15 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                 $stmtTotale = $pdo->prepare($sqlTotaleFinanziato);
                 $stmtTotale->bindParam(':nomeProgetto', $progetto['nome']);
                 $stmtTotale->execute();
-
+            
                 // Recuperiamo il totale dei finanziamenti
                 $totale = $stmtTotale->fetchColumn();
-                $progetto['totale_finanziato'] = $totale;  // Aggiungiamo il totale al progetto
-                $stmtTotale->closeCursor(); // Chiudiamo il cursore della seconda query
-            }
+            
+                // Se il valore è false o null, lo forziamo a 0
+                $progetto['totale_finanziato'] = ($totale === false || $totale === null) ? 0 : $totale;
+            
+                $stmtTotale->closeCursor(); // Chiudiamo il cursore della query
+            }                       
 
             // Restituiamo i progetti con il totale dei finanziamenti
             echo json_encode(["result" => $progetti]);
