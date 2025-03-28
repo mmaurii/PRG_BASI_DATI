@@ -5,7 +5,7 @@ let projectName, mail, projectData, comments, role, pictures, profili, popUpFina
     btnSelectReward, popUpSelectFinanziamento, btnClosePopUpSelectFinanziamento, btnSelectFinanziamento, btnShowPopUpAggiungiProfilo,
     popUpAggiungiProfilo, btnClosePopUpAggiungiProfilo, btnAddProfilo,
     finanziamentiUtente, finanziamentoViewer, selectedFinanziamento = "", profileGrid, token,
-    competenze = { "competenzeTotali": [], "competenzeUser": [], "competenzePerProfilo": [] };
+    competenze = {"competenzeTotali": [], "competenzeUser": [], "competenzePerProfilo": []};
 
 const currentDate = new Date();
 let today = currentDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
 })
 
-function initInterface() {
+async function initInterface() {
     try {
         const params = new URLSearchParams(window.location.search);
         projectName = params.get('name');
@@ -108,39 +108,41 @@ function initInterface() {
             role = getRoleFromToken(token.token);
         }
 
+        await getProject();
 
-        Promise.all([getProject(), getPictures(), getComments(), getRewards(), getProfiliByProgetto()]).then(() => {
-            updateDataFinanceInterface();
+        updateDataFinanceInterface();
 
-            if (pictures) {
-                pictures.forEach(element => {
-                    let image = document.createElement("img")
-                    document.querySelector(".project-images").appendChild(image)
-                    image.src = element.foto;
-                });
-            }
-
-            comments.forEach(element => {
-                templateComment(element.testo, element.data, element.mail, element.id)
+        await getPictures();
+        if (pictures) {
+            pictures.forEach(element => {
+                let image = document.createElement("img")
+                document.querySelector(".project-images").appendChild(image)
+                image.src = element.foto;
             });
-
-            displayRewards();
-
-            profili.forEach(async (element) => {
-                await getCompetenzeByProfile(element.id);
-
-                templateProfile(element)
-            });
-
-            if (profili.length === 0) {
-                document.querySelector("#search-profile").innerText = "Nessun profilo richiesto al momento"
-            }
-            if (mail === projectData.mailC && projectData.tipo === "Software") {  // Controlla se l'utente è il creatore del progetto
-                btnShowPopUpAggiungiProfilo.style.display = "block";
-            }
-
-            console.log("progetto caricato con successo!")
+        }
+        await getComments();
+        comments.forEach(element => {
+            templateComment(element.testo, element.data, element.mail, element.id)
         });
+
+        await getRewards();
+        displayRewards();
+
+        await getProfiliByProgetto();
+        profili.forEach(async (element) => {
+            await getCompetenzeByProfile(element.id);
+
+            templateProfile(element)
+        });
+
+        if (profili.length === 0) {
+            document.querySelector("#search-profile").innerText = "Nessun profilo richiesto al momento"
+        }
+        if (mail === projectData.mailC && projectData.tipo === "Software") {  // Controlla se l'utente è il creatore del progetto
+            btnShowPopUpAggiungiProfilo.style.display = "block";
+        }
+
+        console.log("progetto caricato con successo!")
     } catch (error) {
         console.error('Errore nel caricamento del progetto:', error);
     }
@@ -263,7 +265,7 @@ async function getCompetenze(mail, key) {
             } else {
                 console.error('Risposta non corretta dal server.', response.data);
             }
-        })
+    })
         .catch(error => {
             console.error("Errore di connessione:", error.response ? error.response.data.error : error.message);
         });
@@ -293,8 +295,8 @@ async function getCompetenzeByProfile(element) {
         });
 }
 
-function getProfiliByProgetto() {
-    return axios.get("../backend/getProfiliByProgetto.php", {
+async function getProfiliByProgetto() {
+    await axios.get("../backend/getProfiliByProgetto.php", {
         params: {
             progetto: projectName // Parametri della query string
         },
@@ -315,32 +317,36 @@ function getProfiliByProgetto() {
             console.error("Access denied:", error.response ? error.response.data.error : error.message);
         });
 }
-function getRewards() {
-    return axios.get("../backend/getRewards.php", {
-        params: {
-            nomeProgetto: projectName // Parametri della query string
-        },
-        headers: {
-            "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
-        }
-    })
-        .then(response => {
-            if (response.data.result) {
-                rewards = response.data.result;
-                //console.log(response.data.result);
-            } else if (response.data.error) {
-                console.error(response.data.error);
-            } else {
-                console.error('Risposta non corretta dal server.');
+async function getRewards() {
+    try {
+        await axios.get("../backend/getRewards.php", {
+            params: {
+                nomeProgetto: projectName // Parametri della query string
+            },
+            headers: {
+                "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
             }
         })
-        .catch(error => {
-            console.error("Errore nel recupero delle rewards:", error.response ? error.response.data.error : error.message);
-        });
+            .then(response => {
+                if (response.data.result) {
+                    rewards = response.data.result;
+                    //console.log(response.data.result);
+                } else if (response.data.error) {
+                    console.error(response.data.error);
+                } else {
+                    console.error('Risposta non corretta dal server.');
+                }
+            })
+            .catch(error => {
+                console.error("Errore nel recupero delle rewards:", error.response ? error.response.data.error : error.message);
+            });
+    } catch (error) {
+        console.error('Errore nel caricamento delle rewards:', error);
+    }
 }
 
-function getPictures() {
-    return axios.get("../backend/getFotoByProgetto.php", {
+async function getPictures() {
+    await axios.get("../backend/getFotoByProgetto.php", {
         params: {
             progetto: projectName // Parametri della query string
         },
@@ -362,8 +368,8 @@ function getPictures() {
         });
 }
 
-function getComments() {
-    return axios.get("../backend/getCommentsByProgetto.php", {
+async function getComments() {
+    await axios.get("../backend/getCommentsByProgetto.php", {
         params: {
             progetto: projectName // Parametri della query string
         },
@@ -384,8 +390,8 @@ function getComments() {
             console.error("Access denied:", error.response ? error.response.data.error : error.message);
         });
 }
-function getProject() {
-    return axios.get("../backend/getProjectByName.php", {
+async function getProject() {
+    await axios.get("../backend/getProjectByName.php", {
         params: {
             progetto: projectName // Parametri della query string
         },
@@ -819,7 +825,7 @@ function displayRewards() {
     });
 
     rewardViewers.forEach(element => {
-        if (element.children.length === 0) {
+        if(element.children.length === 0) {
             let noReward = document.createElement("p")
             noReward.innerText = "Nessuna reward disponibile"
             element.appendChild(noReward)
@@ -997,7 +1003,7 @@ async function applyForProfile(event) {
         if (!mail) {
             return
         }
-
+    
         //ottengo le competenze dell'utente
         await getCompetenze(mail, "competenzeUser");
 
