@@ -443,22 +443,35 @@ DELIMITER ;
 
 DROP PROCEDURE IF EXISTS addProfileForProjectSoft;
 DELIMITER |
-CREATE PROCEDURE addProfileForProjectSoft(IN inputNome VARCHAR(255), IN inputNomeS VARCHAR(255))
+CREATE PROCEDURE addProfileForProjectSoft(
+    IN inputNome VARCHAR(255), 
+    IN inputNomeS VARCHAR(255),
+    OUT outputProfileID INT
+)
 BEGIN
+    -- Controlla se il progetto esiste
     IF NOT EXISTS (SELECT 1 FROM PROGETTO WHERE nome = inputNomeS) THEN
         SIGNAL SQLSTATE '45000' 
         SET MESSAGE_TEXT = 'Errore: Il progetto non esiste.';
     END IF;
 
+    -- Controlla se il progetto è di tipo 'Software'
     IF NOT EXISTS (SELECT 1 FROM PROGETTO WHERE nome = inputNomeS AND tipo = 'Software') THEN
         SIGNAL SQLSTATE '45000' 
         SET MESSAGE_TEXT = 'Errore: Il progetto esiste, ma non è di tipo Software.';
     END IF;
 
-    INSERT INTO PROFILO (nome, nomeS) VALUES (inputNome, inputNomeS);
+    -- Inserisci il nuovo profilo nella tabella PROFILO
+    INSERT INTO PROFILO (nome, nomeS) 
+    VALUES (inputNome, inputNomeS);
+
+    -- Recupera l'ID del nuovo profilo inserito
+    SET outputProfileID = LAST_INSERT_ID(); -- Ottieni l'ID dell'ultimo inserimento
+
 END;
 |
 DELIMITER ;
+
 
 
 /* creo una procedura per gestire l'accettazione di una candidatura */
@@ -562,6 +575,31 @@ BEGIN
     SELECT competenza, livello
     FROM S_P
     WHERE idProfilo = p_idProfilo;
+END
+|
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS popola_s_p;
+DELIMITER |
+CREATE PROCEDURE popola_s_p(IN p_competenza VARCHAR(255), IN p_idProfilo INT, IN p_livello TINYINT)
+BEGIN
+    IF p_livello < 0 OR p_livello > 5 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Il livello deve essere compreso tra 0 e 5';
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM SKILL WHERE competenza = p_competenza) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La competenza non esiste nella tabella SKILL';
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM PROFILO WHERE id = p_idProfilo) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'L\'ID del profilo non esiste nella tabella PROFILO';
+    END IF;
+
+    INSERT INTO S_P (competenza, idProfilo, livello)
+    VALUES (p_competenza, p_idProfilo, p_livello);
 END
 |
 DELIMITER ;

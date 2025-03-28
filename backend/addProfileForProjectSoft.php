@@ -15,29 +15,30 @@
                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $pdo->exec(mysqlCharachter);
             } catch (PDOException $e) {
-                        return json_encode(["error" => "[ERRORE] Connessione al DB non riuscita. Errore: ".$e->getMessage()]);
-
+                echo json_encode(["error" => "[ERRORE] Connessione al DB non riuscita. Errore: ".$e->getMessage()]);
                 exit();
             }
 
             try {
-                // Preparing the SQL query to call the procedure with an output parameter
-                $sql = "CALL addProfileForProjectSoft(:inputNome, :inputNomeS)";
+                // Prepara la query per chiamare la procedura con un parametro di uscita
+                $sql = "CALL addProfileForProjectSoft(:inputNome, :inputNomeS, @outputProfileID)";
                 $stmt = $pdo->prepare($sql);
 
-                // Binding the input parameters
+                // Binding dei parametri di input
                 $stmt->bindParam(':inputNome', $inputNome, PDO::PARAM_STR);
                 $stmt->bindParam(':inputNomeS', $inputNomeS, PDO::PARAM_STR);
 
-                // Execute the query
-                $result = $stmt->execute();
-                
-                $text = "timeStamp: " . date('Y-m-d H:i:s').";queryType: INSERT;query: " . $sql . ";result: " . $result;
-                $resp = writeLog($text);
-    
-                echo $result;
+                // Esegui la query
+                $stmt->execute();
+
+                // Recupera l'ID del profilo appena creato
+                $stmt = $pdo->query("SELECT @outputProfileID AS profileID");
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                // Aggiungi l'ID alla risposta
+                echo json_encode(["success" => true, "profileID" => $result['profileID']]);
             } catch (PDOException $e) {
-                echo ("[ERRORE] Query SQL non riuscita. Errore: " . $e->getMessage());
+                echo json_encode(["error" => "[ERRORE] Query SQL non riuscita. Errore: " . $e->getMessage()]);
                 exit();
             }
         }

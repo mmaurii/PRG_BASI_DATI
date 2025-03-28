@@ -72,7 +72,7 @@ export function getRoleFromToken(token) {
     try {
         const payloadBase64 = token.split('.')[1]; // Estrae la parte payload del JWT
         const payloadDecoded = JSON.parse(atob(payloadBase64)); // Decodifica da Base64 a JSON
-        console.log(payloadDecoded);
+        //console.log(payloadDecoded);
 
         return payloadDecoded.ruolo || null;
     } catch (error) {

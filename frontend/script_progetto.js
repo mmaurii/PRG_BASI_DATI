@@ -1,9 +1,10 @@
 import { isUserLoggedIn, getRoleFromToken } from "./script_navbar.js";
 
-let projectName, mail, projectData, comments, role, pictures, profili, popUpFinanzia, btnClosePopUpFinanziamento,
+let projectName, mail, projectData, comments, role, pictures, profili, competenzeTotali, popUpFinanzia, btnClosePopUpFinanziamento,
     mailFinanziatore, overlay, btnFinanzia, rewards, rewardViewers, selectedReward = "", btnUnselectReward,
-    btnSelectReward, popUpSelectFinanziamento, btnClosePopUpSelectFinanziamento, btnSelectFinanziamento,
-    finanziamentiUtente, finanziamentoViewer, selectedFinanziamento = "", profilGrid, competenze, token;
+    btnSelectReward, popUpSelectFinanziamento, btnClosePopUpSelectFinanziamento, btnSelectFinanziamento, btnShowPopUpAggiungiProfilo,
+    popUpAggiungiProfilo, btnClosePopUpAggiungiProfilo, btnAddProfilo, 
+    finanziamentiUtente, finanziamentoViewer, selectedFinanziamento = "", profilGrid, competenzePerProfilo, token;
 
 const currentDate = new Date();
 let today = currentDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
@@ -29,6 +30,40 @@ document.addEventListener('DOMContentLoaded', async function () {
     btnSelectReward.addEventListener('click', displaySelectFinanziamento);
     btnClosePopUpSelectFinanziamento.addEventListener('click', closeSelectFinanziamento);
     btnSelectFinanziamento.addEventListener('click', associateRewardToFinanziamento);
+    
+    btnShowPopUpAggiungiProfilo = document.querySelector(".add-profile-button");
+    popUpAggiungiProfilo = document.querySelector(".popUp.aggiungi-profilo");
+    btnClosePopUpAggiungiProfilo = document.getElementById('close-aggiungiProfilo'); // Potresti voler usare un altro ID per il pulsante di chiusura
+    btnAddProfilo = document.querySelector("#aggiungi");
+
+    btnShowPopUpAggiungiProfilo.addEventListener('click', showFormAddProfile);
+    btnClosePopUpAggiungiProfilo.addEventListener('click', closeFormAddProfile);
+
+    await getCompetenze();
+
+    let livelloRange = document.getElementById('livello');
+    let livelloValore = document.getElementById('livello-valore');
+
+    livelloRange.addEventListener('input', function() {
+        let valoreLivello = livelloRange.value;
+        livelloValore.textContent = valoreLivello;
+    });
+
+    let selectElement = document.getElementById('competenza');
+
+    competenzeTotali.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.competenza;
+        option.textContent = item.competenza;
+        selectElement.appendChild(option);
+    });
+
+    btnAddProfilo.addEventListener('click', function(){
+        let nomeProfilo = document.querySelector("#nome-profilo")
+        let comp = selectElement.value
+        let liv = livelloValore.textContent
+        addProfile(nomeProfilo, comp, liv)
+    });
 
     await initInterface();
 
@@ -101,13 +136,138 @@ async function initInterface() {
 
             templateProfile(element.nome)
         });
-        
+
+        if(profili.length === 0){
+            document.querySelector("#search-profile").innerText = "Nessun profilo richiesto al momento"
+        }
+        if (mail === projectData.mailC && projectData.tipo === "Software") {  // Controlla se l'utente è il creatore del progetto
+            btnShowPopUpAggiungiProfilo.style.display = "block";
+        }
 
         console.log("progetto caricato con successo!")
     } catch (error) {
         console.error('Errore nel caricamento del progetto:', error);
     }
 
+}
+async function addProfile(nome,comp,liv){
+    //console.log("profilo inserito")
+    const data = {
+        nomeProfilo: nome.value,
+        nomeProgetto: projectName,
+    };
+
+    await axios.post("../backend/addProfileForProjectSoft.php", data, {
+        headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
+    })
+        .then(response => {
+            if (response.data) {
+                //console.log(response.data);
+                
+                if(popola_s_p(response.data.profileID,comp,liv)){
+                    prova(nome.value,Array.of(comp),liv);
+                }
+                closeFormAddProfile();
+                nome.value = "";
+            } else if (response.data.error) {
+                console.error(response.data.error);
+            } else {
+                console.error('Risposta non corretta dal server.');
+            }
+        })
+        .catch(error => {
+            console.error("Access denied:", error.response ? error.response.data : error.message);
+        });
+    
+
+}
+function prova(name,comp,liv){
+    let profileCard = document.createElement("div");
+    profileCard.classList.add("profile-card");
+
+    let profileName = document.createElement("h3");
+    profileName.innerText = name;
+    profileCard.appendChild(profileName);
+
+    let TitoloCompetenza = document.createElement("h4");
+    TitoloCompetenza.innerText = "Competenze richieste";
+    profileCard.appendChild(TitoloCompetenza);
+
+    let ulCompetenza = document.createElement("ul");
+    ulCompetenza.classList.add("competence-list");
+
+    comp.forEach(element => {
+        let li = document.createElement("li");
+        li.classList.add("competence-item");
+
+        let spanCompetenza = document.createElement("span");
+        spanCompetenza.textContent = `${element}`;
+        spanCompetenza.classList.add("competence-name");
+
+        let spanLivello = document.createElement("span");
+        spanLivello.textContent = `Livello: ${liv}`;
+        spanLivello.classList.add("competence-level");
+
+        li.appendChild(spanCompetenza);
+        li.appendChild(spanLivello);
+        ulCompetenza.appendChild(li);
+    });
+
+    
+    profileCard.appendChild(ulCompetenza);
+
+    
+    let applyButton = document.createElement("button");
+    applyButton.textContent = "Candidati";
+    applyButton.classList.add("apply-button");
+    profileCard.appendChild(applyButton);
+
+    profilGrid.appendChild(profileCard);
+}
+async function popola_s_p(id,comp,liv){
+    const data = {
+        competenza: comp,
+        idProfilo: id,
+        livello: parseInt(liv, 10)
+    };
+
+    await axios.post("../backend/popola_s_p.php", data, {
+        headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
+    })
+        .then(response => {
+            //console.log(response);
+            if (response.data) {
+                //console.log(response.data);
+            } else if (response.data.error) {
+                console.error(response.data.error);
+            } else {
+                console.error('Risposta non corretta dal server.');
+            }
+        })
+        .catch(error => {
+            console.error("Access denied:", error.response ? error.response.data : error.message);
+        });
+}
+async function getCompetenze(){
+        await axios.get("../backend/getCompetenze.php", {
+            params: {
+                mail:""
+            },
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+            }
+        })
+        .then(response => {
+            //console.log(response.data);
+            if (response.data.result) {
+                competenzeTotali = response.data.result;
+            } else {
+                console.error("Errore durante il recupero delle competenzePerProfilo.");
+            }
+        })
+        .catch(error => {
+            console.error("Errore di connessione:", error.response ? error.response.data.error : error.message);
+        });
 }
 async function getCompetenzeByProfile(element){
     await axios.get("../backend/getCompetenzeByProfile.php", {
@@ -120,7 +280,8 @@ async function getCompetenzeByProfile(element){
     })
         .then(response => {
             if (response.data.result) {
-                competenze = response.data.result;
+                competenzePerProfilo = response.data.result;
+                //console.log(competenzePerProfilo)
             } else if (response.data.error) {
                 console.error(response.data.error);
             } else {
@@ -250,6 +411,17 @@ async function getProject() {
             console.error("Access denied:", error.response ? error.response.data.error : error.message);
         });
 }
+
+function showFormAddProfile() {
+    popUpAggiungiProfilo.style.display = 'flex';  // Mostra il pop-up con display flex
+    overlay.style.display = 'block';  // Mostra l'overlay
+}
+
+function closeFormAddProfile() {
+    popUpAggiungiProfilo.style.display = 'none';  // Nasconde il pop-up
+    overlay.style.display = 'none';  // Nasconde l'overlay
+}
+
 function showReplyForm(button) {
     var replyForm = button.nextElementSibling;
     replyForm.firstElementChild.value = "";
@@ -381,9 +553,7 @@ function templateProfile(name) {
     let ulCompetenza = document.createElement("ul");
     ulCompetenza.classList.add("competence-list");
 
-    competenze.forEach(element => {
-        console.log(element);
-
+    competenzePerProfilo.forEach(element => {
         let li = document.createElement("li");
         li.classList.add("competence-item");
 
