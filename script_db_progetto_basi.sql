@@ -124,7 +124,7 @@ CREATE TABLE COMPOSTO (
 CREATE TABLE CANDIDATURA (
     mail VARCHAR(255),
     id INT,
-    stato VARCHAR(50),
+    stato ENUM('accepted', 'rejected', 'pending') default 'pending',
     PRIMARY KEY (mail, id),
     FOREIGN KEY (mail) REFERENCES UTENTE(mail),
     FOREIGN KEY (id) REFERENCES PROFILO(id)
@@ -360,14 +360,17 @@ DELIMITER ;
 /* Inserimento di una candidatura per un profilo richiesto per la realizzazione di un progetto software */
 DROP PROCEDURE IF EXISTS InserisciCandidatura;
 DELIMITER |
-CREATE PROCEDURE InserisciCandidatura(IN inputMail VARCHAR(255), IN inputId INT, IN inputStato VARCHAR(50))
+CREATE PROCEDURE InserisciCandidatura(IN inputMail VARCHAR(255), IN inputId INT)
 BEGIN
-    if not exists(select * from profilo where id = inputId) then
+    if not exists(select * from PROFILO where id = inputId) then
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'inputId doesn\'t exists';
     END IF;
-    insert into candidatura (mail, id, stato)
-	values (inputMail, inputId, inputStato);
+    
+    if(not exists (select 1 from CANDIDATURA where mail = inputMail and id = inputId)) then
+		insert into CANDIDATURA (mail, id)
+		values (inputMail, inputId);
+    end if;
 END;
 |
 DELIMITER ;
@@ -946,16 +949,16 @@ INSERT INTO COMPOSTO (nomeC, nomeH) VALUES
 ('Batteria Li-Ion', 'Dispositivo IoT per Piante');
 
 INSERT INTO CANDIDATURA (mail, id, stato) VALUES
-('mario.rossi@email.com', 1, 'in attesa'),  -- Candidato per il profilo 1
-('luca.bianchi@email.com', 2, 'in attesa'), -- Candidato per il profilo 2
-('anna.verdi@email.com', 3, 'in attesa'),   -- Candidato per il profilo 3
-('sara.neri@email.com', 4, 'in attesa'),    -- Candidato per il profilo 4
-('giovanni.ferri@email.com', 5, 'in attesa'), -- Candidato per il profilo 5
-('mario.rossi@email.com', 6, 'in attesa'),  -- Candidato per il profilo 6
-('luca.bianchi@email.com', 7, 'in attesa'), -- Candidato per il profilo 7
-('anna.verdi@email.com', 8, 'in attesa'),   -- Candidato per il profilo 8
-('sara.neri@email.com', 9, 'in attesa'),    -- Candidato per il profilo 9
-('giovanni.ferri@email.com', 10, 'in attesa'); -- Candidato per il profilo 10
+('mario.rossi@email.com', 1, 'pending'),  -- Candidato per il profilo 1
+('luca.bianchi@email.com', 2, 'pending'), -- Candidato per il profilo 2
+('anna.verdi@email.com', 3, 'pending'),   -- Candidato per il profilo 3
+('sara.neri@email.com', 4, 'pending'),    -- Candidato per il profilo 4
+('giovanni.ferri@email.com', 5, 'pending'), -- Candidato per il profilo 5
+('mario.rossi@email.com', 6, 'pending'),  -- Candidato per il profilo 6
+('luca.bianchi@email.com', 7, 'pending'), -- Candidato per il profilo 7
+('anna.verdi@email.com', 8, 'pending'),   -- Candidato per il profilo 8
+('sara.neri@email.com', 9, 'pending'),    -- Candidato per il profilo 9
+('giovanni.ferri@email.com', 10, 'pending'); -- Candidato per il profilo 10
 
 SELECT * FROM UTENTE;
 SELECT * FROM CREATORE;

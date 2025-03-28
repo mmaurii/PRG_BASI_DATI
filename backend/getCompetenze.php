@@ -31,13 +31,8 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             // Recupera tutte le competenze
             $competencies = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            if (count($competencies) > 0) {
-                // Se ci sono competenze, restituiscile in formato JSON
-                echo json_encode(["result" => $competencies]);
-            } else {
-                // Se non ci sono competenze, restituisci un messaggio appropriato
-                echo json_encode(["error" => "Nessuna competenza trovata"]);
-            }
+            // Se ci sono competenze, restituiscile in formato JSON
+            echo json_encode(["result" => $competencies]);
         } else {
             echo json_encode(["error" => "Parametro 'mail' mancante"]);
         }
