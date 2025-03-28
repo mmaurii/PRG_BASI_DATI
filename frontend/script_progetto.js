@@ -64,10 +64,10 @@ document.addEventListener('DOMContentLoaded', async function () {
         addProfile(nomeProfilo, comp, liv)
     });
 
-    await initInterface();
+    initInterface();
 })
 
-async function initInterface() {
+function initInterface() {
     try {
         const params = new URLSearchParams(window.location.search);
         projectName = params.get('name');
@@ -79,9 +79,7 @@ async function initInterface() {
         }
 
 
-        await getProject(); // Recupera i progetti
-
-        Promise.all([getPictures(), getComments(), getRewards(), getProfiliByProgetto()]).then(() => {
+        Promise.all([getProject(), getPictures(), getComments(), getRewards(), getProfiliByProgetto()]).then(() => {
             console.log("progetto caricato con successo!")
         });
     } catch (error) {
@@ -258,6 +256,9 @@ function getProfiliByProgetto() {
                 if (profili.length === 0) {
                     document.querySelector("#search-profile").innerText = "Nessun profilo richiesto al momento"
                 }
+                if (mail === projectData.mailC && projectData.tipo === "Software") {  // Controlla se l'utente è il creatore del progetto
+                    btnShowPopUpAggiungiProfilo.style.display = "block";
+                }    
             } else if (response.data.error) {
                 console.error(response.data.error);
             } else {
@@ -394,9 +395,6 @@ function getProject() {
                 projectData = response.data.result;
                 console.log(response.data.result);
                 updateDataFinanceInterface();
-                if (mail === projectData.mailC && projectData.tipo === "Software") {  // Controlla se l'utente è il creatore del progetto
-                    btnShowPopUpAggiungiProfilo.style.display = "block";
-                }    
             } else if (response.data.error) {
                 console.error(response.data.error);
             } else {
