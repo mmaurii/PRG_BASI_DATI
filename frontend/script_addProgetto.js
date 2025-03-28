@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelector('input[name="reward-title[]"]').value = '';
         document.querySelector('input[name="reward-image[]"]').value = '';
 
-        /*
+        
         const nome = document.querySelector('#title').value;
 
         if (rewardImage) {
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
         } else {
             alert('Devi caricare un\'immagine per il progetto.');
-        }*/
+        }
     });
 });
 
