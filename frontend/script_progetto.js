@@ -1,10 +1,11 @@
 import { isUserLoggedIn, getRoleFromToken, getUsernameFromToken } from "./script_navbar.js";
 
-let projectName, mail, projectData, comments, role, pictures, profili, competenzeTotali, popUpFinanzia, btnClosePopUpFinanziamento,
+let projectName, mail, projectData, comments, role, pictures, profili, popUpFinanzia, btnClosePopUpFinanziamento,
     mailFinanziatore, overlay, btnFinanzia, rewards, rewardViewers, selectedReward = "", btnUnselectReward,
     btnSelectReward, popUpSelectFinanziamento, btnClosePopUpSelectFinanziamento, btnSelectFinanziamento, btnShowPopUpAggiungiProfilo,
-    popUpAggiungiProfilo, btnClosePopUpAggiungiProfilo, btnAddProfilo, competenzeUser,
-    finanziamentiUtente, finanziamentoViewer, selectedFinanziamento = "", profileGrid, competenzePerProfilo, token;
+    popUpAggiungiProfilo, btnClosePopUpAggiungiProfilo, btnAddProfilo,
+    finanziamentiUtente, finanziamentoViewer, selectedFinanziamento = "", profileGrid, token,
+    competenze = {"competenzeTotali": [], "competenzeUser": [], "competenzePerProfilo": []};
 
 const currentDate = new Date();
 let today = currentDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
@@ -37,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     btnShowPopUpAggiungiProfilo.addEventListener('click', showFormAddProfile);
     btnClosePopUpAggiungiProfilo.addEventListener('click', closeFormAddProfile);
 
-    await getCompetenze();
+    await getCompetenze("", "competenzeTotali");
 
     let livelloRange = document.getElementById('livello');
     let livelloValore = document.getElementById('livello-valore');
@@ -49,7 +50,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     let selectElement = document.getElementById('competenza');
 
-    competenzeTotali.forEach(item => {
+    competenze.competenzeTotali.forEach(item => {
         const option = document.createElement('option');
         option.value = item.competenza;
         option.textContent = item.competenza;
@@ -245,66 +246,29 @@ async function popola_s_p(id, comp, liv) {
             console.error("Access denied:", error.response ? error.response.data : error.message);
         });
 }
-async function getCompetenze() {
+
+async function getCompetenze(mail, key) {
     await axios.get("../backend/getCompetenze.php", {
         params: {
-            mail: ""
+            mail: mail
         },
         headers: {
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
         }
     })
         .then(response => {
-            //console.log(response.data);
             if (response.data.result) {
-                competenzeTotali = response.data.result;
+                console.log(response.data.result);
+                competenze[key] = response.data.result;
+            } else if (response.data.error) {
+                console.error(response.data.error);
             } else {
-                console.error("Errore durante il recupero delle competenzePerProfilo.");
+                console.error('Risposta non corretta dal server.', response.data);
             }
-        })
+    })
         .catch(error => {
             console.error("Errore di connessione:", error.response ? error.response.data.error : error.message);
         });
-}
-
-async function getUserCompetenze() {
-    mail = getUsernameFromToken();
-
-    //controlloo che non sia null undefined o false per via di getUsernameFromToken
-    if (!mail) {
-        competenzeUser = [];
-        return
-    }
-
-    try {
-        await axios.get("../backend/getCompetenze.php", {
-            params: {
-                mail: mail // Parametri della query string
-            },
-            headers: {
-                "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
-            }
-        })
-            .then(response => {
-                if (response.data.result) {
-                    console.log(response.data.result);
-                    competenzeUser = response.data.result;
-                } else if (response.data.error) {
-                    console.error(response.data.error);
-                    competenzeUser = [];
-                } else {
-                    console.error('Risposta non corretta dal server.', response.data);
-                    competenzeUser = [];
-                }
-            })
-            .catch(error => {
-                console.error("Errore nel recupero delle competenze:", error.response ? error.response.data.error : error.message);
-                alert("Errore nel recupero delle competenze");
-            });
-    } catch (error) {
-        console.error('Errore nel caricamento delle competenze:', error);
-        alert("Errore nel caricamento delle competenze");
-    }
 }
 
 async function getCompetenzeByProfile(element) {
@@ -318,7 +282,7 @@ async function getCompetenzeByProfile(element) {
     })
         .then(response => {
             if (response.data.result) {
-                competenzePerProfilo = response.data.result;
+                competenze.competenzePerProfilo = response.data.result;
                 //console.log(competenzePerProfilo)
             } else if (response.data.error) {
                 console.error(response.data.error);
@@ -592,7 +556,7 @@ function templateProfile(element) {
     let ulCompetenza = document.createElement("ul");
     ulCompetenza.classList.add("competence-list");
 
-    competenzePerProfilo.forEach(element => {
+    competenze.competenzePerProfilo.forEach(element => {
         let li = document.createElement("li");
         li.classList.add("competence-item");
 
@@ -859,6 +823,14 @@ function displayRewards() {
             element.appendChild(rewardNodeCopy);
         });
     });
+
+    rewardViewers.forEach(element => {
+        if(element.children.length === 0) {
+            let noReward = document.createElement("p")
+            noReward.innerText = "Nessuna reward disponibile"
+            element.appendChild(noReward)
+        }
+    });
 }
 
 function selectReward(event) {
@@ -1025,8 +997,15 @@ function associateRewardToFinanziamento(event) {
 
 async function applyForProfile(event) {
     if (isUserLoggedIn()) {
+        mail = getUsernameFromToken();
+
+        //controlloo che non sia null undefined o false per via di getUsernameFromToken
+        if (!mail) {
+            return
+        }
+    
         //ottengo le competenze dell'utente
-        await getUserCompetenze();
+        await getCompetenze(mail, "competenzeUser");
 
         //identifico dove l'utente ha cliccato e ne ottengo le competenze
         let CompetenzeClickedProfile = event.target.parentElement.querySelectorAll(".competence-item");
@@ -1038,7 +1017,7 @@ async function applyForProfile(event) {
         });
 
         //verifico che le competenze dell'utente e del profilo siano compatibili
-        if (competenzeUser.some(r => competenzeProfileMapped.some(e => e.competenza === r.competenza && e.livello <= r.livello))) {
+        if (competenze.competenzeUser.some(r => competenzeProfileMapped.some(e => e.competenza === r.competenza && e.livello <= r.livello))) {
             //candido l'utente al profilo
             await addCandidatura(event.target.parentElement.id);
         } else {

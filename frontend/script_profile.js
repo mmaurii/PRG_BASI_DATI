@@ -1,7 +1,7 @@
 import { isUserLoggedIn, getUsernameFromToken } from './script_navbar.js';
 
-let token, btnCloseCompetenze, overlay, popUpSetLivelloCompetenze, competenze, competenzeViewer, competenzeUser,
-    btnSaveCompetenze, btnDisplayCompetenze;
+let token, btnCloseCompetenze, overlay, popUpSetLivelloCompetenze, competenzeViewer, competenzeUser,
+    btnSaveCompetenze, btnDisplayCompetenze, competenze = {"competenzeTotali": [], "competenzeUser": []};
 
 
 document.addEventListener('DOMContentLoaded', async function () {
@@ -39,7 +39,7 @@ function signup() {
 async function displaySetLivelloCompetenze() {
     if (isUserLoggedIn()) {
         //scarico i dati delle competenze
-        await getCompetenze();
+        await getCompetenze("","competenzeTotali");
         //visualizzo le competenze
         displayCompetenze();
         //dispaly user competenze
@@ -48,8 +48,18 @@ async function displaySetLivelloCompetenze() {
         overlay.style.display = "block";
         popUpSetLivelloCompetenze.style.display = "block";
 
+        if (!isUserLoggedIn()) {
+            return
+        }
+        let mail = getUsernameFromToken();
+    
+        //controllo che non sia null undefined o false per via di getUsernameFromToken
+        if (!mail) {
+            return
+        }
+    
         //get user competenze
-        await getUserCompetenze();
+        await getCompetenze(mail, "competenzeUser");
         displayUserCompetenze();
     } else {
         alert("Devi essere loggato per poter visualizzare le competenze");
@@ -63,11 +73,11 @@ function closeSetLivelloCompetenze(event) {
     popUpSetLivelloCompetenze.style.display = "none";
 }
 
-async function getCompetenze() {
+async function getCompetenze(mail, key) {
     try {
         await axios.get("../backend/getCompetenze.php", {
             params: {
-                mail: ""
+                mail: mail
             },
             headers: {
                 "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
@@ -76,54 +86,11 @@ async function getCompetenze() {
             .then(response => {
                 if (response.data.result) {
                     console.log(response.data.result);
-                    competenze = response.data.result;
+                    competenze[key] = response.data.result;
                 } else if (response.data.error) {
                     console.error(response.data.error);
                 } else {
                     console.error('Risposta non corretta dal server.', response.data);
-                }
-            })
-            .catch(error => {
-                console.error("Errore nel recupero delle competenze:", error.response ? error.response.data.error : error.message);
-                alert("Errore nel recupero delle competenze");
-            });
-    } catch (error) {
-        console.error('Errore nel caricamento delle competenze:', error);
-        alert("Errore nel caricamento delle competenze");
-    }
-}
-
-async function getUserCompetenze() {
-    if (!isUserLoggedIn()) {
-        return
-    }
-    let mail = getUsernameFromToken();
-
-    //controlloo che non sia null undefined o false per via di getUsernameFromToken
-    if (!mail) {
-        competenzeUser = [];
-        return
-    }
-
-    try {
-        await axios.get("../backend/getCompetenze.php", {
-            params: {
-                mail: mail // Parametri della query string
-            },
-            headers: {
-                "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
-            }
-        })
-            .then(response => {
-                if (response.data.result) {
-                    console.log(response.data.result);
-                    competenzeUser = response.data.result;
-                } else if (response.data.error) {
-                    console.error(response.data.error);
-                    competenzeUser = [];
-                } else {
-                    console.error('Risposta non corretta dal server.', response.data);
-                    competenzeUser = [];
                 }
             })
             .catch(error => {
@@ -141,7 +108,7 @@ function displayCompetenze() {
     competenzeViewer.innerHTML = "";
 
     //read all finanziamenti and append them to the container
-    competenze.forEach(competenza => {
+    competenze.competenzeTotali.forEach(competenza => {
         let competenzeNode = document.createElement("div");
         competenzeNode.className = "competenza";
         competenzeNode.setAttribute("tabindex", "0");
@@ -162,7 +129,7 @@ function displayCompetenze() {
 }
 
 function displayUserCompetenze() {
-    competenzeUser.forEach(competenza => {
+    competenze.competenzeUser.forEach(competenza => {
         let inputRange = document.getElementById(competenza.competenza);
         inputRange.value = competenza.livello;
     });
@@ -172,9 +139,11 @@ function displayUserCompetenze() {
 function saveCompetenze() {
     let competenzeUpdated = [];
 
-    competenze.forEach(competenza => {
+    //identifico le comptenze che sono state modificate
+    //e le aggiungo all'array competenzeUpdated
+    competenze.competenzeTotali.forEach(competenza => {
         let inputRange = document.getElementById(competenza.competenza);
-        let c = competenzeUser.find(c => c.competenza === competenza.competenza);
+        let c = competenze.competenzeUser.find(c => c.competenza === competenza.competenza);
         if (c) {
             if (c.livello != inputRange.value) {
                 competenzeUpdated.push({
@@ -195,9 +164,8 @@ function saveCompetenze() {
     if (isUserLoggedIn()) {
         let mail = getUsernameFromToken();
 
-        //controlloo che non sia null undefined o false per via di getUsernameFromToken
+        //controllo che non sia null undefined o false per via di getUsernameFromToken
         if (!mail) {
-            competenzeUser = [];
             return
         }
 
