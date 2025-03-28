@@ -183,10 +183,12 @@ function saveCompetenze() {
                 });
             }
         } else {
-            competenzeUpdated.push({
-                competenza: competenza.competenza,
-                livello: inputRange.value
-            });
+            if(inputRange.value != -1){
+                competenzeUpdated.push({
+                    competenza: competenza.competenza,
+                    livello: inputRange.value
+                });
+            }
         }
     });
 

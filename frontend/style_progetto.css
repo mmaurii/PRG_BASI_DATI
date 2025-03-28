@@ -535,7 +535,7 @@ button.scroll-right:hover {
     transition: transform 0.3s ease, box-shadow 0.3s ease; /* Aggiungi un'animazione al passaggio del mouse */
 }
 
-.profile-card:hover {
+.profile-card:hover, .reward:hover {
     transform: translateY(-10px); /* Solleva la card quando ci passi sopra con il mouse */
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15); /* Ombra più pronunciata al passaggio del mouse */
 }
@@ -908,7 +908,7 @@ footer {
     width: 100%;
 }
 
-.reward:hover, .reward.selected, .finanziamento.selected {
+.reward.selected, .finanziamento.selected {
     box-shadow: 0px 5px 15px rgb(25, 76, 20);
     transition: box-shadow 0.1s ease-in-out;
 }
