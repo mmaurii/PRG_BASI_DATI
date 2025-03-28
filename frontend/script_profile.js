@@ -1,7 +1,7 @@
 import { isUserLoggedIn, getUsernameFromToken } from './script_navbar.js';
 
 let token, btnCloseCompetenze, overlay, popUpSetLivelloCompetenze, competenzeViewer, competenzeUser,
-    btnSaveCompetenze, btnDisplayCompetenze, competenze = { "competenzeTotali": [], "competenzeUser": [] };
+    btnSaveCompetenze, btnDisplayCompetenze, competenze = {"competenzeTotali": [], "competenzeUser": []};
 
 
 document.addEventListener('DOMContentLoaded', async function () {
@@ -36,28 +36,31 @@ function signup() {
     window.location.href = './signup.html';
 }
 
-function displaySetLivelloCompetenze() {
+async function displaySetLivelloCompetenze() {
     if (isUserLoggedIn()) {
-        let mail = getUsernameFromToken();
+        //scarico i dati delle competenze
+        await getCompetenze("","competenzeTotali");
+        //visualizzo le competenze
+        displayCompetenze();
+        //dispaly user competenze
 
+        //visualizzo il popUp
+        overlay.style.display = "block";
+        popUpSetLivelloCompetenze.style.display = "block";
+
+        if (!isUserLoggedIn()) {
+            return
+        }
+        let mail = getUsernameFromToken();
+    
         //controllo che non sia null undefined o false per via di getUsernameFromToken
         if (!mail) {
             return
         }
-
-        Promise.all([
-            getCompetenze("", "competenzeTotali"),
-            getCompetenze(mail, "competenzeUser")
-        ]).then(() => {
-            //visualizzo le competenze
-            displayCompetenze();
-            //dispaly user competenze
-            displayUserCompetenze();
     
-            //visualizzo il popUp
-            overlay.style.display = "block";
-            popUpSetLivelloCompetenze.style.display = "block";
-        });
+        //get user competenze
+        await getCompetenze(mail, "competenzeUser");
+        displayUserCompetenze();
     } else {
         alert("Devi essere loggato per poter visualizzare le competenze");
         window.location.href = "./login.html";
@@ -70,29 +73,34 @@ function closeSetLivelloCompetenze(event) {
     popUpSetLivelloCompetenze.style.display = "none";
 }
 
-function getCompetenze(mail, key) {
-    return axios.get("../backend/getCompetenze.php", {
-        params: {
-            mail: mail
-        },
-        headers: {
-            "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
-        }
-    })
-        .then(response => {
-            if (response.data.result) {
-                console.log(response.data.result);
-                competenze[key] = response.data.result;
-            } else if (response.data.error) {
-                console.error(response.data.error);
-            } else {
-                console.error('Risposta non corretta dal server.', response.data);
+async function getCompetenze(mail, key) {
+    try {
+        await axios.get("../backend/getCompetenze.php", {
+            params: {
+                mail: mail
+            },
+            headers: {
+                "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
             }
         })
-        .catch(error => {
-            console.error("Errore nel recupero delle competenze:", error.response ? error.response.data.error : error.message);
-            alert("Errore nel recupero delle competenze");
-        });
+            .then(response => {
+                if (response.data.result) {
+                    console.log(response.data.result);
+                    competenze[key] = response.data.result;
+                } else if (response.data.error) {
+                    console.error(response.data.error);
+                } else {
+                    console.error('Risposta non corretta dal server.', response.data);
+                }
+            })
+            .catch(error => {
+                console.error("Errore nel recupero delle competenze:", error.response ? error.response.data.error : error.message);
+                alert("Errore nel recupero delle competenze");
+            });
+    } catch (error) {
+        console.error('Errore nel caricamento delle competenze:', error);
+        alert("Errore nel caricamento delle competenze");
+    }
 }
 
 function displayCompetenze() {
@@ -144,7 +152,7 @@ function saveCompetenze() {
                 });
             }
         } else {
-            if (inputRange.value != -1) {
+            if(inputRange.value != -1){
                 competenzeUpdated.push({
                     competenza: competenza.competenza,
                     livello: inputRange.value

@@ -64,7 +64,37 @@ document.addEventListener('DOMContentLoaded', async function () {
         addProfile(nomeProfilo, comp, liv)
     });
 
-    initInterface();
+    await initInterface();
+
+
+    const projectImages = document.querySelector('.project-images');
+    const images = projectImages.querySelectorAll('img');
+    const scrollLeftButton = document.querySelector('.scroll-left');
+    const scrollRightButton = document.querySelector('.scroll-right');
+
+
+    document.getElementById('finanziamento').addEventListener('click', displayFinanziamento);
+    document.querySelector('.submit-comment').addEventListener('click', sendComment);
+
+    let currentIndex = 0; // Per tracciare quale immagine è visibile
+
+    // Funzione per spostarsi a sinistra
+    scrollLeftButton.addEventListener('click', () => {
+        if (currentIndex > 0) {
+            currentIndex--; // Decrescere l'indice
+            const newTransformValue = -(currentIndex * 100); // Spostare il contenuto per mostrare l'immagine precedente
+            projectImages.style.transform = `translateX(${newTransformValue}%)`;
+        }
+    });
+
+    // Funzione per spostarsi a destra
+    scrollRightButton.addEventListener('click', () => {
+        if (currentIndex < images.length - 1) {
+            currentIndex++; // Aumentare l'indice
+            const newTransformValue = -(currentIndex * 100); // Spostare il contenuto per mostrare l'immagine successiva
+            projectImages.style.transform = `translateX(${newTransformValue}%)`;
+        }
+    });
 })
 
 function initInterface() {
@@ -80,13 +110,42 @@ function initInterface() {
 
 
         Promise.all([getProject(), getPictures(), getComments(), getRewards(), getProfiliByProgetto()]).then(() => {
+            updateDataFinanceInterface();
+
+            if (pictures) {
+                pictures.forEach(element => {
+                    let image = document.createElement("img")
+                    document.querySelector(".project-images").appendChild(image)
+                    image.src = element.foto;
+                });
+            }
+
+            comments.forEach(element => {
+                templateComment(element.testo, element.data, element.mail, element.id)
+            });
+
+            displayRewards();
+
+            profili.forEach(async (element) => {
+                await getCompetenzeByProfile(element.id);
+
+                templateProfile(element)
+            });
+
+            if (profili.length === 0) {
+                document.querySelector("#search-profile").innerText = "Nessun profilo richiesto al momento"
+            }
+            if (mail === projectData.mailC && projectData.tipo === "Software") {  // Controlla se l'utente è il creatore del progetto
+                btnShowPopUpAggiungiProfilo.style.display = "block";
+            }
+
             console.log("progetto caricato con successo!")
         });
     } catch (error) {
         console.error('Errore nel caricamento del progetto:', error);
     }
-}
 
+}
 async function addProfile(nome, comp, liv) {
     //console.log("profilo inserito")
     const data = {
@@ -246,19 +305,6 @@ function getProfiliByProgetto() {
         .then(response => {
             if (response.data.result) {
                 profili = response.data.result;
-
-                profili.forEach(async (element) => {
-                    await getCompetenzeByProfile(element.id);
-    
-                    templateProfile(element)
-                });
-    
-                if (profili.length === 0) {
-                    document.querySelector("#search-profile").innerText = "Nessun profilo richiesto al momento"
-                }
-                if (mail === projectData.mailC && projectData.tipo === "Software") {  // Controlla se l'utente è il creatore del progetto
-                    btnShowPopUpAggiungiProfilo.style.display = "block";
-                }    
             } else if (response.data.error) {
                 console.error(response.data.error);
             } else {
@@ -282,8 +328,6 @@ function getRewards() {
             if (response.data.result) {
                 rewards = response.data.result;
                 //console.log(response.data.result);
-
-                displayRewards();
             } else if (response.data.error) {
                 console.error(response.data.error);
             } else {
@@ -308,43 +352,6 @@ function getPictures() {
             if (response.data.result.length !== 0) {
                 //console.log(response.data.result); // Load the protected content
                 pictures = response.data.result;
-
-                if (pictures) {
-                    pictures.forEach(element => {
-                        let image = document.createElement("img")
-                        document.querySelector(".project-images").appendChild(image)
-                        image.src = element.foto;
-                    });
-                }
-
-                const projectImages = document.querySelector('.project-images');
-                const images = projectImages.querySelectorAll('img');
-                const scrollLeftButton = document.querySelector('.scroll-left');
-                const scrollRightButton = document.querySelector('.scroll-right');
-            
-            
-                document.getElementById('finanziamento').addEventListener('click', displayFinanziamento);
-                document.querySelector('.submit-comment').addEventListener('click', sendComment);
-            
-                let currentIndex = 0; // Per tracciare quale immagine è visibile
-            
-                // Funzione per spostarsi a sinistra
-                scrollLeftButton.addEventListener('click', () => {
-                    if (currentIndex > 0) {
-                        currentIndex--; // Decrescere l'indice
-                        const newTransformValue = -(currentIndex * 100); // Spostare il contenuto per mostrare l'immagine precedente
-                        projectImages.style.transform = `translateX(${newTransformValue}%)`;
-                    }
-                });
-            
-                // Funzione per spostarsi a destra
-                scrollRightButton.addEventListener('click', () => {
-                    if (currentIndex < images.length - 1) {
-                        currentIndex++; // Aumentare l'indice
-                        const newTransformValue = -(currentIndex * 100); // Spostare il contenuto per mostrare l'immagine successiva
-                        projectImages.style.transform = `translateX(${newTransformValue}%)`;
-                    }
-                });            
             } else {
                 console.log("foto non disponibile per il progetto")
             }
@@ -367,10 +374,6 @@ function getComments() {
         .then(response => {
             if (response.data.result) {
                 comments = response.data.result;
-
-                comments.forEach(element => {
-                    templateComment(element.testo, element.data, element.mail, element.id)
-                });    
             } else if (response.data.error) {
                 console.error(response.data.error);
             } else {
@@ -394,7 +397,6 @@ function getProject() {
             if (response.data.result) {
                 projectData = response.data.result;
                 console.log(response.data.result);
-                updateDataFinanceInterface();
             } else if (response.data.error) {
                 console.error(response.data.error);
             } else {
