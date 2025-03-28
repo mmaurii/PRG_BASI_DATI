@@ -811,9 +811,9 @@ function displayRewards() {
         rewardNode.className = "reward";
         rewardNode.setAttribute("tabindex", "0");
         rewardNode.innerHTML = `
-                            <a>
-                                <img src="${reward.foto}" cod="${reward.cod}" alt="foto reward: ${reward.cod}">
-                            </a>
+                            <div class="divimg">
+                            <img src="${reward.foto}" cod="${reward.cod}" alt="foto reward: ${reward.cod}">
+                            </div>
                             <p>${reward.descrizione}</p>
                         `;
 

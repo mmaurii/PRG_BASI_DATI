@@ -210,3 +210,43 @@ footer {
     background-color: #f9f9f9;
     color: darkgray;
 }
+
+#rewards-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+    margin-top: 25px;
+    justify-content: center;
+}
+
+.reward-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 10vw;
+
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.reward-item:hover {
+    box-shadow: 0px 5px 15px rgb(25, 76, 20);
+    transition: box-shadow 0.1s ease-in-out;
+}
+
+.reward-item img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    border-radius: 4px;
+    padding: 7px;
+}
+
+.reward-item p {
+    color: grey;
+    margin-bottom: 16px;
+}

@@ -24,9 +24,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Mostra il titolo e l'immagine della ricompensa
         rewardItem.innerHTML = `
-            <strong>${rewardTitle}</strong>
-            
-        `; //<img src="${URL.createObjectURL(rewardImage)}" alt="${rewardTitle}" width="50" height="50">
+            <img src="${URL.createObjectURL(rewardImage)}" alt="${rewardTitle}" width="50" height="50">
+            <p>${rewardTitle}</p>
+        `;
 
         // Aggiungi la ricompensa alla lista
         rewardsList.appendChild(rewardItem);
@@ -35,6 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelector('input[name="reward-title[]"]').value = '';
         document.querySelector('input[name="reward-image[]"]').value = '';
 
+        /*
         const nome = document.querySelector('#title').value;
 
         if (rewardImage) {
@@ -64,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
         } else {
             alert('Devi caricare un\'immagine per il progetto.');
-        }
+        }*/
     });
 });
 
