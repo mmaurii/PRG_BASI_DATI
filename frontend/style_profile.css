@@ -1,0 +1,331 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    width: 50vw;;
+    gap: 32px;
+    margin: 0 auto;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 32px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: green;
+}
+
+.search-bar {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    width: 35vw;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 8px 16px;
+    border: 1px solid lightgrey;
+    border-radius: 4px 0 0 4px;
+    font-size: 16px;
+    outline: none;
+}
+
+.search-bar input:focus {
+    border-color: green;
+}
+
+.search-button {
+    padding: 8px 16px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: darkgreen;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 32px;
+    cursor: pointer;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: black;
+    font-weight: 500;
+}
+
+.nav-links a:hover {
+    color: green;
+}
+
+/*    
+.hero {
+    text-align: center;
+    padding: 64px 32px;
+    background-color: #f9f9f9;
+}
+
+.hero h1 {
+    font-size: 40px;
+    margin-bottom: 16px;
+}
+
+.hero p {
+    font-size: 19px;
+    color: darkgrey;
+    margin-bottom: 32px;
+    }
+    
+.start-button {
+    padding: 13px 32px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.start-button:hover {
+    background-color: darkgreen;
+}
+
+.top-progetti {
+    padding: 32px;
+}
+
+.top-progetti h2 {
+    text-align: center;
+    margin-bottom: 32px;
+    font-size: 32px;
+}
+
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 32px;
+    max-width: 1500px;
+    margin: 0 auto;
+}
+
+.card {
+    display: block;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-decoration: none;
+    color: black;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.card h3 {
+    padding: 16px;
+    font-size: 20px;
+}
+
+.card p {
+    padding: 0 16px;
+    color: grey;
+    height: 10%;
+}
+
+.progress-bar {
+    height: 10px;
+    background-color: lightgray;
+    margin: 16px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background-color: green;
+}
+
+.card p:last-child {
+    padding: 0 16px 16px;
+    font-size: 14px;
+    color: black;
+}
+ */
+footer {
+    text-align: center;
+    padding: 16px;
+    background-color: #f9f9f9;
+    color: darkgrey;
+}
+
+/* Overlay to block interface */
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent */
+    display: none; /* Initially hidden */
+    z-index: 999; /* Lower than .wrapper */
+}
+
+/* pop up */
+.popUp {
+    display: none;
+    position: fixed;
+    /* Per centrarlo rispetto alla finestra del browser */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #f9f9f9;
+    /* Sfondo leggermente trasparente */
+    padding: 20px;
+    max-width: 90vw;
+    /* Limita la larghezza al 90% della finestra */
+    max-height: 90vh;
+    /* Limita l'altezza al 90% della finestra */
+    border-radius: 15px;
+    /* Bordi arrotondati */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    /* Ombra elegante */
+    overflow: auto;
+    /* Aggiunge lo scroll se il contenuto è troppo grande */
+    z-index: 1000;
+    /* Assicura che sia sopra gli altri elementi */
+    color: black;
+    flex-direction: column;
+    justify-content: top;
+    /* Centra verticalmente */
+    align-items: left;
+    /* Centra orizzontalmente */
+}
+
+.popUp > .close-btn {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    height: auto;
+}
+
+.close-popUp {
+    background: none;
+    border: none;
+    font-size: 24px;
+}
+
+.close-popUp:hover i {
+    color: darkgreen;
+}
+
+.popUp > .footer-popUp > button {
+    padding: 10px 24px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.popUp > .footer-popUp > button:hover {
+    background-color: darkgreen;
+}
+
+.popUp > div{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.competenza{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    border-radius: 5px;
+    overflow: hidden;
+    min-width: 150px;
+    width: 80%;
+    margin: 5px;
+    padding: 5px;
+    border: 2px solid darkgreen;
+}
+
+.competenza p{
+    width: 70%;
+}
+
+.competenza input{
+    width: 30%;
+    min-width: 50px;
+}
+
+main > button{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 24px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 20px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+main > button:hover{
+    background-color: darkgreen;
+}

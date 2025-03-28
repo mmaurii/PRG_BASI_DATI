@@ -1,4 +1,4 @@
-import { isUserLoggedIn, getRoleFromToken } from "./script_navbar.js";
+import { isUserLoggedIn, getRoleFromToken, getUsernameFromToken } from "./script_navbar.js";
 
 let projectName, mail, projectData, comments, role, pictures, profili, competenzeTotali, popUpFinanzia, btnClosePopUpFinanziamento,
     mailFinanziatore, overlay, btnFinanzia, rewards, rewardViewers, selectedReward = "", btnUnselectReward,
@@ -682,17 +682,6 @@ function templateComment(text, mysqlDate, creatore, id) {
         sendReply(textRisposta, id, divForm, buttonRispondi);
     });
 
-}
-
-function getUsernameFromToken(token) {
-    try {
-        const payloadBase64 = token.split('.')[1]; // Estrae la parte payload del JWT
-        const payloadDecoded = JSON.parse(atob(payloadBase64)); // Decodifica da Base64 a JSON
-        return payloadDecoded.username || null; // Restituisce lo username
-    } catch (error) {
-        //console.error("Errore nella decodifica del token:", error);
-        return false;
-    }
 }
 
 function getGiorniRimasti(dataLimite) {

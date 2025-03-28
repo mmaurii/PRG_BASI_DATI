@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOSTARTER</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+        integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="style_profile.css">
+    <script type="module" src="script_navbar.js"></script>
+    <script type="module" src="script_profile.js"></script>
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <div id="navbar"></div>
+
+    <main>
+        <button id="btn-display-competenze">imposta le tue competenze</button>
+        <button id="">test 2</button>
+        <button id="">test 1</button>
+
+    </main>
+
+    <!-- pop up per settare le competenze-->
+    <section class="popUp set-livello-competenze">
+        <div class="close-btn">
+            <button class="close-popUp" id="closeCompetenze"><i class="fas fa-times close"></i></button>
+        </div>
+        <h2 class="full-event-title">Competenze:</h2>
+        <div class="popUp-main competenze-viewer"></div>
+        <div class="footer-popUp">
+            <button id="btn-save-competenze">Save</button>
+        </div>
+    </section>
+
+    <div id="overlay"></div>
+    </div>
+</body>
+
+</html>

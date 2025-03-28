@@ -207,11 +207,25 @@ DELIMITER |
 CREATE PROCEDURE setLivelloCompetenza (IN inputLivello int, IN inputCompetenza VARCHAR(255), IN inputMail varchar(255), OUT isSet bool) 
 BEGIN
 	set isSet = false;
-	if (inputLivello>=0 and inputLivello <=5) then
+	
+    if(exists (select 1 from POSSIEDE where mail = inputMail and competenza = inputCompetenza)) then
+    	if (inputLivello>=0 and inputLivello <=5) then
+			update POSSIEDE 
+            set livello = inputLivello
+            where mail = inputMail and competenza = inputCompetenza;
+			set isSet = true;
+		end if;
+        
+        if(inputLivello = -1) then
+			delete from POSSIEDE
+            where mail = inputMail and competenza = inputCompetenza;
+			set isSet = true;
+        end if;
+	else
 		insert into POSSIEDE (mail, competenza, livello)
-        values (inputMail, inputCompetenza, inputLivello);
+		values (inputMail, inputCompetenza, inputLivello);
 		set isSet = true;
-    end if;
+	end if;
 END;
 |
 DELIMITER ;

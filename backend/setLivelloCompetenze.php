@@ -1,9 +1,10 @@
 <?php
     require_once 'config.php';
     require 'protected.php';
+    require_once 'logMongoDB.php';
     require  __DIR__ . '/../vendor/autoload.php';
 
-    if($_SERVER["REQUEST_METHOD"] == "POST") {
+    if($_SERVER["REQUEST_METHOD"] == "PUT") {
         if(verifyJwtToken()) {
             // Recupero i dati inviati dal client
             $data = json_decode(file_get_contents('php://input'), true);
@@ -21,24 +22,29 @@
             }
 
             try {
-                // Preparing the SQL query to call the procedure with an output parameter
-                $sql = "CALL setLivelloCompetenza(:livello, :competenza, :mail, @isSet)";
-                $stmt = $pdo->prepare($sql);
-
-                // Binding the input parameters
-                $stmt->bindParam(':livello', $livello, PDO::PARAM_INT);
-                $stmt->bindParam(':competenza', $competenza, PDO::PARAM_STR);
-                $stmt->bindParam(':mail', $mail, PDO::PARAM_STR);
-                
-                // Execute the query
-                $result = $stmt->execute();
-
-                // Recupera il valore dell'output della procedura
-                $result = $pdo->query("SELECT @isSet AS isSuccess");
-                $isSuccess = $result->fetch(PDO::FETCH_ASSOC)['isSuccess'];
-
-                $text = "timeStamp: " . date('Y-m-d H:i:s').";mail: " . $mail . ";competenza: " . $competenza . ";queryType: INSERT;query: " . $sql . ";result: " . $result;
-                $resp = writeLog($text);
+                $isSuccess;
+                foreach($competenza as $comp) {
+                    $livello = $comp["livello"];
+                    $competenza = $comp["competenza"];
+                    // Preparing the SQL query to call the procedure with an output parameter
+                    $sql = "CALL setLivelloCompetenza(:livello, :competenza, :mail, @isSet)";
+                    $stmt = $pdo->prepare($sql);
+                    
+                    // Binding the input parameters
+                    $stmt->bindParam(':livello', $livello, PDO::PARAM_INT);
+                    $stmt->bindParam(':competenza', $competenza, PDO::PARAM_STR);
+                    $stmt->bindParam(':mail', $mail, PDO::PARAM_STR);
+                    
+                    // Execute the query
+                    $result = $stmt->execute();
+                    
+                    // Recupera il valore dell'output della procedura
+                    $result = $pdo->query("SELECT @isSet AS isSuccess");
+                    $isSuccess = $result->fetch(PDO::FETCH_ASSOC)['isSuccess'];
+                    
+                    $text = "timeStamp: " . date('Y-m-d H:i:s').";mail: " . $mail . ";competenza: " . $competenza . ";queryType: INSERT;query: " . $sql . ";result: " . $isSuccess;
+                    $resp = writeLog($text);
+                }
 
                 echo json_encode(["result"=>$isSuccess]);
             } catch (PDOException $e) {
