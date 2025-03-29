@@ -5,7 +5,7 @@ let projectName, mail, projectData, comments, role, pictures, profili, popUpFina
     btnSelectReward, popUpSelectFinanziamento, btnClosePopUpSelectFinanziamento, btnSelectFinanziamento, btnShowPopUpAggiungiProfilo,
     popUpAggiungiProfilo, btnClosePopUpAggiungiProfilo, btnAddProfilo, competenzeSelezionate, livelliCompetenze,
     finanziamentiUtente, finanziamentoViewer, selectedFinanziamento = "", profileGrid, token,
-    competenze = {"competenzeTotali": [], "competenzeUser": [], "competenzePerProfilo": []};
+    competenze = { "competenzeTotali": [], "competenzeUser": [], "competenzePerProfilo": [] };
 
 const currentDate = new Date();
 let today = currentDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
@@ -190,36 +190,36 @@ async function initInterface() {
 async function addProfile(nome, comp, liv) {
     //console.log("profilo inserito")
     if (nome.value) {
-    const data = {
-        nomeProfilo: nome.value,
-        nomeProgetto: projectName,
-    };
+        const data = {
+            nomeProfilo: nome.value,
+            nomeProgetto: projectName,
+        };
 
-    await axios.post("../backend/addProfileForProjectSoft.php", data, {
-        headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
-    })
-        .then(response => {
-            if (response.data) {
-                //console.log(response.data);
-                let idProfilo = response.data.profileID
-                comp.forEach((element) => {
-                    popola_s_p(idProfilo, element, liv[element])
-                });
-                templateProfileFromButtonAdd(nome.value, comp, liv, idProfilo);
-                closeFormAddProfile();
-                nome.value = "";       
-            } else if (response.data.error) {
-                console.error(response.data.error);
-            } else {
-                console.error('Risposta non corretta dal server.');
-            }
+        await axios.post("../backend/addProfileForProjectSoft.php", data, {
+            headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
         })
-        .catch(error => {
-            console.error("Access denied:", error.response ? error.response.data : error.message);
-        });
-    }else{
+            .then(response => {
+                if (response.data) {
+                    //console.log(response.data);
+                    let idProfilo = response.data.profileID
+                    comp.forEach((element) => {
+                        popola_s_p(idProfilo, element, liv[element])
+                    });
+                    templateProfileFromButtonAdd(nome.value, comp, liv, idProfilo);
+                    closeFormAddProfile();
+                    nome.value = "";
+                } else if (response.data.error) {
+                    console.error(response.data.error);
+                } else {
+                    console.error('Risposta non corretta dal server.');
+                }
+            })
+            .catch(error => {
+                console.error("Access denied:", error.response ? error.response.data : error.message);
+            });
+    } else {
         alert("inserisci il nome")
-    }    
+    }
 
 }
 function templateProfileFromButtonAdd(name, comp, liv, idProfilo) {
@@ -248,7 +248,7 @@ function templateProfileFromButtonAdd(name, comp, liv, idProfilo) {
         spanCompetenza.classList.add("competence-name");
 
         let spanLivello = document.createElement("span");
-        spanLivello.textContent = "Livello: "+liv[element];
+        spanLivello.textContent = "Livello: " + liv[element];
         spanLivello.livello = liv[element];
         spanLivello.classList.add("competence-level");
 
@@ -314,7 +314,7 @@ async function getCompetenze(mail, key) {
             } else {
                 console.error('Risposta non corretta dal server.', response.data);
             }
-    })
+        })
         .catch(error => {
             console.error("Errore di connessione:", error.response ? error.response.data.error : error.message);
         });
@@ -768,10 +768,10 @@ function getGiorniRimasti(dataLimite) {
 
 function displayFinanziamento(event) {
     if (isUserLoggedIn()) {
-        //verifico che il progetto non sia chiuso
-        if (projectData.budget > projectData.totale_finanziato && today <= projectData.dataLimite) {
-            //verifico che ci sia un utenete
-            if (isUserLoggedIn) {
+        //verifico che l'utente non sia il creatore del progetto
+        if (mail !== projectData.mailC) {
+            //verifico che il progetto non sia chiuso
+            if (projectData.budget > projectData.totale_finanziato && today <= projectData.dataLimite) {
                 //visualizzo l'interfaccia di finanziamento
                 overlay.style.display = "block";
                 popUpFinanzia.style.display = "flex";
@@ -785,13 +785,11 @@ function displayFinanziamento(event) {
                         }
                     });
                 }
-
             } else {
-                alert("Devi essere loggato per poter finanziare il progetto");
-                window.location.href = "./login.html";
+                alert("Progetto non finanziabile, il progetto è chiuso perchè il budget è stato raggiunto o la data limite è scaduta");
             }
         } else {
-            alert("Progetto non finanziabile, il progetto è chiuso perchè il budget è stato raggiunto o la data limite è scaduta");
+            alert("Non puoi finanziare il tuo progetto");
         }
     } else {
         alert("Devi essere loggato per poter finanziare il progetto");
@@ -887,7 +885,7 @@ function displayRewards() {
     });
 
     rewardViewers.forEach(element => {
-        if(element.children.length === 0) {
+        if (element.children.length === 0) {
             let noReward = document.createElement("p")
             noReward.innerText = "Nessuna reward disponibile"
             element.appendChild(noReward)
@@ -1058,7 +1056,7 @@ function associateRewardToFinanziamento(event) {
 }
 
 async function applyForProfile(event) {
-    
+
     if (isUserLoggedIn()) {
         mail = getUsernameFromToken();
 
@@ -1066,7 +1064,7 @@ async function applyForProfile(event) {
         if (!mail) {
             return
         }
-    
+
         //ottengo le competenze dell'utente
         await getCompetenze(mail, "competenzeUser");
         //identifico dove l'utente ha cliccato e ne ottengo le competenze
@@ -1079,7 +1077,7 @@ async function applyForProfile(event) {
         });
         //verifico che le competenze dell'utente e del profilo siano compatibili
         //if (competenze.competenzeUser.some(r => competenzeProfileMapped.some(e => e.competenza === r.competenza && e.livello <= r.livello))) {
-        if(competenzeProfileMapped.every(compP => competenze.competenzeUser.some(compU => compU.competenza === compP.competenza && compP.livello <= compU.livello))){  
+        if (competenzeProfileMapped.every(compP => competenze.competenzeUser.some(compU => compU.competenza === compP.competenza && compP.livello <= compU.livello))) {
             //candido l'utente al profilo
             await addCandidatura(event.target.parentElement.id);
         } else {
@@ -1105,11 +1103,8 @@ async function addCandidatura(id) {
         .then(response => {
             if (response.status == 200) {
                 alert("Candidatura inviata con successo");
-            } else if (response.data.error) {
-                console.error(response.data.error);
-                alert("Errore nell'invio della candidatura");
             } else {
-                console.error('Risposta non corretta dal server.');
+                console.error(response);
                 alert("Errore nell'invio della candidatura");
             }
         })
