@@ -143,14 +143,7 @@
             </div>
             <div class="form-group">
                 <label for="competenza">Seleziona una competenza:</label>
-                <select id="competenza" name="competenza" class="select-field">
-                    <!-- Le opzioni saranno aggiunte dinamicamente via JS -->
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="livello">Seleziona il livello (0-5):</label>
-                <input type="range" id="livello" name="livello" min="0" max="5" step="1" value="0" class="range-slider">
-                <span id="livello-valore">0</span>
+                <div id="lista-competenze" class="scroll-container"></div>
             </div>
             <div class="footer-aggiungi">
                 <button id="aggiungi">Aggiungi</button>

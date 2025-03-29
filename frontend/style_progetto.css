@@ -754,7 +754,7 @@ footer {
     background-color: darkgreen;
 }
 
-/* pop-up per aggiungere il profilo */
+/* Pop-up per aggiungere il profilo */
 .popUp.add-profile {
     display: none;
     position: fixed;
@@ -800,6 +800,7 @@ footer {
     border-color: green;
 }
 
+/* Bottone per aggiungere profilo */
 .add-profile-button, #aggiungi {
     padding: 12px 24px;
     background-color: green;
@@ -808,62 +809,125 @@ footer {
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
+    margin-top: 16px;
 }
 
 .add-profile-button:hover, #aggiungi:hover {
     background-color: darkgreen;
 }
-/* Aggiungi padding agli input */
+
+/* Campo input nome profilo */
 #nome-profilo {
-    padding: 12px 16px; /* Aggiungi padding interno per distanziare il testo */
+    padding: 12px 16px;
     border: 1px solid lightgrey;
     border-radius: 4px;
     font-size: 16px;
     outline: none;
-    margin-bottom: 16px; /* Spazio tra input e bottone */
+    margin-bottom: 16px;
 }
 
-/* Aggiungi padding e margine al bottone */
-#aggiungi {
-    padding: 12px 24px; /* Aggiungi padding al bottone */
-    background-color: green;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 16px; /* Aggiungi spazio sopra al bottone */
-}
-
-#aggiungi:hover {
-    background-color: darkgreen;
-}
-/* Generale */
-.form-group {
-    margin-bottom: 20px;
-}
-
-  /* Selezione Competenza */
-.select-field {
-    width: 100%;
+/* Contenitore per selezione competenze */
+#lista-competenze {
+    max-height: 450px; /* Limita altezza per lo scrolling */
+    overflow-y: auto;
     padding: 10px;
-    margin-top: 5px;
     border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
-    background-color: #fff;
+    border-radius: 5px;
+    background: #fff;
+    contain: content;
+}
+/* Checkbox personalizzate */
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 8px;
+    background: #ffffff; /* Sfondo bianco per contrasto */
+    border-radius: 5px;
+    border: 1px solid #ccc; /* Bordo più netto */
+    font-weight: 500;
+    color: #333; /* Testo più scuro */
+    text-shadow: none; /* Evita sfocatura del testo */
 }
 
-  /* Slider Livello */
-.range-slider {
-    width: 100%;
-    margin-top: 5px;
+
+.checkbox-item input[type="checkbox"] {
+    transform: scale(1.2);
 }
-#livello-valore {
-    display: inline-block;
+/* Slider livello */
+.range-slider {
+    width: 100px;
     margin-left: 10px;
-    font-size: 1.2rem;
-    color: #333;
+}
+
+/* Sezione profili aggiunti */
+.profile-card {
+    background: white;
+    padding: 16px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin: 10px 0;
+    max-width: 400px;
+}
+
+/* Nome del profilo */
+.profile-card h3 {
+    margin-bottom: 8px;
+    color: darkgreen;
+}
+
+/* Titolo competenze */
+.profile-card h4 {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Lista competenze */
+.competence-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 8px;
+}
+
+/* Ogni competenza in lista */
+.competence-item {
+    display: flex;
+    justify-content: space-between;
+    background: #f8f8f8;
+    padding: 6px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+}
+
+.competence-name {
+    font-size: 16px;
+    color: #222; /* Testo più scuro per contrasto */
+}
+
+.competence-level {
+    font-size: 14px;
+    color: #006400; /* Verde più visibile */
+}
+
+
+/* Bottone per candidarsi */
+.apply-button {
+    display: block;
+    width: 100%;
+    background: green;
+    color: white;
+    padding: 8px;
+    border-radius: 5px;
+    margin-top: 10px;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+}
+
+.apply-button:hover {
+    background: darkgreen;
 }
 
 

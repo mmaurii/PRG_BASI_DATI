@@ -3,7 +3,7 @@ import { isUserLoggedIn, getRoleFromToken, getUsernameFromToken } from "./script
 let projectName, mail, projectData, comments, role, pictures, profili, popUpFinanzia, btnClosePopUpFinanziamento,
     mailFinanziatore, overlay, btnFinanzia, rewards, rewardViewers, selectedReward = "", btnUnselectReward,
     btnSelectReward, popUpSelectFinanziamento, btnClosePopUpSelectFinanziamento, btnSelectFinanziamento, btnShowPopUpAggiungiProfilo,
-    popUpAggiungiProfilo, btnClosePopUpAggiungiProfilo, btnAddProfilo,
+    popUpAggiungiProfilo, btnClosePopUpAggiungiProfilo, btnAddProfilo, competenzeSelezionate, livelliCompetenze,
     finanziamentiUtente, finanziamentoViewer, selectedFinanziamento = "", profileGrid, token,
     competenze = {"competenzeTotali": [], "competenzeUser": [], "competenzePerProfilo": []};
 
@@ -40,28 +40,66 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     await getCompetenze("", "competenzeTotali");
 
-    let livelloRange = document.getElementById('livello');
-    let livelloValore = document.getElementById('livello-valore');
-
-    livelloRange.addEventListener('input', function () {
-        let valoreLivello = livelloRange.value;
-        livelloValore.textContent = valoreLivello;
-    });
-
-    let selectElement = document.getElementById('competenza');
+    let listaCompetenze = document.getElementById('lista-competenze');
+    competenzeSelezionate = []; // Array delle competenze selezionate
+    livelliCompetenze = {};
 
     competenze.competenzeTotali.forEach(item => {
-        const option = document.createElement('option');
-        option.value = item.competenza;
-        option.textContent = item.competenza;
-        selectElement.appendChild(option);
+        let label = document.createElement('label');
+        label.classList.add("checkbox-item");
+
+        let checkbox = document.createElement('input');
+        checkbox.type = "checkbox";
+        checkbox.value = item.competenza;
+
+        // Crea un range associato alla checkbox
+        let range = document.createElement('input');
+        range.type = "range";
+        range.min = "0";
+        range.max = "5";
+        range.value = "0";
+        range.classList.add("range-slider");
+        range.disabled = true; // Disabilitato finché la checkbox non è selezionata
+
+        // Gestione dell'evento di selezione della checkbox
+        checkbox.addEventListener("change", function () {
+            if (checkbox.checked) {
+                competenzeSelezionate.push(item.competenza);
+                livelliCompetenze[item.competenza] = range.value; // Salva il livello iniziale
+                range.disabled = false; // Attiva il range
+            } else {
+                competenzeSelezionate = competenzeSelezionate.filter(c => c !== item.competenza);
+                delete livelliCompetenze[item.competenza]; // Rimuove il livello
+                range.value = 0; // Resetta il livello a 0
+                range.disabled = true; // Disabilita il range
+            }
+        });
+
+        // Gestione dell'evento di cambiamento del livello (quando si sposta il range)
+        range.addEventListener("input", function () {
+            if (checkbox.checked) {
+                livelliCompetenze[item.competenza] = range.value; // Aggiorna il livello
+            }
+        });
+
+        // Aggiungi la checkbox e il range nel label
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(" " + item.competenza));
+        label.appendChild(range);
+
+        listaCompetenze.appendChild(label);
     });
 
+
+
     btnAddProfilo.addEventListener('click', function () {
+        console.log(competenzeSelezionate)
+        console.log(livelliCompetenze)
         let nomeProfilo = document.querySelector("#nome-profilo")
-        let comp = selectElement.value
-        let liv = livelloValore.textContent
+        let comp = competenzeSelezionate
+        let liv = livelliCompetenze
         addProfile(nomeProfilo, comp, liv)
+
     });
 
     await initInterface();
@@ -150,6 +188,7 @@ async function initInterface() {
 }
 async function addProfile(nome, comp, liv) {
     //console.log("profilo inserito")
+    if (nome.value) {
     const data = {
         nomeProfilo: nome.value,
         nomeProgetto: projectName,
@@ -161,12 +200,13 @@ async function addProfile(nome, comp, liv) {
         .then(response => {
             if (response.data) {
                 //console.log(response.data);
-
-                if (popola_s_p(response.data.profileID, comp, liv)) {
-                    prova(nome.value, Array.of(comp), liv);
-                }
+                let idProfilo = response.data.profileID
+                comp.forEach((element) => {
+                    popola_s_p(idProfilo, element, liv[element])
+                });
+                templateProfileFromButtonAdd(nome.value, comp, liv, idProfilo);
                 closeFormAddProfile();
-                nome.value = "";
+                nome.value = "";       
             } else if (response.data.error) {
                 console.error(response.data.error);
             } else {
@@ -176,12 +216,16 @@ async function addProfile(nome, comp, liv) {
         .catch(error => {
             console.error("Access denied:", error.response ? error.response.data : error.message);
         });
-
+    }else{
+        alert("inserisci il nome")
+    }    
 
 }
-function prova(name, comp, liv) {
+function templateProfileFromButtonAdd(name, comp, liv, idProfilo) {
     let profileCard = document.createElement("div");
     profileCard.classList.add("profile-card");
+    console.log(idProfilo)
+    profileCard.id = idProfilo;
 
     let profileName = document.createElement("h3");
     profileName.innerText = name;
@@ -203,7 +247,8 @@ function prova(name, comp, liv) {
         spanCompetenza.classList.add("competence-name");
 
         let spanLivello = document.createElement("span");
-        spanLivello.textContent = `Livello: ${liv}`;
+        spanLivello.textContent = "Livello: "+liv[element];
+        spanLivello.livello = liv[element];
         spanLivello.classList.add("competence-level");
 
         li.appendChild(spanCompetenza);
@@ -218,10 +263,13 @@ function prova(name, comp, liv) {
     let applyButton = document.createElement("button");
     applyButton.textContent = "Candidati";
     applyButton.classList.add("apply-button");
+    applyButton.addEventListener('click', applyForProfile);
+
     profileCard.appendChild(applyButton);
 
     profileGrid.appendChild(profileCard);
 }
+
 async function popola_s_p(id, comp, liv) {
     const data = {
         competenza: comp,
@@ -258,7 +306,7 @@ async function getCompetenze(mail, key) {
     })
         .then(response => {
             if (response.data.result) {
-                console.log(response.data.result);
+                //console.log(response.data.result);
                 competenze[key] = response.data.result;
             } else if (response.data.error) {
                 console.error(response.data.error);
@@ -422,6 +470,19 @@ function showFormAddProfile() {
 function closeFormAddProfile() {
     popUpAggiungiProfilo.style.display = 'none';  // Nasconde il pop-up
     overlay.style.display = 'none';  // Nasconde l'overlay
+
+    document.querySelectorAll("#lista-competenze input[type='checkbox']").forEach(checkbox => {
+        checkbox.checked = false;
+    });
+
+    document.querySelectorAll("#lista-competenze input[type='range']").forEach(range => {
+        range.value = 0;
+        range.disabled = true; // Disabilita nuovamente il range
+    });
+
+    // Svuota gli array di selezione
+    competenzeSelezionate = [];
+    livelliCompetenze = {};
 }
 
 function showReplyForm(button) {
@@ -996,6 +1057,7 @@ function associateRewardToFinanziamento(event) {
 }
 
 async function applyForProfile(event) {
+    
     if (isUserLoggedIn()) {
         mail = getUsernameFromToken();
 
@@ -1006,7 +1068,6 @@ async function applyForProfile(event) {
     
         //ottengo le competenze dell'utente
         await getCompetenze(mail, "competenzeUser");
-
         //identifico dove l'utente ha cliccato e ne ottengo le competenze
         let CompetenzeClickedProfile = event.target.parentElement.querySelectorAll(".competence-item");
         let competenzeProfileMapped = Array.from(CompetenzeClickedProfile).map((e) => {
@@ -1015,7 +1076,6 @@ async function applyForProfile(event) {
                 "livello": e.querySelector(".competence-level").livello
             };
         });
-
         //verifico che le competenze dell'utente e del profilo siano compatibili
         if (competenze.competenzeUser.some(r => competenzeProfileMapped.some(e => e.competenza === r.competenza && e.livello <= r.livello))) {
             //candido l'utente al profilo
