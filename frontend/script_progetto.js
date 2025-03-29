@@ -40,6 +40,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     await getCompetenze("", "competenzeTotali");
 
+
+    //aggiunta form popup in base alle competenze, aggiunta eventi legati alla scelta delle competenze per profilo
     let listaCompetenze = document.getElementById('lista-competenze');
     competenzeSelezionate = []; // Array delle competenze selezionate
     livelliCompetenze = {};
@@ -90,8 +92,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         listaCompetenze.appendChild(label);
     });
 
-
-
     btnAddProfilo.addEventListener('click', function () {
         console.log(competenzeSelezionate)
         console.log(livelliCompetenze)
@@ -102,6 +102,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     });
 
+    //creazione interfaccia
     await initInterface();
 
 
