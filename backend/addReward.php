@@ -18,7 +18,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $pdo->exec(mysqlCharachter);
         } catch (PDOException $e) {
-            return json_encode(["error" => "[ERRORE] Connessione al DB non riuscita. Errore: " . $e->getMessage()]);
+            http_response_code(500);
+            echo json_encode(["error" => "[ERRORE] Connessione al DB non riuscita"]);
             exit();
         }
 
@@ -41,13 +42,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             echo $result;
         } catch (PDOException $e) {
+            http_response_code(500);
             echo ("[ERRORE] Query SQL non riuscita. Errore: " . $e->getMessage());
             exit();
         }
     } else {
+        http_response_code(401);
         echo json_encode(["error" => "jwtToken not valid"]);
     }
 } else {
+    http_response_code(405); // Method Not Allowed
     echo json_encode(["error" => "HTTP method not allowed"]);
 }
 ?>

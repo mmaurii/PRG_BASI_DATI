@@ -16,7 +16,8 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                 $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
                 $pdo->exec(mysqlCharachter);
             } catch (PDOException $e) {
-                return json_encode(["error" => "[ERRORE] Connessione al DB non riuscita. Errore: " . $e->getMessage()]);
+                http_response_code(500);
+                echo json_encode(["error" => "[ERRORE] Connessione al DB non riuscita"]);
                 exit();
             }
 
@@ -34,6 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                 // Restituiamo le rewards in formato JSON
                 echo json_encode(["result" => $rewards]);
             } catch (PDOException $e) {
+                http_response_code(500);
                 echo json_encode(["error" => "Query SQL non riuscita. Errore: " . $e->getMessage()]);
                 exit();
             }
@@ -47,6 +49,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         echo json_encode(["error" => "jwtToken not valid"]);
     }
 } else {
-    http_response_code(400);
+    http_response_code(405);
     echo json_encode(["error" => "HTTP method not allowed"]);
 }

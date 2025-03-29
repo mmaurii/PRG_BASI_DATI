@@ -16,8 +16,8 @@
                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $pdo->exec(mysqlCharachter);
             } catch (PDOException $e) {
-                        return json_encode(["error" => "[ERRORE] Connessione al DB non riuscita. Errore: ".$e->getMessage()]);
-
+                http_response_code(500);
+                echo json_encode(["error" => "[ERRORE] Connessione al DB non riuscita"]);
                 exit();
             }
 
@@ -48,6 +48,7 @@
 
                 echo json_encode(["result"=>$isSuccess]);
             } catch (PDOException $e) {
+                http_response_code(500);
                 echo json_encode(["error" => "[ERRORE] Query SQL non riuscita. Errore: " . $e->getMessage()]);
                 exit();
             }
@@ -58,7 +59,7 @@
         }
     }
     else {
-        http_response_code(400);
+        http_response_code(405);
         echo json_encode(["error" => "HTTP method not allowed"]);
     }
 ?>

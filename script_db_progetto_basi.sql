@@ -362,15 +362,17 @@ DROP PROCEDURE IF EXISTS InserisciCandidatura;
 DELIMITER |
 CREATE PROCEDURE InserisciCandidatura(IN inputMail VARCHAR(255), IN inputId INT)
 BEGIN
-    if not exists(select * from PROFILO where id = inputId) then
+    if not exists(select 1 from PROFILO where id = inputId) then
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'inputId doesn\'t exists';
+        SET MESSAGE_TEXT = 'Profile with inputId doesn\'t exists';
     END IF;
     
-    if(not exists (select 1 from CANDIDATURA where mail = inputMail and id = inputId)) then
-		insert into CANDIDATURA (mail, id)
-		values (inputMail, inputId);
-    end if;
+	if not exists(select 1 from UTENTE where mail = inputMail) then
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'User with inputMail doesn\'t exists';
+    END IF;
+    
+	INSERT IGNORE INTO CANDIDATURA (mail, id) VALUES (inputMail, inputId);
 END;
 |
 DELIMITER ;

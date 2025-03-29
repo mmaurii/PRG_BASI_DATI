@@ -13,13 +13,14 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $pdo->exec(mysqlCharachter);
     } catch (PDOException $e) {
-        echo json_encode(["error" => "[ERRORE] Connessione al DB non riuscita. Errore: " . $e->getMessage()]);
+        http_response_code(500);
+        echo json_encode(["error" => "[ERRORE] Connessione al DB non riuscita"]);
         exit();
     }
 
-    try {
-        // Verifica se il parametro 'progetto' è presente nei parametri GET
-        if (isset($_GET['mail'])) {
+    // Verifica se il parametro 'progetto' è presente nei parametri GET
+    if (isset($_GET['mail'])) {
+        try {
             $mail = $_GET['mail'];
 
             $sql = "CALL getCompetenze(:mail)";
@@ -39,13 +40,16 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                 // Se non ci sono competenze, restituisci un messaggio appropriato
                 echo json_encode(["error" => "Nessuna competenza trovata"]);
             }
-        } else {
-            echo json_encode(["error" => "Parametro 'mail' mancante"]);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(["error" => "[ERRORE] Impossibile ottenere le competenze. Errore: " . $e->getMessage()]);
+            exit();
         }
-    } catch (PDOException $e) {
-        echo json_encode(["error" => "[ERRORE] Impossibile ottenere le competenze. Errore: " . $e->getMessage()]);
-        exit();
+    } else {
+        http_response_code(400);
+        echo json_encode(["error" => "Parametro 'mail' mancante"]);
     }
 } else {
+    http_response_code(405);
     echo json_encode(["error" => "HTTP method not allowed"]);
 }

@@ -13,7 +13,8 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $pdo->exec(mysqlCharachter);
     } catch (PDOException $e) {
-        echo json_encode(["error" => "[ERRORE] Connessione al DB non riuscita. Errore: " . $e->getMessage()]);
+        http_response_code(500);
+        echo json_encode(["error" => "[ERRORE] Connessione al DB non riuscita"]);
         exit();
     }
 
@@ -37,10 +38,12 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             echo json_encode(["error" => "Parametro 'mail' mancante"]);
         }
     } catch (PDOException $e) {
+        http_response_code(500);
         echo json_encode(["error" => "[ERRORE] Impossibile ottenere le competenze. Errore: " . $e->getMessage()]);
         exit();
     }
 } else {
+    http_response_code(405);
     echo json_encode(["error" => "HTTP method not allowed"]);
 }
 ?>

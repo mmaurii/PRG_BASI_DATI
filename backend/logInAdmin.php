@@ -22,7 +22,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $pdo->exec(mysqlCharachter);
     } catch (PDOException $e) {
-        echo json_encode(["error" => "[ERRORE] Connessione al DB non riuscita. Errore: " . $e->getMessage()]);
+        http_response_code(500);
+        echo json_encode(["error" => "[ERRORE] Connessione al DB non riuscita"]);
         exit();
     }
 
@@ -41,7 +42,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Retrieve the output parameter value
         $result = $pdo->query("SELECT @outputVar AS outputValue");
     } catch (PDOException $e) {
-        echo json_encode(["error" => "[ERRORE] Query SQL non riuscita. Errore: " . $e->getMessage()]);
+        http_response_code(500);
+        echo json_encode(["error" => "[ERRORE] Connessione al DB non riuscita"]);
         exit();
     }
 
@@ -73,6 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo json_encode(["token" => $jwtToken]);
         
         } catch (PDOException $e) {
+            http_response_code(500);
             echo json_encode(["error" => "[ERRORE] Impossibile ottenere il ruolo: " . $e->getMessage()]);
             exit();
         }        
@@ -81,6 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo json_encode(["error" => "Invalid credentials"]);
     }
 } else {
+    http_response_code(405);
     echo json_encode(["error" => "HTTP method not allowed"]);
 }
 ?>

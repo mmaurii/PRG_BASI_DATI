@@ -1078,7 +1078,8 @@ async function applyForProfile(event) {
             };
         });
         //verifico che le competenze dell'utente e del profilo siano compatibili
-        if (competenze.competenzeUser.some(r => competenzeProfileMapped.some(e => e.competenza === r.competenza && e.livello <= r.livello))) {
+        //if (competenze.competenzeUser.some(r => competenzeProfileMapped.some(e => e.competenza === r.competenza && e.livello <= r.livello))) {
+        if(competenzeProfileMapped.every(compP => competenze.competenzeUser.some(compU => compU.competenza === compP.competenza && compP.livello <= compU.livello))){  
             //candido l'utente al profilo
             await addCandidatura(event.target.parentElement.id);
         } else {
@@ -1102,8 +1103,7 @@ async function addCandidatura(id) {
         headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
     })
         .then(response => {
-            if (response.data.result) {
-                //console.log(response.data);
+            if (response.status == 200) {
                 alert("Candidatura inviata con successo");
             } else if (response.data.error) {
                 console.error(response.data.error);
@@ -1114,7 +1114,7 @@ async function addCandidatura(id) {
             }
         })
         .catch(error => {
-            console.error("Access denied:", error.response ? error.response.data : error.message);
-            alert("Errore nell'invio della candidatura");
+            //console.error("Access denied:", error.response ? error.response.data : error.message);
+            alert(error.response ? error.response.data.error : error.message);
         });
 }

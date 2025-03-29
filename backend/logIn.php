@@ -23,7 +23,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $pdo->exec(mysqlCharachter);
         $pdo->exec(mysqlCharachter);
     } catch (PDOException $e) {
-        echo json_encode(["error" => "[ERRORE] Connessione al DB non riuscita: " . $e->getMessage()]);
+        http_response_code(500);
+        echo json_encode(["error" => "[ERRORE] Connessione al DB non riuscita"]);
         exit();
     }
 
@@ -38,6 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Recupera il risultato della procedura
         $result = $pdo->query("SELECT @outputVar AS outputValue");
     } catch (PDOException $e) {
+        
         echo json_encode(["error" => "[ERRORE] Query SQL non riuscita: " . $e->getMessage()]);
         exit();
     }
@@ -71,6 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo json_encode(["token" => $jwtToken]);
         
         } catch (PDOException $e) {
+            http_response_code(500);
             echo json_encode(["error" => "[ERRORE] Impossibile ottenere il ruolo: " . $e->getMessage()]);
             exit();
         }        

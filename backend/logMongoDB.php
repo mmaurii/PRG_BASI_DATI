@@ -26,9 +26,11 @@ function writeLog($text): string
             return json_encode(["result" => false]);
         }
     } catch (InvalidArgumentException $e) {
+        http_response_code(400);
         return json_encode(["error" => "[ERRORE] I parametri di input sono sbagliati. Errore: " . $e->getMessage()]);
     } catch (Exception $e) {
-        return json_encode(["error" => "[ERRORE] Connessione al DB non riuscita. Errore: " . $e->getMessage()]);
+        http_response_code(500);
+        return json_encode(["error" => "[ERRORE] Connessione al DB non riuscita"]);
     }
 }
 
