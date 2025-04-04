@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stato = $data["stato"];
     $mailC = $data["mailC"];
     $tipo = $data["tipo"];
-    $imageUrl = $data["imageUrl"];
+    $imageUrls = $data["imageUrls"];
 
     // Connessione al DB
     try {
@@ -54,9 +54,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Aggiungi il file immagine alla tabella FOTO
         $sql = "INSERT INTO FOTO (foto, nomeP) VALUES (:foto, :nomeP)";
         $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':foto', $imageUrl, PDO::PARAM_STR);
-        $stmt->bindParam(':nomeP', $nome, PDO::PARAM_STR);
-        $stmt->execute();
+    
+        foreach ($imageUrls as $imageUrl) {
+            $stmt->bindParam(':foto', $imageUrl, PDO::PARAM_STR);
+            $stmt->bindParam(':nomeP', $nome, PDO::PARAM_STR);
+            $stmt->execute();
+        }
 
         echo json_encode(["success" => "Progetto inserito con successo e immagine caricata", "imageUrl" => $imageUrl]);
     } catch (PDOException $e) {

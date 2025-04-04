@@ -69,100 +69,87 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-
-document.querySelector('.project-form').addEventListener('submit', function(event) {
-    event.preventDefault(); // Impedisce il comportamento predefinito del form (invio della pagina)
+document.querySelector('.project-form').addEventListener('submit', async function(event) {
+    event.preventDefault(); // Impedisce il comportamento predefinito del form
 
     // Preleva i dati dal modulo
     const nome = document.querySelector('#title').value;
     const descrizione = document.querySelector('#short-description').value;
-    const dataInserimento = new Date().toISOString().split('T')[0]; // Data odierna
+    const dataInserimento = new Date().toISOString().split('T')[0];
     const budget = document.querySelector('#goal').value;
     const dataLimite = document.querySelector('#end-date').value;
-    const stato = 'aperto'; // Default o puoi aggiungere un campo per questo
-    const mailC = 'mario.rossi@email.com'; // Qui dovresti recuperare l'email del creatore
-    const tipo = document.querySelector('#project-type').value; // Seleziona il valore dal <select>
+    const stato = 'aperto';
+    const mailC = 'mario.rossi@email.com'; // Utente di prova
+    const tipo = document.querySelector('#project-type').value;
 
-    // Crea l'oggetto contenente i dati da inviare al server
-    const projectData = {
-        nome: nome,
-        descrizione: descrizione,
-        dataInserimento: dataInserimento,
-        budget: budget,
-        dataLimite: dataLimite,
-        stato: stato,
-        mailC: mailC,
-        tipo: tipo
-    };
+    const imageFiles = Array.from(document.querySelector('#image').files);
 
-
-    // Gestione del caricamento dell'immagine
-    const imageFile = document.querySelector('#image').files[0];
-    if (imageFile) {
-        const formData = new FormData();
-        formData.append('file', imageFile);
-
-        // Effettua la richiesta POST per caricare l'immagine
-        axios.post("http://13.61.196.206/uploadImage.php", formData)
-            .then(response => {
-                if (response.data.success) {
-                    // Ottieni il percorso dell'immagine dalla risposta
-                    const imageUrl = response.data.imageUrl;
-                    console.log(imageUrl);
-
-                    // Aggiungi l'URL dell'immagine ai dati del progetto
-                    projectData.imageUrl = imageUrl;
-
-                    // Ora invia i dati del progetto al server
-                    axios.post("../backend/addProgetto.php", projectData)
-                        .then(response => {
-                            if (response.data.success) {
-                                alert('Progetto inserito con successo!');
-                                // Puoi fare altre operazioni dopo l'inserimento (es. resettare il modulo o reindirizzare)
-                            } else {
-                                alert('Errore: ' + response.data.error);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Errore nella richiesta del progetto:', error);
-                            alert('Si è verificato un errore nell\'aggiungere il progetto.');
-                        });
-                } else {
-                    alert('Errore nel caricamento dell\'immagine: ' + response.data.error);
-                }
-
-                // Invia ogni ricompensa a addreward.php
-                rewardsData.forEach(reward => {
-                    axios.post("../backend/addReward.php", {
-                        //codice: reward.inputCod,
-                        foto: reward.inputFoto,
-                        descrizione: reward.inputDescrizione,
-                        progetto: reward.inputNomeP
-                    }, {
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                    .then(response => {
-                        console.log('Ricompensa aggiunta con successo:', response.data);
-                    })
-                    .catch(error => {
-                        console.error('Errore nell\'aggiunta della ricompensa:', error);
-                        alert('Errore nel salvataggio della ricompensa: ' + error.message);
-                    });
-                });
-            })
-            .catch(error => {
-                console.error('Errore nella richiesta di caricamento dell\'immagine:', error);
-                alert('Si è verificato un errore nel caricare l\'immagine.');
-            });
-    } else {
-        alert('Devi caricare un\'immagine per il progetto.');
+    if (imageFiles.length === 0) {
+        alert('Devi caricare almeno un\'immagine per il progetto.');
+        return;
     }
 
-    // Verifica se ci sono ricompense da inviare
-    if (rewardsData.length === 0) {
-        alert("Nessuna ricompensa da salvare!");
-        return;
+    try {
+        // Carica tutte le immagini
+        const uploadPromises = imageFiles.map(file => {
+            const formData = new FormData();
+            formData.append('file', file);
+            return axios.post("http://13.61.196.206/uploadImage.php", formData);
+        });
+
+        const uploadResponses = await Promise.all(uploadPromises);
+        const imageUrls = uploadResponses.map(res => res.data.imageUrl);
+
+        // Crea l'oggetto contenente i dati da inviare al server
+        const projectData = {
+            nome: nome,
+            descrizione: descrizione,
+            dataInserimento: dataInserimento,
+            budget: budget,
+            dataLimite: dataLimite,
+            stato: stato,
+            mailC: mailC,
+            tipo: tipo,
+            imageUrls: imageUrls
+        };
+
+        const response = await axios.post("../backend/addProgetto.php", projectData);
+
+        if (response.data.success) {
+            alert('Progetto creato con successo!');
+        } else {
+            alert('Errore: ' + response.data.error);
+        }
+
+        // Invia ogni ricompensa a addreward.php
+        rewardsData.forEach(reward => {
+            axios.post("../backend/addReward.php", {
+                //codice: reward.inputCod,
+                foto: reward.inputFoto,
+                descrizione: reward.inputDescrizione,
+                progetto: reward.inputNomeP
+            }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                console.log('Ricompensa aggiunta con successo:', response.data);
+            })
+            .catch(error => {
+                console.error('Errore nell\'aggiunta della ricompensa:', error);
+                alert('Errore nel salvataggio della ricompensa: ' + error.message);
+            });
+        });
+
+        // Verifica se ci sono ricompense da inviare
+        if (rewardsData.length === 0) {
+            alert("Nessuna ricompensa da salvare!");
+            return;
+        }
+
+    } catch (error) {
+        console.error('Errore:', error);
+        alert('Si è verificato un errore durante il caricamento.');
     }
 });
