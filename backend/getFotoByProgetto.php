@@ -15,35 +15,36 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             exit();
         }
 
-        // Recupero del nome del progetto dai parametri della query
         $params = $_GET;
-        if (isset($params['progetto'])) {
-            $projectName = $params['progetto'];
+
+        if (isset($params['progetti']) && is_array($params['progetti'])) {
+            $projects = $params['progetti'];
+            $results = [];
 
             try {
-                // Preparazione della query SQL per chiamare la stored procedure con il parametro
                 $sql = "CALL getFotoByProgetto(:progetto)";
                 $stmt = $pdo->prepare($sql);
 
-                $stmt->bindParam(':progetto', $projectName, PDO::PARAM_STR);
+                foreach ($projects as $projectName) {
+                    $stmt->bindParam(':progetto', $projectName, PDO::PARAM_STR);
+                    $stmt->execute();
+                    $foto = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    $stmt->closeCursor();
 
-                $stmt->execute();
-                
-                // Recupera tutti i risultati
-                $results = $stmt->fetchAll();
+                    $results[$projectName] = $foto;
+                }
 
-                // Rispondi con JSON (bisogna ECHO)
                 echo json_encode(["result" => $results]);
 
             } catch (PDOException $e) {
-                // this should never happen, but just in case
                 http_response_code(500);
                 echo json_encode(["error" => "Query SQL non riuscita. Errore: " . $e->getMessage()]);
                 exit();
             }
+
         } else {
             http_response_code(400);
-            echo json_encode(["error" => "Parametro 'progetto' mancante."]);
+            echo json_encode(["error" => "Parametro 'progetti' mancante o non valido. Deve essere un array."]);
             exit();
         }
     } else {

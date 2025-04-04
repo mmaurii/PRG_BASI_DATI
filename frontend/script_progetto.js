@@ -153,12 +153,15 @@ async function initInterface() {
 
         await getPictures();
         if (pictures) {
-            pictures.forEach(element => {
-                let image = document.createElement("img")
-                document.querySelector(".project-images").appendChild(image)
+            const projectImages = pictures[projectName];
+
+            projectImages.forEach(element => {
+                let image = document.createElement("img");
                 image.src = element.foto;
+                document.querySelector(".project-images").appendChild(image);
             });
         }
+
         await getComments();
         comments.forEach(element => {
             templateComment(element.testo, element.data, element.mail, element.id)
@@ -397,7 +400,7 @@ async function getRewards() {
 async function getPictures() {
     await axios.get("../backend/getFotoByProgetto.php", {
         params: {
-            progetto: projectName // Parametri della query string
+            progetti: [projectName]
         },
         headers: {
             "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization

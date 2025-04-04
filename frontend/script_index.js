@@ -22,34 +22,35 @@ async function initInterface() {
 
     projectContainer.innerHTML = htmlContent;
 
-    // Carica le immagini in background
-    progetti.forEach(async (element, index) => {
-        const picture = await getFotoProgetto(element);
-        document.querySelectorAll(".card img")[index].src = picture;
+    const fotoProgetti = await getFotoProgetti(progetti);
+
+    document.querySelectorAll(".card").forEach((card, index) => {
+        const nome = progetti[index].nome;
+        let foto = fotoProgetti[nome]?.[0]?.foto || "";
+        
+        const img = card.querySelector("img");
+        if (img && foto) img.src = foto;
     });
 }
 
-async function getFotoProgetto(element) {
+async function getFotoProgetti(progetti) {
     try {
+        const nomiProgetti = progetti.map(p => p.nome);
+
         const response = await axios.get("../backend/getFotoByProgetto.php", {
             params: {
-                progetto: element.nome // Parametri della query string
+                progetti: nomiProgetti
             },
             headers: {
-                "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
+                "Authorization": `Bearer ${JSON.stringify(token)}`
             }
         });
 
-        console.log(response); // Per debugging
+        return response.data.result;
 
-        if (response.data.result.length !== 0) {
-            return response.data.result[0].foto;  // Restituisci l'URL della foto
-        } else {
-            return "";  // Se non c'è nessuna foto, restituisci una stringa vuota
-        }
     } catch (error) {
-        console.error("Errore nel recupero della foto:", error.response ? error.response.data : error.message);
-        return "";  // In caso di errore, restituisci una stringa vuota
+        console.error("Errore nel recupero delle foto:", error.response ? error.response.data : error.message);
+        return {};
     }
 }
 
