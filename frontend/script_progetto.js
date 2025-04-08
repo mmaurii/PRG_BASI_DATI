@@ -93,13 +93,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
 
     btnAddProfilo.addEventListener('click', function () {
-        console.log(competenzeSelezionate)
-        console.log(livelliCompetenze)
         let nomeProfilo = document.querySelector("#nome-profilo")
         let comp = competenzeSelezionate
         let liv = livelliCompetenze
         addProfile(nomeProfilo, comp, liv)
-
     });
 
     //creazione interfaccia
@@ -180,8 +177,8 @@ async function initInterface() {
         if (profili.length === 0) {
             document.querySelector("#search-profile").innerText = "Nessun profilo richiesto al momento"
         }
-        if (mail === projectData.mailC && projectData.tipo === "Software") {  // Controlla se l'utente è il creatore del progetto
-            btnShowPopUpAggiungiProfilo.style.display = "block";
+        if (mail === projectData.mailC && projectData.tipo === "Software") {  // Controlla se l'utente è il creatore del progetto, si possono aggiungere profili solo se il prgetto è di tipo software
+            btnShowPopUpAggiungiProfilo.style.display = "block";    
         }
 
         console.log("progetto caricato con successo!")
@@ -204,6 +201,7 @@ async function addProfile(nome, comp, liv) {
             .then(response => {
                 if (response.data) {
                     //console.log(response.data);
+                    document.querySelector("#search-profile").innerText = "Stiamo cercando profili con le seguenti competenze per aiutarci nel nostro progetto:";
                     let idProfilo = response.data.profileID
                     comp.forEach((element) => {
                         popola_s_p(idProfilo, element, liv[element])
