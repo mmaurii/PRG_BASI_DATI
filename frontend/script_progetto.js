@@ -1,6 +1,6 @@
 import { isUserLoggedIn, getRoleFromToken, getUsernameFromToken } from "./script_navbar.js";
 
-let projectName, mail, projectData, comments, role, pictures, profili, popUpFinanzia, btnClosePopUpFinanziamento,
+let projectName, mail, projectData, comments, role, pictures, profili, candidatureByProfile, popUpFinanzia, btnClosePopUpFinanziamento,
     mailFinanziatore, overlay, btnFinanzia, rewards, rewardViewers, selectedReward = "", btnUnselectReward,
     btnSelectReward, popUpSelectFinanziamento, btnClosePopUpSelectFinanziamento, btnSelectFinanziamento, btnShowPopUpAggiungiProfilo,
     popUpAggiungiProfilo, btnClosePopUpAggiungiProfilo, btnAddProfilo, competenzeSelezionate, livelliCompetenze,
@@ -40,69 +40,13 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     await getCompetenze("", "competenzeTotali");
 
-
-    //aggiunta form popup in base alle competenze, aggiunta eventi legati alla scelta delle competenze per profilo
-    let listaCompetenze = document.getElementById('lista-competenze');
-    competenzeSelezionate = []; // Array delle competenze selezionate
-    livelliCompetenze = {};
-
-    competenze.competenzeTotali.forEach(item => {
-        let label = document.createElement('label');
-        label.classList.add("checkbox-item");
-
-        let checkbox = document.createElement('input');
-        checkbox.type = "checkbox";
-        checkbox.value = item.competenza;
-
-        // Crea un range associato alla checkbox
-        let range = document.createElement('input');
-        range.type = "range";
-        range.min = "0";
-        range.max = "5";
-        range.value = "0";
-        range.classList.add("range-slider");
-        range.disabled = true; // Disabilitato finché la checkbox non è selezionata
-
-        // Gestione dell'evento di selezione della checkbox
-        checkbox.addEventListener("change", function () {
-            if (checkbox.checked) {
-                competenzeSelezionate.push(item.competenza);
-                livelliCompetenze[item.competenza] = range.value; // Salva il livello iniziale
-                range.disabled = false; // Attiva il range
-            } else {
-                competenzeSelezionate = competenzeSelezionate.filter(c => c !== item.competenza);
-                delete livelliCompetenze[item.competenza]; // Rimuove il livello
-                range.value = 0; // Resetta il livello a 0
-                range.disabled = true; // Disabilita il range
-            }
-        });
-
-        // Gestione dell'evento di cambiamento del livello (quando si sposta il range)
-        range.addEventListener("input", function () {
-            if (checkbox.checked) {
-                livelliCompetenze[item.competenza] = range.value; // Aggiorna il livello
-            }
-        });
-
-        // Aggiungi la checkbox e il range nel label
-        label.appendChild(checkbox);
-        label.appendChild(document.createTextNode(" " + item.competenza));
-        label.appendChild(range);
-
-        listaCompetenze.appendChild(label);
-    });
-
-    btnAddProfilo.addEventListener('click', function () {
-        let nomeProfilo = document.querySelector("#nome-profilo")
-        let comp = competenzeSelezionate
-        let liv = livelliCompetenze
-        addProfile(nomeProfilo, comp, liv)
-    });
+    //codice per popolare il popUp con i dati raccolti (nascosto inizialmente da css)
+    initPopUpAddProfile();
 
     //creazione interfaccia
     await initInterface();
 
-
+    //creazione foto scorrevoli
     const projectImages = document.querySelector('.project-images');
     const images = projectImages.querySelectorAll('img');
     const scrollLeftButton = document.querySelector('.scroll-left');
@@ -187,6 +131,207 @@ async function initInterface() {
     }
 
 }
+function initPopUpAddProfile(){
+    //aggiunta form popup in base alle competenze, aggiunta eventi legati alla scelta delle competenze per profilo
+    let listaCompetenze = document.getElementById('lista-competenze');
+    competenzeSelezionate = []; // Array delle competenze selezionate
+    livelliCompetenze = {};
+
+    competenze.competenzeTotali.forEach(item => {
+        let label = document.createElement('label');
+        label.classList.add("checkbox-item");
+
+        let checkbox = document.createElement('input');
+        checkbox.type = "checkbox";
+        checkbox.value = item.competenza;
+
+        // Crea un range associato alla checkbox
+        let range = document.createElement('input');
+        range.type = "range";
+        range.min = "0";
+        range.max = "5";
+        range.value = "0";
+        range.classList.add("range-slider");
+        range.disabled = true; // Disabilitato finché la checkbox non è selezionata
+
+        // Gestione dell'evento di selezione della checkbox
+        checkbox.addEventListener("change", function () {
+            if (checkbox.checked) {
+                competenzeSelezionate.push(item.competenza);
+                livelliCompetenze[item.competenza] = range.value; // Salva il livello iniziale
+                range.disabled = false; // Attiva il range
+            } else {
+                competenzeSelezionate = competenzeSelezionate.filter(c => c !== item.competenza);
+                delete livelliCompetenze[item.competenza]; // Rimuove il livello
+                range.value = 0; // Resetta il livello a 0
+                range.disabled = true; // Disabilita il range
+            }
+        });
+
+        // Gestione dell'evento di cambiamento del livello (quando si sposta il range)
+        range.addEventListener("input", function () {
+            if (checkbox.checked) {
+                livelliCompetenze[item.competenza] = range.value; // Aggiorna il livello
+            }
+        });
+
+        // Aggiungi la checkbox e il range nel label
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(" " + item.competenza));
+        label.appendChild(range);
+
+        listaCompetenze.appendChild(label);
+    });
+
+    btnAddProfilo.addEventListener('click', function () {
+        let nomeProfilo = document.querySelector("#nome-profilo")
+        let comp = competenzeSelezionate
+        let liv = livelliCompetenze
+        addProfile(nomeProfilo, comp, liv)
+    });
+}
+function initPopUpViewCandidature(idProfilo){
+    const popUp = document.querySelector(".manage-candidature");
+    const overlay = document.getElementById("overlay");
+    const candidatureViewer = document.querySelector(".candidature-viewer");
+
+    // Pulisce la lista precedente (se presente)
+    candidatureViewer.innerHTML = "";
+
+    // Controlla se l'array è vuoto
+    if (candidatureByProfile.length === 0) {
+        const noCandidatesMsg = document.createElement("p");
+        noCandidatesMsg.textContent = "Ancora nessuna candidatura.";
+        noCandidatesMsg.classList.add("no-candidates-msg"); // Aggiunta classe
+        candidatureViewer.appendChild(noCandidatesMsg);
+    }
+    else {
+        // Crea e aggiungi le candidature
+        candidatureByProfile.forEach(element => {
+            let candidateItem = document.createElement("div");
+            candidateItem.classList.add("candidate-item");
+
+            let candidateEmail = document.createElement("span");
+            candidateEmail.textContent = element.mail;
+
+            // Bottone "Accetta"
+            let acceptButton = document.createElement("button");
+            acceptButton.textContent = "Accetta";
+            acceptButton.classList.add("accept-btn");
+            acceptButton.addEventListener("click", function () {
+                accettaCandidatura(idProfilo,element.mail,acceptButton,rejectButton);
+            });
+
+            // Bottone "Rifiuta"
+            let rejectButton = document.createElement("button");
+            rejectButton.textContent = "Rifiuta";
+            rejectButton.classList.add("reject-btn");
+            rejectButton.addEventListener("click", function () {
+                rifiutaCandidatura(idProfilo,element.mail,acceptButton,rejectButton);
+            });
+
+            if (element.stato === "accepted") {
+                acceptButton.disabled = true;
+                rejectButton.disabled = false;
+                acceptButton.style.backgroundColor = "#a8d08d";
+            } else if (element.stato === "rejected") {
+                acceptButton.disabled = false;
+                rejectButton.disabled = true;
+                rejectButton.style.backgroundColor = "#f1b0b0";
+            }
+
+            // Aggiungi gli elementi
+            candidateItem.appendChild(candidateEmail);
+            candidateItem.appendChild(acceptButton);
+            candidateItem.appendChild(rejectButton);
+
+            // Aggiungi l'elemento alla lista
+            candidatureViewer.appendChild(candidateItem);
+        });
+    }
+
+    popUp.style.display = "none";
+    overlay.style.display = "none";
+
+    // Funzione per chiudere il popup e l'overlay
+    document.getElementById("close-manageCandidature").addEventListener("click", closeManageCandidatura);
+}
+async function accettaCandidatura(idProfilo,mail,btnAcc,btnRej){
+    const data = {
+        nomeUtente: mail,
+        idProfilo: idProfilo,
+        statoCandidatura: "accepted"
+    };
+
+    await axios.put("../backend/manageApplicationStatus.php", data, {
+        headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
+    })
+        .then(response => {
+            //console.log(response);
+            if (response.data) {
+                alert("candidatura accettata")
+                btnAcc.disabled = true;
+                btnRej.disabled = false;
+                btnAcc.style.backgroundColor = "#a8d08d";
+                btnRej.style.backgroundColor = "red";
+                //console.log(response.data);
+            } else if (response.data.error) {
+                console.error(response.data.error);
+            } else {
+                console.error('Risposta non corretta dal server.');
+            }
+        })
+        .catch(error => {
+            console.error("Access denied:", error.response ? error.response.data : error.message);
+        });
+}
+async function rifiutaCandidatura(idProfilo,mail,btnAcc,btnRej){
+    const data = {
+        nomeUtente: mail,
+        idProfilo: idProfilo,
+        statoCandidatura: "rejected"
+    };
+
+    await axios.put("../backend/manageApplicationStatus.php", data, {
+        headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
+    })
+        .then(response => {
+            //console.log(response);
+            if (response.data) {
+                alert("candidatura rifiutata")
+                btnAcc.disabled = false;
+                btnRej.disabled = true;
+                btnAcc.style.backgroundColor = "green";
+                btnRej.style.backgroundColor = "#f1b0b0";
+                //console.log(response.data);
+            } else if (response.data.error) {
+                console.error(response.data.error);
+            } else {
+                console.error('Risposta non corretta dal server.');
+            }
+        })
+        .catch(error => {
+            console.error("Access denied:", error.response ? error.response.data : error.message);
+        });
+}
+
+function closeManageCandidatura(){
+    document.querySelector(".manage-candidature").style.display = "none";
+    document.getElementById("overlay").style.display = "none";
+}
+async function showManageCandidatura(idProfilo) {
+    await getCandidatureByProfile(idProfilo);
+
+    //inizializzo i popUp
+    initPopUpViewCandidature(idProfilo);
+
+    const popUp = document.querySelector(".manage-candidature");
+    const overlay = document.getElementById("overlay");
+    // Mostra il popup e l'overlay
+    popUp.style.display = "block";
+    overlay.style.display = "block";
+}
+
 async function addProfile(nome, comp, liv) {
     //console.log("profilo inserito")
     if (nome.value) {
@@ -226,7 +371,7 @@ async function addProfile(nome, comp, liv) {
 function templateProfileFromButtonAdd(name, comp, liv, idProfilo) {
     let profileCard = document.createElement("div");
     profileCard.classList.add("profile-card");
-    console.log(idProfilo)
+
     profileCard.id = idProfilo;
 
     let profileName = document.createElement("h3");
@@ -268,6 +413,23 @@ function templateProfileFromButtonAdd(name, comp, liv, idProfilo) {
     applyButton.addEventListener('click', applyForProfile);
 
     profileCard.appendChild(applyButton);
+
+    // Bottone "Visualizza candidature"
+    let viewApplicationsButton = document.createElement("button");
+    viewApplicationsButton.textContent = "Visualizza candidature";
+    viewApplicationsButton.classList.add("apply-button");
+    viewApplicationsButton.style.backgroundColor = "#004d99"; // blu scuro
+    viewApplicationsButton.addEventListener('click', function() {
+        showManageCandidatura(idProfilo);
+    });
+    
+    profileCard.appendChild(viewApplicationsButton);
+
+    if(mail === projectData.mailC){
+        applyButton.style.display = "none";
+    }else{
+        viewApplicationsButton.style.display = "none"
+    }
 
     profileGrid.appendChild(profileCard);
 }
@@ -321,6 +483,7 @@ async function getCompetenze(mail, key) {
         });
 }
 
+
 async function getCompetenzeByProfile(element) {
     await axios.get("../backend/getCompetenzeByProfile.php", {
         params: {
@@ -334,6 +497,30 @@ async function getCompetenzeByProfile(element) {
             if (response.data.result) {
                 competenze.competenzePerProfilo = response.data.result;
                 //console.log(competenzePerProfilo)
+            } else if (response.data.error) {
+                console.error(response.data.error);
+            } else {
+                console.error('Risposta non corretta dal server.');
+            }
+        })
+        .catch(error => {
+            console.error("Access denied:", error.response ? error.response.data.error : error.message);
+        });
+}
+
+async function getCandidatureByProfile(idProfilo) {
+    await axios.get("../backend/getCandidatureByProfiloId.php", {
+        params: {
+            id: idProfilo 
+        },
+        headers: {
+            "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
+        }
+    })
+        .then(response => {
+            if (response.data.result) {
+                candidatureByProfile = response.data.result;
+                //console.log(candidatureByProfile)
             } else if (response.data.error) {
                 console.error(response.data.error);
             } else {
@@ -604,52 +791,67 @@ function templateProfile(element) {
             <button class="apply-button">Candidati</button>
         </div>
     */
-    let profileCard = document.createElement("div");
-    profileCard.classList.add("profile-card");
-    profileCard.id = element.id;
+        let profileCard = document.createElement("div");
+        profileCard.classList.add("profile-card");
+        profileCard.id = element.id;
+    
+        let profileName = document.createElement("h3");
+        profileName.innerText = element.nome;
+        profileCard.appendChild(profileName);
+    
+        let TitoloCompetenza = document.createElement("h4");
+        TitoloCompetenza.innerText = "Competenze richieste";
+        profileCard.appendChild(TitoloCompetenza);
+    
+        let ulCompetenza = document.createElement("ul");
+        ulCompetenza.classList.add("competence-list");
+    
+        competenze.competenzePerProfilo.forEach(element => {
+            let li = document.createElement("li");
+            li.classList.add("competence-item");
+    
+            let spanCompetenza = document.createElement("span");
+            spanCompetenza.textContent = `${element.competenza}`;
+            spanCompetenza.classList.add("competence-name");
+    
+            let spanLivello = document.createElement("span");
+            spanLivello.textContent = `Livello: ${element.livello}`;
+            spanLivello.livello = element.livello;
+            spanLivello.classList.add("competence-level");
+    
+            li.appendChild(spanCompetenza);
+            li.appendChild(spanLivello);
+            ulCompetenza.appendChild(li);
+        });
+    
+        profileCard.appendChild(ulCompetenza);
+    
+        // Bottone "Candidati"
+        let applyButton = document.createElement("button");
+        applyButton.textContent = "Candidati";
+        applyButton.classList.add("apply-button");
+        applyButton.addEventListener('click', applyForProfile);
+        profileCard.appendChild(applyButton);
+    
+        // Bottone "Visualizza candidature"
+        let viewApplicationsButton = document.createElement("button");
+        viewApplicationsButton.textContent = "Visualizza candidature";
+        viewApplicationsButton.classList.add("apply-button");
+        viewApplicationsButton.style.backgroundColor = "#004d99"; // blu scuro
+        viewApplicationsButton.addEventListener('click', function() {
+            showManageCandidatura(element.id);
+        });
 
-    let profileName = document.createElement("h3");
-    profileName.innerText = element.nome;
-    profileCard.appendChild(profileName);
-
-    let TitoloCompetenza = document.createElement("h4");
-    TitoloCompetenza.innerText = "Competenze richieste";
-    profileCard.appendChild(TitoloCompetenza);
-
-    let ulCompetenza = document.createElement("ul");
-    ulCompetenza.classList.add("competence-list");
-
-    competenze.competenzePerProfilo.forEach(element => {
-        let li = document.createElement("li");
-        li.classList.add("competence-item");
-
-        let spanCompetenza = document.createElement("span");
-        spanCompetenza.textContent = `${element.competenza}`;
-        spanCompetenza.classList.add("competence-name");
-
-        let spanLivello = document.createElement("span");
-        spanLivello.textContent = `Livello: ${element.livello}`;
-        spanLivello.livello = element.livello;
-        spanLivello.classList.add("competence-level");
-
-        li.appendChild(spanCompetenza);
-        li.appendChild(spanLivello);
-        ulCompetenza.appendChild(li);
-    });
+        profileCard.appendChild(viewApplicationsButton);
+        
+        if(mail === projectData.mailC){
+            applyButton.style.display = "none";
+        }else{
+            viewApplicationsButton.style.display = "none"
+        }
 
 
-    profileCard.appendChild(ulCompetenza);
-
-
-    let applyButton = document.createElement("button");
-    applyButton.textContent = "Candidati";
-    applyButton.classList.add("apply-button");
-    //associo il metodo per la candidatura al click del bottone
-    applyButton.addEventListener('click', applyForProfile);
-
-    profileCard.appendChild(applyButton);
-
-    profileGrid.appendChild(profileCard);
+        profileGrid.appendChild(profileCard);
 }
 
 function templateComment(text, mysqlDate, creatore, id) {
@@ -1062,7 +1264,8 @@ async function applyForProfile(event) {
         mail = getUsernameFromToken();
 
         //controlloo che non sia null undefined o false per via di getUsernameFromToken
-        if (!mail) {
+        if (!mail || (mail === projectData.mailC)){
+            alert("il creatore non può candidarsi")
             return
         }
 
@@ -1102,6 +1305,7 @@ async function addCandidatura(id) {
         headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
     })
         .then(response => {
+            console.log(response)
             if (response.status == 200) {
                 alert("Candidatura inviata con successo");
             } else {
@@ -1111,6 +1315,6 @@ async function addCandidatura(id) {
         })
         .catch(error => {
             //console.error("Access denied:", error.response ? error.response.data : error.message);
-            alert(error.response ? error.response.data.error : error.message);
+            console.error(error.response ? error.response.data.error : error.message);
         });
 }
