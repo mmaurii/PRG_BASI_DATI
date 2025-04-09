@@ -122,7 +122,7 @@ async function initInterface() {
             document.querySelector("#search-profile").innerText = "Nessun profilo richiesto al momento"
         }
         if (mail === projectData.mailC && projectData.tipo === "Software") {  // Controlla se l'utente è il creatore del progetto, si possono aggiungere profili solo se il prgetto è di tipo software
-            btnShowPopUpAggiungiProfilo.style.display = "block";    
+            btnShowPopUpAggiungiProfilo.style.display = "block";
         }
 
         console.log("progetto caricato con successo!")
@@ -131,7 +131,7 @@ async function initInterface() {
     }
 
 }
-function initPopUpAddProfile(){
+function initPopUpAddProfile() {
     //aggiunta form popup in base alle competenze, aggiunta eventi legati alla scelta delle competenze per profilo
     let listaCompetenze = document.getElementById('lista-competenze');
     competenzeSelezionate = []; // Array delle competenze selezionate
@@ -190,7 +190,7 @@ function initPopUpAddProfile(){
         addProfile(nomeProfilo, comp, liv)
     });
 }
-function initPopUpViewCandidature(idProfilo){
+function initPopUpViewCandidature(idProfilo) {
     const popUp = document.querySelector(".manage-candidature");
     const overlay = document.getElementById("overlay");
     const candidatureViewer = document.querySelector(".candidature-viewer");
@@ -219,7 +219,7 @@ function initPopUpViewCandidature(idProfilo){
             acceptButton.textContent = "Accetta";
             acceptButton.classList.add("accept-btn");
             acceptButton.addEventListener("click", function () {
-                accettaCandidatura(idProfilo,element.mail,acceptButton,rejectButton);
+                accettaCandidatura(idProfilo, element.mail, acceptButton, rejectButton);
             });
 
             // Bottone "Rifiuta"
@@ -227,7 +227,7 @@ function initPopUpViewCandidature(idProfilo){
             rejectButton.textContent = "Rifiuta";
             rejectButton.classList.add("reject-btn");
             rejectButton.addEventListener("click", function () {
-                rifiutaCandidatura(idProfilo,element.mail,acceptButton,rejectButton);
+                rifiutaCandidatura(idProfilo, element.mail, acceptButton, rejectButton);
             });
 
             if (element.stato === "accepted") {
@@ -256,7 +256,7 @@ function initPopUpViewCandidature(idProfilo){
     // Funzione per chiudere il popup e l'overlay
     document.getElementById("close-manageCandidature").addEventListener("click", closeManageCandidatura);
 }
-async function accettaCandidatura(idProfilo,mail,btnAcc,btnRej){
+async function accettaCandidatura(idProfilo, mail, btnAcc, btnRej) {
     const data = {
         nomeUtente: mail,
         idProfilo: idProfilo,
@@ -285,7 +285,7 @@ async function accettaCandidatura(idProfilo,mail,btnAcc,btnRej){
             console.error("Access denied:", error.response ? error.response.data : error.message);
         });
 }
-async function rifiutaCandidatura(idProfilo,mail,btnAcc,btnRej){
+async function rifiutaCandidatura(idProfilo, mail, btnAcc, btnRej) {
     const data = {
         nomeUtente: mail,
         idProfilo: idProfilo,
@@ -315,7 +315,7 @@ async function rifiutaCandidatura(idProfilo,mail,btnAcc,btnRej){
         });
 }
 
-function closeManageCandidatura(){
+function closeManageCandidatura() {
     document.querySelector(".manage-candidature").style.display = "none";
     document.getElementById("overlay").style.display = "none";
 }
@@ -419,15 +419,15 @@ function templateProfileFromButtonAdd(name, comp, liv, idProfilo) {
     viewApplicationsButton.textContent = "Visualizza candidature";
     viewApplicationsButton.classList.add("apply-button");
     viewApplicationsButton.style.backgroundColor = "#004d99"; // blu scuro
-    viewApplicationsButton.addEventListener('click', function() {
+    viewApplicationsButton.addEventListener('click', function () {
         showManageCandidatura(idProfilo);
     });
-    
+
     profileCard.appendChild(viewApplicationsButton);
 
-    if(mail === projectData.mailC){
+    if (mail === projectData.mailC) {
         applyButton.style.display = "none";
-    }else{
+    } else {
         viewApplicationsButton.style.display = "none"
     }
 
@@ -511,7 +511,7 @@ async function getCompetenzeByProfile(element) {
 async function getCandidatureByProfile(idProfilo) {
     await axios.get("../backend/getCandidatureByProfiloId.php", {
         params: {
-            id: idProfilo 
+            id: idProfilo
         },
         headers: {
             "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
@@ -791,67 +791,67 @@ function templateProfile(element) {
             <button class="apply-button">Candidati</button>
         </div>
     */
-        let profileCard = document.createElement("div");
-        profileCard.classList.add("profile-card");
-        profileCard.id = element.id;
-    
-        let profileName = document.createElement("h3");
-        profileName.innerText = element.nome;
-        profileCard.appendChild(profileName);
-    
-        let TitoloCompetenza = document.createElement("h4");
-        TitoloCompetenza.innerText = "Competenze richieste";
-        profileCard.appendChild(TitoloCompetenza);
-    
-        let ulCompetenza = document.createElement("ul");
-        ulCompetenza.classList.add("competence-list");
-    
-        competenze.competenzePerProfilo.forEach(element => {
-            let li = document.createElement("li");
-            li.classList.add("competence-item");
-    
-            let spanCompetenza = document.createElement("span");
-            spanCompetenza.textContent = `${element.competenza}`;
-            spanCompetenza.classList.add("competence-name");
-    
-            let spanLivello = document.createElement("span");
-            spanLivello.textContent = `Livello: ${element.livello}`;
-            spanLivello.livello = element.livello;
-            spanLivello.classList.add("competence-level");
-    
-            li.appendChild(spanCompetenza);
-            li.appendChild(spanLivello);
-            ulCompetenza.appendChild(li);
-        });
-    
-        profileCard.appendChild(ulCompetenza);
-    
-        // Bottone "Candidati"
-        let applyButton = document.createElement("button");
-        applyButton.textContent = "Candidati";
-        applyButton.classList.add("apply-button");
-        applyButton.addEventListener('click', applyForProfile);
-        profileCard.appendChild(applyButton);
-    
-        // Bottone "Visualizza candidature"
-        let viewApplicationsButton = document.createElement("button");
-        viewApplicationsButton.textContent = "Visualizza candidature";
-        viewApplicationsButton.classList.add("apply-button");
-        viewApplicationsButton.style.backgroundColor = "#004d99"; // blu scuro
-        viewApplicationsButton.addEventListener('click', function() {
-            showManageCandidatura(element.id);
-        });
+    let profileCard = document.createElement("div");
+    profileCard.classList.add("profile-card");
+    profileCard.id = element.id;
 
-        profileCard.appendChild(viewApplicationsButton);
-        
-        if(mail === projectData.mailC){
-            applyButton.style.display = "none";
-        }else{
-            viewApplicationsButton.style.display = "none"
-        }
+    let profileName = document.createElement("h3");
+    profileName.innerText = element.nome;
+    profileCard.appendChild(profileName);
+
+    let TitoloCompetenza = document.createElement("h4");
+    TitoloCompetenza.innerText = "Competenze richieste";
+    profileCard.appendChild(TitoloCompetenza);
+
+    let ulCompetenza = document.createElement("ul");
+    ulCompetenza.classList.add("competence-list");
+
+    competenze.competenzePerProfilo.forEach(element => {
+        let li = document.createElement("li");
+        li.classList.add("competence-item");
+
+        let spanCompetenza = document.createElement("span");
+        spanCompetenza.textContent = `${element.competenza}`;
+        spanCompetenza.classList.add("competence-name");
+
+        let spanLivello = document.createElement("span");
+        spanLivello.textContent = `Livello: ${element.livello}`;
+        spanLivello.livello = element.livello;
+        spanLivello.classList.add("competence-level");
+
+        li.appendChild(spanCompetenza);
+        li.appendChild(spanLivello);
+        ulCompetenza.appendChild(li);
+    });
+
+    profileCard.appendChild(ulCompetenza);
+
+    // Bottone "Candidati"
+    let applyButton = document.createElement("button");
+    applyButton.textContent = "Candidati";
+    applyButton.classList.add("apply-button");
+    applyButton.addEventListener('click', applyForProfile);
+    profileCard.appendChild(applyButton);
+
+    // Bottone "Visualizza candidature"
+    let viewApplicationsButton = document.createElement("button");
+    viewApplicationsButton.textContent = "Visualizza candidature";
+    viewApplicationsButton.classList.add("apply-button");
+    viewApplicationsButton.style.backgroundColor = "#004d99"; // blu scuro
+    viewApplicationsButton.addEventListener('click', function () {
+        showManageCandidatura(element.id);
+    });
+
+    profileCard.appendChild(viewApplicationsButton);
+
+    if (mail === projectData.mailC) {
+        applyButton.style.display = "none";
+    } else {
+        viewApplicationsButton.style.display = "none"
+    }
 
 
-        profileGrid.appendChild(profileCard);
+    profileGrid.appendChild(profileCard);
 }
 
 function templateComment(text, mysqlDate, creatore, id) {
@@ -970,33 +970,39 @@ function getGiorniRimasti(dataLimite) {
 }
 
 function displayFinanziamento(event) {
-    if (isUserLoggedIn()) {
-        //verifico che l'utente non sia il creatore del progetto
-        if (mail !== projectData.mailC) {
-            //verifico che il progetto non sia chiuso
-            if (projectData.budget > projectData.totale_finanziato && today <= projectData.dataLimite) {
-                //visualizzo l'interfaccia di finanziamento
-                overlay.style.display = "block";
-                popUpFinanzia.style.display = "flex";
-                mailFinanziatore.innerText = mail;
+    //verifico che il progetto sia aperto
+    if (projectData.stato == "aperto") {
+        //verifico che l'utente sia loggato
+        if (isUserLoggedIn()) {
+            //verifico che l'utente non sia il creatore del progetto
+            if (mail !== projectData.mailC) {
+                //verifico che il progetto non sia chiuso
+                if (projectData.budget > projectData.totale_finanziato && today <= projectData.dataLimite) {
+                    //visualizzo l'interfaccia di finanziamento
+                    overlay.style.display = "block";
+                    popUpFinanzia.style.display = "flex";
+                    mailFinanziatore.innerText = mail;
 
-                if (selectedReward !== "") {
-                    let rewardDOMNodes = document.querySelectorAll(".reward");
-                    rewardDOMNodes.forEach(reward => {
-                        if (reward.querySelector("img")?.getAttribute("cod") == selectedReward) {
-                            reward.classList.add("selected");
-                        }
-                    });
+                    if (selectedReward !== "") {
+                        let rewardDOMNodes = document.querySelectorAll(".reward");
+                        rewardDOMNodes.forEach(reward => {
+                            if (reward.querySelector("img")?.getAttribute("cod") == selectedReward) {
+                                reward.classList.add("selected");
+                            }
+                        });
+                    }
+                } else {
+                    alert("Progetto non finanziabile, il progetto è chiuso perchè il budget è stato raggiunto o la data limite è scaduta");
                 }
             } else {
-                alert("Progetto non finanziabile, il progetto è chiuso perchè il budget è stato raggiunto o la data limite è scaduta");
+                alert("Non puoi finanziare il tuo progetto");
             }
         } else {
-            alert("Non puoi finanziare il tuo progetto");
+            alert("Devi essere loggato per poter finanziare il progetto");
+            window.location.href = "./login.html";
         }
-    } else {
-        alert("Devi essere loggato per poter finanziare il progetto");
-        window.location.href = "./login.html";
+    }else{
+        alert("Progetto non finanziabile, il progetto è chiuso perchè il budget è stato raggiunto o la data limite è scaduta");
     }
 }
 
@@ -1264,7 +1270,7 @@ async function applyForProfile(event) {
         mail = getUsernameFromToken();
 
         //controlloo che non sia null undefined o false per via di getUsernameFromToken
-        if (!mail || (mail === projectData.mailC)){
+        if (!mail || (mail === projectData.mailC)) {
             alert("il creatore non può candidarsi")
             return
         }
