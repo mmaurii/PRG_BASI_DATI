@@ -282,7 +282,9 @@ async function accettaCandidatura(idProfilo, mail, btnAcc, btnRej) {
             }
         })
         .catch(error => {
-            console.error("Access denied:", error.response ? error.response.data : error.message);
+            let msg = error.response ? error.response.data : error.message;
+            console.error("Access denied:", msg);
+            alert(msg);
         });
 }
 async function rifiutaCandidatura(idProfilo, mail, btnAcc, btnRej) {
@@ -311,7 +313,9 @@ async function rifiutaCandidatura(idProfilo, mail, btnAcc, btnRej) {
             }
         })
         .catch(error => {
-            console.error("Access denied:", error.response ? error.response.data : error.message);
+            let msg = error.response ? error.response.data : error.message;
+            console.error("Access denied:", msg);
+            alert(msg);
         });
 }
 
@@ -361,7 +365,9 @@ async function addProfile(nome, comp, liv) {
                 }
             })
             .catch(error => {
-                console.error("Access denied:", error.response ? error.response.data : error.message);
+                let msg = error.response ? error.response.data : error.message;
+                console.error("Access denied:", msg);
+                alert(msg);
             });
     } else {
         alert("inserisci il nome")
@@ -455,8 +461,10 @@ async function popola_s_p(id, comp, liv) {
             }
         })
         .catch(error => {
-            console.error("Access denied:", error.response ? error.response.data : error.message);
-        });
+            let msg = error.response ? error.response.data : error.message;
+            console.error("Access denied:", msg);
+            alert(msg);
+    });
 }
 
 async function getCompetenze(mail, key) {
@@ -479,8 +487,10 @@ async function getCompetenze(mail, key) {
             }
         })
         .catch(error => {
-            console.error("Errore di connessione:", error.response ? error.response.data.error : error.message);
-        });
+            let msg = error.response ? error.response.data : error.message;
+            console.error("Access denied:", msg);
+            alert(msg);
+    });
 }
 
 
@@ -504,8 +514,10 @@ async function getCompetenzeByProfile(element) {
             }
         })
         .catch(error => {
-            console.error("Access denied:", error.response ? error.response.data.error : error.message);
-        });
+            let msg = error.response ? error.response.data : error.message;
+            console.error("Access denied:", msg);
+            alert(msg);
+    });
 }
 
 async function getCandidatureByProfile(idProfilo) {
@@ -528,8 +540,10 @@ async function getCandidatureByProfile(idProfilo) {
             }
         })
         .catch(error => {
-            console.error("Access denied:", error.response ? error.response.data.error : error.message);
-        });
+            let msg = error.response ? error.response.data : error.message;
+            console.error("Access denied:", msg);
+            alert(msg);
+    });
 }
 
 async function getProfiliByProgetto() {
@@ -551,8 +565,10 @@ async function getProfiliByProgetto() {
             }
         })
         .catch(error => {
-            console.error("Access denied:", error.response ? error.response.data.error : error.message);
-        });
+            let msg = error.response ? error.response.data : error.message;
+            console.error("Access denied:", msg);
+            alert(msg);
+    });
 }
 async function getRewards() {
     try {
@@ -575,7 +591,9 @@ async function getRewards() {
                 }
             })
             .catch(error => {
-                console.error("Errore nel recupero delle rewards:", error.response ? error.response.data.error : error.message);
+                let msg = error.response ? error.response.data : error.message;
+                console.error("Access denied:", msg);
+                alert(msg);
             });
     } catch (error) {
         console.error('Errore nel caricamento delle rewards:', error);
@@ -600,8 +618,10 @@ async function getPictures() {
             }
         })
         .catch(error => {
-            console.error("Access denied:", error.response ? error.response.data : error.message);
-            //window.location.href = "login.html"; // Redirect if unauthorized
+            let msg = error.response ? error.response.data : error.message;
+            console.error("Access denied:", msg);
+            alert(msg);
+        //window.location.href = "login.html"; // Redirect if unauthorized
         });
 }
 
@@ -624,8 +644,10 @@ async function getComments() {
             }
         })
         .catch(error => {
-            console.error("Access denied:", error.response ? error.response.data.error : error.message);
-        });
+            let msg = error.response ? error.response.data : error.message;
+            console.error("Access denied:", msg);
+            alert(msg);
+    });
 }
 async function getProject() {
     await axios.get("../backend/getProjectByName.php", {
@@ -647,8 +669,10 @@ async function getProject() {
             }
         })
         .catch(error => {
-            console.error("Access denied:", error.response ? error.response.data.error : error.message);
-        });
+            let msg = error.response ? error.response.data : error.message;
+            console.error("Access denied:", msg);
+            alert(msg);
+    });
 }
 
 function showFormAddProfile() {
@@ -730,8 +754,10 @@ function sendReply(text, idComment, divReply, btnReply) {
                     text.value = "";
                 })
                 .catch(error => {
-                    console.error("Access denied:", error.response ? error.response.data : error.message);
-                });
+                    let msg = error.response ? error.response.data : error.message;
+                    console.error("Access denied:", msg);
+                    alert(msg);
+                    });
 
         }
 
@@ -761,8 +787,10 @@ function sendComment() {
                     console.log(response.data); // Load the protected content
                 })
                 .catch(error => {
-                    console.error("Access denied:", error.response ? error.response.data : error.message);
-                });
+                    let msg = error.response ? error.response.data : error.message;
+                    console.error("Access denied:", msg);
+                    alert(msg);
+                    });
         }
     }
     document.querySelector("#textComment").value = ""
@@ -1322,7 +1350,8 @@ async function addCandidatura(id) {
             }
         })
         .catch(error => {
-            //console.error("Access denied:", error.response ? error.response.data : error.message);
-            console.error(error.response ? error.response.data.error : error.message);
-        });
+            let msg = error.response ? error.response.data : error.message;
+            console.error("Access denied:", msg);
+            alert(msg);
+    });
 }

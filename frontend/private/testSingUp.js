@@ -36,7 +36,9 @@ function test(event) {
             }
     })
         .catch(error => {
-            console.error("Access denied:", error.response ? error.response.data.error : error.message);
-        });
+            let msg = error.response ? error.response.data : error.message;
+            console.error("Access denied:", msg);
+            alert(msg);
+    });
 
 }

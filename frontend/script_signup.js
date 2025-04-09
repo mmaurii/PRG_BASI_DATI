@@ -82,8 +82,10 @@ async function createAccount(event) {
             }
          })
          .catch(error => {
-            console.error("Access denied:", error.response ? error.response.data.error : error.message);
-         });
+            let msg = error.response ? error.response.data : error.message;
+            console.error("Access denied:", msg);
+            alert(msg);
+     });
    } catch (error) {
       console.error('Errore durante la registrazione:', error);
       alert('Si è verificato un errore. Riprova più tardi.');
