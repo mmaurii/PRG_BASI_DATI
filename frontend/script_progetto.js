@@ -1063,7 +1063,9 @@ function addFinanziamento(event) {
             closeFinanziamento(event);
         })
         .catch(error => {
-            console.error("Access denied:", error.response ? error.response.data.error : error.message);
+            let msg = error.response ? error.response.data.error : error.message;
+            alert(msg);
+            console.error("Access denied:", msg);
         });
 
 }

@@ -775,6 +775,24 @@ END;
 |
 DELIMITER ;
 
+/* EVENT DECLARATIONS */
+SET GLOBAL event_scheduler = ON;
+SET GLOBAL time_zone = '+02:00';  -- per l'ora italiana (CET o CEST)
+
+/* Creo un evento che chiuda il progetto quando si raggiunge la data di scadenza del progetto */
+DROP EVENT IF EXISTS chiudiProgettiScaduti;
+DELIMITER |
+CREATE EVENT chiudiProgettiScaduti 
+ON SCHEDULE EVERY 1 DAY
+STARTS TIMESTAMP(CURDATE() + INTERVAL '00:00:01' HOUR_SECOND)
+DO
+  UPDATE PROGETTO
+  SET stato = 'chiuso'
+  WHERE DATE(dataLimite) <= CURDATE() AND stato = 'aperto';
+|
+DELIMITER ;
+
+
 SHOW PROCEDURE STATUS WHERE Db = 'BOSTARTER';
 
 INSERT INTO UTENTE (mail, nickname, password, nome, cognome, annoN, luogo) 
