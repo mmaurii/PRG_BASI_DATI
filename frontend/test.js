@@ -49,7 +49,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.body.appendChild(imgElement);
             })
             .catch(error => {
-                console.error("Access denied:", error.response ? error.response.data : error.message);
+                let msg = error.response ? error.response.data : error.message;
+                console.error("Access denied:", msg);
+                alert(msg);
                 //window.location.href = "login.html"; // Redirect if unauthorized
             });
         

@@ -15,7 +15,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             })
             .catch(error => {
-                console.error("Login error:", error.response ? error.response.data : error.message);
+                let msg = error.response ? error.response.data : error.message;
+                console.error("Access denied:", msg);
+                alert(msg);
             });
     }); */
 
@@ -51,7 +53,9 @@ function test(event) {
                 }
             })
             .catch(error => {
-                console.error("Access denied:", error.response ? error.response.data.error : error.message);
+                let msg = error.response ? error.response.data : error.message;
+                console.error("Access denied:", msg);
+                alert(msg);
                 //window.location.href = "login.html"; // Redirect if unauthorized
             });
     }

@@ -362,6 +362,11 @@ DROP PROCEDURE IF EXISTS InserisciCandidatura;
 DELIMITER |
 CREATE PROCEDURE InserisciCandidatura(IN inputMail VARCHAR(255), IN inputId INT)
 BEGIN
+	IF EXISTS (SELECT 1 FROM CANDIDATURA WHERE mail = inputMail AND id = inputId) THEN
+		SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = 'Candidatura già presente';
+	END IF;
+    
     if not exists(select 1 from PROFILO where id = inputId) then
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Profile with inputId doesn\'t exists';
@@ -372,7 +377,7 @@ BEGIN
         SET MESSAGE_TEXT = 'User with inputMail doesn\'t exists';
     END IF;
     
-	INSERT IGNORE INTO CANDIDATURA (mail, id) VALUES (inputMail, inputId);
+	INSERT INTO CANDIDATURA (mail, id) VALUES (inputMail, inputId);
 END;
 |
 DELIMITER ;
@@ -623,6 +628,17 @@ END
 |
 DELIMITER ;
 
+/*ottenere tutte le candidature di un certo profilo*/
+DROP PROCEDURE IF EXISTS getCandidatureByProfiloId;
+DELIMITER |
+CREATE PROCEDURE getCandidatureByProfiloId(IN profiloId INT)
+BEGIN
+    SELECT *
+    FROM CANDIDATURA
+    WHERE id = profiloId;
+END
+|
+DELIMITER ;
 
 /* DEFINIZIONE DELLE VIEW */
 
@@ -758,6 +774,24 @@ BEGIN
 END;
 |
 DELIMITER ;
+
+/* EVENT DECLARATIONS */
+SET GLOBAL event_scheduler = ON;
+SET GLOBAL time_zone = '+02:00';  -- per l'ora italiana (CET o CEST)
+
+/* Creo un evento che chiuda il progetto quando si raggiunge la data di scadenza del progetto */
+DROP EVENT IF EXISTS chiudiProgettiScaduti;
+DELIMITER |
+CREATE EVENT chiudiProgettiScaduti 
+ON SCHEDULE EVERY 1 DAY
+STARTS TIMESTAMP(CURDATE() + INTERVAL '00:00:01' HOUR_SECOND)
+DO
+  UPDATE PROGETTO
+  SET stato = 'chiuso'
+  WHERE DATE(dataLimite) <= CURDATE() AND stato = 'aperto';
+|
+DELIMITER ;
+
 
 SHOW PROCEDURE STATUS WHERE Db = 'BOSTARTER';
 
@@ -951,16 +985,19 @@ INSERT INTO COMPOSTO (nomeC, nomeH) VALUES
 ('Batteria Li-Ion', 'Dispositivo IoT per Piante');
 
 INSERT INTO CANDIDATURA (mail, id, stato) VALUES
-('mario.rossi@email.com', 1, 'pending'),  -- Candidato per il profilo 1
-('luca.bianchi@email.com', 2, 'pending'), -- Candidato per il profilo 2
-('anna.verdi@email.com', 3, 'pending'),   -- Candidato per il profilo 3
-('sara.neri@email.com', 4, 'pending'),    -- Candidato per il profilo 4
-('giovanni.ferri@email.com', 5, 'pending'), -- Candidato per il profilo 5
-('mario.rossi@email.com', 6, 'pending'),  -- Candidato per il profilo 6
-('luca.bianchi@email.com', 7, 'pending'), -- Candidato per il profilo 7
-('anna.verdi@email.com', 8, 'pending'),   -- Candidato per il profilo 8
-('sara.neri@email.com', 9, 'pending'),    -- Candidato per il profilo 9
-('giovanni.ferri@email.com', 10, 'pending'); -- Candidato per il profilo 10
+('mario.rossi@email.com', 1, 'pending'),
+('anna.verdi@email.com', 3, 'pending'),  
+('giovanni.ferri@email.com', 5, 'pending'),
+('mario.rossi@email.com', 6, 'pending'),
+('luca.bianchi@email.com', 7, 'pending'),
+('anna.verdi@email.com', 8, 'pending'),
+('sara.neri@email.com', 9, 'pending'),
+('giovanni.ferri@email.com', 10, 'pending');
+
+INSERT INTO CANDIDATURA (mail, id, stato) VALUES
+('mario.rossi@email.com', 3, 'pending'),
+('luca.bianchi@email.com', 3, 'pending'),
+('paolo.riva@email.com', 3, 'pending');
 
 SELECT * FROM UTENTE;
 SELECT * FROM CREATORE;

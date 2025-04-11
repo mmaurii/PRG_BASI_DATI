@@ -930,7 +930,131 @@ footer {
     background: darkgreen;
 }
 
+/* Bottone visualizza candidature (blu) */
+.apply-button:nth-of-type(2) {
+    background: #004d99;
+}
 
+.apply-button:nth-of-type(2):hover {
+    background: #003366;
+}
+
+/* Popup per la gestione delle candidature */
+.manage-candidature {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #f9f9f9;
+    padding: 20px;
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    z-index: 1000;
+    flex-direction: column;
+    justify-content: top;
+    align-items: left;
+}
+
+/* Header del popup (chiusura e titolo) */
+/* Header del popup (chiusura e titolo) */
+.manage-candidature .popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px; /* Spazio sotto il titolo */
+}
+
+.manage-candidature .popup-header h3 {
+    font-size: 20px;
+    margin: 0;
+    color: #333;
+}
+
+/* Lista delle candidature */
+.candidature-viewer {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    margin-top: 10px; /* Aggiungi margine sopra la lista per distanziare dal titolo */
+}
+
+
+.manage-candidature .popup-header .close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #888;
+    cursor: pointer;
+}
+
+.manage-candidature .popup-header .close-btn:hover {
+    color: #333;
+}
+
+/* Candidatura individuale */
+.candidate-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.candidate-item:last-child {
+    border-bottom: none;
+}
+
+.candidate-email {
+    font-size: 16px;
+    color: #555;
+}
+
+/* Bottoni "Accetta" e "Rifiuta" */
+.accept-btn, .reject-btn {
+    padding: 8px 15px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-left: 10px;
+}
+
+/* "Accetta" - verde */
+.accept-btn {
+    background-color: green;
+    color: white;
+}
+
+.accept-btn:hover {
+    background-color: darkgreen;
+}
+
+/* "Rifiuta" - rosso */
+.reject-btn {
+    background-color: red;
+    color: white;
+}
+
+.reject-btn:hover {
+    background-color: #92251d;
+}
+/* Messaggio quando non ci sono candidature */
+.no-candidates-msg {
+    font-style: italic;
+    color: #555;
+    text-align: center;
+    font-size: 16px;
+    margin: 8px 0;
+}
 
 /* Overlay to block interface */
 #overlay {
