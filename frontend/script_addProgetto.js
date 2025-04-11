@@ -1,7 +1,22 @@
-const rewardsData = [];
+import { isUserLoggedIn, getUsernameFromToken } from './script_navbar.js';
 
+const rewardsData = [];
+let mail;
 
 document.addEventListener("DOMContentLoaded", function () {
+
+    if (isUserLoggedIn()) {
+        mail = getUsernameFromToken();
+
+        //controllo che non sia null undefined o false per via di getUsernameFromToken
+        if (!mail) {
+            return
+        }
+        console.log(mail);
+    } else {
+        alert("Devi essere loggato");
+        window.location.href = "./login.html";
+    }
 
     const addRewardButton = document.getElementById('add-reward');
     const rewardsContainer = document.getElementById('rewards-container');
@@ -79,7 +94,7 @@ document.querySelector('.project-form').addEventListener('submit', async functio
     const budget = document.querySelector('#goal').value;
     const dataLimite = document.querySelector('#end-date').value;
     const stato = 'aperto';
-    const mailC = 'mario.rossi@email.com'; // Utente di prova
+    const mailC = mail; // Utente di prova
     const tipo = document.querySelector('#project-type').value;
 
     const imageFiles = Array.from(document.querySelector('#image').files);
