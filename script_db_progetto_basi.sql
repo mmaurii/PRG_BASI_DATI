@@ -236,7 +236,7 @@ DELIMITER |
 CREATE PROCEDURE getProgetti () 
 BEGIN
 	select P.*, T.totale_finanziato
-    from PROGETTO P join TotaleFinanziamenti T on (P.nome = T.nome)
+    from PROGETTO P left join TotaleFinanziamenti T on (P.nome = T.nome)
     where P.stato = 'aperto';
 END;
 |
