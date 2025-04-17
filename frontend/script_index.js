@@ -1,3 +1,5 @@
+import { isUserLoggedIn, getUsernameFromToken } from './script_navbar.js';
+
 let projectContainer, progetti;
 let token = JSON.parse(localStorage.getItem("jwtToken"));
 

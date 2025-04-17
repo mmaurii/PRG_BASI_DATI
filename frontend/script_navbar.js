@@ -41,8 +41,6 @@ document.addEventListener('DOMContentLoaded', function() {
         btnProfile = document.getElementById('profile');
         logo = document.getElementById('logo');
 
-        
-
         // Verifica che gli elementi esistano prima di aggiungere gli event listener
         if (btnLogin && btnLogout && btnSignup && btnProfile && logo) {
             logo.addEventListener('click', ()=>redirect("./index.html"));
@@ -53,6 +51,59 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             console.error('Uno o più elementi non sono stati trovati nel DOM.');
         }
+        
+        document.querySelector('.search-button').addEventListener('click', function () {
+            const query = document.querySelector('#searchInput').value;
+            const resultsContainer = document.getElementById('searchResults');
+            
+            // Se la query è vuota, nascondi la tendina
+            if (query.trim() === "") {
+                resultsContainer.style.display = 'none';
+                return;
+            }
+    
+            // Mostra la tendina mentre si caricano i risultati
+            resultsContainer.style.display = 'block';
+    
+            fetch(`../backend/searchProgetti.php?query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    resultsContainer.innerHTML = "";
+    
+                    if (data.result && data.result.length > 0) {
+                        data.result.forEach(progetto => {
+                            console.log(progetto);
+                            const div = document.createElement("a");
+                            div.href = `progetto.html?name=${encodeURIComponent(progetto.nome)}`; // Link alla pagina del progetto
+                            div.classList.add("dropdown-item");
+                            div.innerHTML = `
+                                <h3>${progetto.nome}</h3>
+                                <p>${progetto.descrizione}</p>
+                            `;
+                            resultsContainer.appendChild(div);
+                        });
+                    } else {
+                        resultsContainer.innerHTML = "<p>Nessun progetto trovato.</p>";
+                    }
+                })
+                .catch(error => {
+                    console.error("Errore durante la ricerca:", error);
+                });
+        });
+    
+        // Nascondi la tendina se l'utente clicca fuori
+        document.addEventListener('click', function(event) {
+            const resultsContainer = document.getElementById('searchResults');
+            const searchButton = document.getElementById('searchButton'); // Ottieni il bottone Cerca
+            const searchInput = document.querySelector('#searchInput'); // Input di ricerca
+            
+            // Se l'utente clicca fuori dalla tendina, dall'input o dal bottone, nascondi la tendina
+            if (!resultsContainer.contains(event.target) && !searchInput.contains(event.target) && !searchButton.contains(event.target)) {
+                resultsContainer.style.display = 'none';
+            }
+        });
+
+
     })
     .catch(error => console.error('Error loading the navbar:', error));
 });
