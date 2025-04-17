@@ -652,6 +652,22 @@ END
 |
 DELIMITER ;
 
+/* ottiene tutte le statistiche relative all'utente */
+DROP PROCEDURE IF EXISTS getUserStatistics;
+DELIMITER |
+CREATE PROCEDURE getUserStatistics(IN inputMail VARCHAR(255))
+BEGIN
+    SELECT COUNT(*) as nCandidature FROM CANDIDATURA C WHERE C.mail = inputMail;
+
+    SELECT COUNT(*) as nCommenti FROM COMMENTO C WHERE C.mail = inputMail;
+    
+    SELECT SUM(F.importo) as totaleFinanziato, COUNT(*) as nFinanziamenti FROM FINANZIAMENTO F WHERE F.mail = inputMail;
+
+    SELECT COUNT(*) as nCompetenze FROM POSSIEDE P WHERE P.mail = inputMail;
+END
+|
+DELIMITER ;
+
 /* DEFINIZIONE DELLE VIEW */
 
 /* Visualizzare valore finanziamento totale per ogni progetto */

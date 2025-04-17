@@ -1,7 +1,7 @@
 import { isUserLoggedIn, getUsernameFromToken } from './script_navbar.js';
 
-let token, btnCloseCompetenze, overlay, popUpSetLivelloCompetenze, competenzeViewer, competenzeUser,
-    btnSaveCompetenze, btnDisplayCompetenze, competenze = { "competenzeTotali": [], "competenzeUser": [] };
+let token, btnCloseCompetenze, overlay, popUpSetLivelloCompetenze, competenzeViewer, competenzeUser, containerStatistics,
+btnSaveCompetenze, btnDisplayCompetenze, competenze = { "competenzeTotali": [], "competenzeUser": [] };
 
 
 document.addEventListener('DOMContentLoaded', async function () {
@@ -16,11 +16,19 @@ document.addEventListener('DOMContentLoaded', async function () {
     competenzeViewer = document.querySelector('.competenze-viewer');
     btnSaveCompetenze = document.getElementById('btn-save-competenze');
     btnDisplayCompetenze = document.getElementById('btn-display-competenze');
+    containerStatistics = document.getElementById('div-statistics');
 
     btnCloseCompetenze.addEventListener('click', closeSetLivelloCompetenze);
     btnSaveCompetenze.addEventListener('click', saveCompetenze);
     btnDisplayCompetenze.addEventListener('click', displaySetLivelloCompetenze);
+
+    initInterface();
 });
+
+
+function initInterface() {
+    Promise.all([loadStatistics()]);
+}
 
 function login() {
     window.location.href = './login.html';
@@ -190,4 +198,29 @@ function saveCompetenze() {
         window.location.href = "./login.html";
     }
 
+}
+
+function loadStatistics() {
+    return axios.get("../backend/getUserStatistics.php", {
+        headers: {
+            "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
+        }
+    })
+        .then(response => {
+            if (response.data.result) {
+                let stats = response.data.result;
+                containerStatistics.innerHTML = `<h2>Statistiche:</h2>
+                                                <p>Numero di candidature: ${stats.nCandidature}</p>
+                                                <p>Numero di commenti: ${stats.nCommenti}</p>
+                                                <p>Numero di finanziamenti: ${stats.nFinanziamenti}</p>
+                                                <p>Totale finanziato: ${stats.totaleFinanziato}</p>
+                                                <p>Numero di competenze: ${stats.nCompetenze}</p>`;
+            } else {
+                console.error('Risposta non corretta dal server.', response.data);
+            }
+        })
+        .catch(error => {
+            console.error("Errore nel recupero delle statistiche:", error.response ? error.response.data.error : error.message);
+            alert("Errore nel recupero delle statistiche");
+        });
 }

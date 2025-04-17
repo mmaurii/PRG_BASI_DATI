@@ -11,33 +11,32 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="style_profile.css">
     <link rel="stylesheet" href="style_navbar.css">
-    <script type="module" src="script_profile.js"></script>
+    <script type="module" defer src="script_navbar.js"></script>
+    <script type="module" defer src="script_profile.js"></script>
 </head>
 
 <body>
     <div class="page-wrapper">
         <div id="navbar"></div>
 
-    <main>
-        <button id="btn-display-competenze">imposta le tue competenze</button>
-        <button id="">test 2</button>
-        <button id="">test 1</button>
+        <main>
+            <div id="div-statistics" class="statistics"></div>
+            <button id="btn-display-competenze">imposta le tue competenze</button>
+        </main>
 
-    </main>
+        <!-- pop up per settare le competenze-->
+        <section class="popUp set-livello-competenze">
+            <div class="close-btn">
+                <button class="close-popUp" id="closeCompetenze"><i class="fas fa-times close"></i></button>
+            </div>
+            <h2 class="full-event-title">Competenze:</h2>
+            <div class="popUp-main competenze-viewer"></div>
+            <div class="footer-popUp">
+                <button id="btn-save-competenze">Save</button>
+            </div>
+        </section>
 
-    <!-- pop up per settare le competenze-->
-    <section class="popUp set-livello-competenze">
-        <div class="close-btn">
-            <button class="close-popUp" id="closeCompetenze"><i class="fas fa-times close"></i></button>
-        </div>
-        <h2 class="full-event-title">Competenze:</h2>
-        <div class="popUp-main competenze-viewer"></div>
-        <div class="footer-popUp">
-            <button id="btn-save-competenze">Save</button>
-        </div>
-    </section>
-
-    <div id="overlay"></div>
+        <div id="overlay"></div>
     </div>
 </body>
 

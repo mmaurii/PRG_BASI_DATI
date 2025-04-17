@@ -22,8 +22,8 @@ main {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: stretch;
-    width: 50vw;;
+    align-items: center;
+    width: 100vw;;
     gap: 32px;
     margin: 0 auto;
 }
@@ -258,8 +258,35 @@ main > button{
     font-size: 20px;
     cursor: pointer;
     margin: 5px;
+    width: 50%;
 }
 
 main > button:hover{
     background-color: darkgreen;
+}
+
+.statistics{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.statistics h2{
+    text-align: center;
+    margin-bottom: 32px;
+    font-size: 32px;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.statistics p{
+    text-align: center;
+    font-size: 20px;
+    color: darkgrey;
+    margin-bottom: 32px;
+    width: 100%;
+    flex-wrap: wrap;
 }
