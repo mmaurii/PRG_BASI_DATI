@@ -28,26 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             $progetti = $stmt->fetchAll();
             $stmt->closeCursor();  // Chiudiamo il cursore della prima query per evitare conflitti
 
-            // Aggiungiamo il totale dei finanziamenti per ciascun progetto
-            foreach ($progetti as &$progetto) {
-                // Eseguiamo la query sulla vista per ottenere il totale dei finanziamenti
-                $sqlTotaleFinanziato = "SELECT totale_finanziato FROM TotaleFinanziamenti WHERE nome = :nomeProgetto";
-                $stmtTotale = $pdo->prepare($sqlTotaleFinanziato);
-                $stmtTotale->bindParam(':nomeProgetto', $progetto['nome']);
-                $stmtTotale->execute();
-            
-                // Recuperiamo il totale dei finanziamenti
-                $totale = $stmtTotale->fetchColumn();
-            
-                // Se il valore è false o null, lo forziamo a 0
-                $progetto['totale_finanziato'] = ($totale === false || $totale === null) ? 0 : $totale;
-            
-                $stmtTotale->closeCursor(); // Chiudiamo il cursore della query
-            }                       
-
-            // Restituiamo i progetti con il totale dei finanziamenti
             echo json_encode(["result" => $progetti]);
-
         } catch (PDOException $e) {
             http_response_code(500);
             echo json_encode(["error" => "Query SQL non riuscita. Errore: " . $e->getMessage()]);

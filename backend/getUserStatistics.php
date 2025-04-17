@@ -18,9 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         }
 
         // Recupera i parametri dalla query string
-        $headers = getallheaders();
-        $jwt = json_decode(str_replace("Bearer ", "", $headers['Authorization']), true)['token'];
-        $mail = decodeJwt($jwt)['user_id'];
+        $mail = decodeJwt()['user_id'];
 
         try {
             // Preparazione della query SQL per chiamare la stored procedure con il parametro

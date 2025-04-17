@@ -235,9 +235,9 @@ drop PROCEDURE if exists getProgetti;
 DELIMITER |
 CREATE PROCEDURE getProgetti () 
 BEGIN
-	select *
-    from PROGETTO
-    where stato = 'aperto';
+	select P.*, T.totale_finanziato
+    from PROGETTO P join TotaleFinanziamenti T on (P.nome = T.nome)
+    where P.stato = 'aperto';
 END;
 |
 DELIMITER ;

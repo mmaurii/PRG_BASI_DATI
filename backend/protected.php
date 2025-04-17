@@ -4,8 +4,10 @@ use Firebase\JWT\Key;
 require_once 'config.php';
 require  __DIR__ . '/../vendor/autoload.php';
 
-function decodeJwt($jwt) {
+function decodeJwt() {
     try {
+        $headers = getallheaders();
+        $jwt = json_decode(str_replace("Bearer ", "", $headers['Authorization']), true)['token'];
         // Decodifica il JWT e verifica la firma
         $decoded = JWT::decode($jwt, new Key(JWTKEY, 'HS256'));
         return (array) $decoded;  // Restituisce il payload come array associativo

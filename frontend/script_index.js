@@ -11,8 +11,9 @@ document.addEventListener('DOMContentLoaded', function() {
 async function initInterface() {
     await getProgetti(); // Recupera i progetti
 
-    let htmlContent = progetti.map(element => `
-        <a href="./progetto.html?name=${element.nome}" class="card" data-nome="${element.nome}">
+    let htmlContent = progetti.map((element) => {
+        element.totale_finanziato = element.totale_finanziato? element.totale_finanziato : 0;
+        return `<a href="./progetto.html?name=${element.nome}" class="card" data-nome="${element.nome}">
             <img src="loading.jpg" data-src="" alt="" loading="lazy">
             <h3>${element.nome}</h3>
             <p>${element.descrizione}</p>
@@ -20,7 +21,7 @@ async function initInterface() {
                 <div class="progress" style="width: ${Math.floor((element.totale_finanziato / element.budget) * 100)}%;"></div>
             </div>
             <p>${Math.floor((element.totale_finanziato / element.budget) * 100)}% finanziato - €${element.totale_finanziato} raccolti</p>
-        </a>`).join("");
+        </a>`}).join("");
 
     projectContainer.innerHTML = htmlContent;
 
