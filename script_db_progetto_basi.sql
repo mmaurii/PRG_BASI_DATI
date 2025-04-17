@@ -242,6 +242,18 @@ END;
 |
 DELIMITER ;
 
+/* creo una procedura per la ricerca dei progetti */
+drop PROCEDURE if exists searchProgetti;
+DELIMITER |
+CREATE PROCEDURE searchProgetti(IN titolo VARCHAR(255))
+BEGIN
+    SELECT *
+    FROM PROGETTO
+    WHERE nome LIKE CONCAT('%', titolo, '%');
+END;
+|
+DELIMITER ;
+
 /* creo una procedura per la richiesta delle rewards associate a un progetto */
 drop PROCEDURE if exists getReWards;
 DELIMITER |
