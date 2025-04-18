@@ -2,13 +2,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 32px 32px;
+    padding: 16px 32px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     z-index: 100;
 }
 
 .logo {
-    font-size: 34px;
+    font-size: 24px;
     font-weight: bold;
     color: green;
 }
@@ -19,7 +19,6 @@
     transform: translateX(-50%);
     display: flex;
     width: 35vw;
-    height: 3.5vh;
 }
 
 .search-bar input {
@@ -36,13 +35,12 @@
 }
 
 .search-button {
-    padding: 8px 24px;
+    padding: 8px 16px;
     background-color: green;
     color: white;
     border: none;
     border-radius: 0 4px 4px 0;
     cursor: pointer;
-    font-size: 16px;
 }
 
 .search-button:hover {
@@ -54,7 +52,6 @@
     display: flex;
     gap: 32px;
     cursor: pointer;
-    font-size: 20px;
 }
 
 .nav-links a {
