@@ -149,9 +149,13 @@ drop PROCEDURE if exists logIn;
 DELIMITER |
 CREATE PROCEDURE logIn (IN inputMail varchar(255), IN inputPassword varchar(255), OUT isLogIn bool)  
 BEGIN
-	if exists(select mail, password
-				FROM UTENTE
-				WHERE (mail=inputMail) AND (password=inputPassword)) then
+	if exists(
+		select mail, password
+				FROM UTENTE U
+				WHERE (U.mail=inputMail) AND 
+					(U.password=inputPassword) and 
+                    not exists(Select mail from ADMIN A where A.mail=inputMail)
+	) then
 		set isLogIn = true;
     else
 		set isLogIn = false;

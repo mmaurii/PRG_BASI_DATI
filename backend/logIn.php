@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Recupera il risultato della procedura
         $result = $pdo->query("SELECT @outputVar AS outputValue");
     } catch (PDOException $e) {
-        
+        http_response_code(500);
         echo json_encode(["error" => "[ERRORE] Query SQL non riuscita: " . $e->getMessage()]);
         exit();
     }
