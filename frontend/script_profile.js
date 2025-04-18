@@ -53,7 +53,7 @@ async function displaySetLivelloCompetenze() {
             return
         }
 
-        Promise.all([getCompetenze("", "competenzeTotali"),
+        Promise.all([getCompetenze(null, "competenzeTotali"),
         getCompetenze(mail, "competenzeUser")])
             .then(() => {
                 //visualizzo le competenze

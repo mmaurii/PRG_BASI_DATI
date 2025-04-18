@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $nomeProgetto = $data["nomeProgetto"];
         $dataFinanziamento = $data["dataFinanziamento"];
         $importoFinanziamento = $data["importoFinanziamento"];
-        $codiceReward = $data["codiceReward"];
+        $codiceReward = $data["codiceReward"] ?? null; // Imposta a null se non fornito
 
         try {
             $pdo = new PDO('mysql:host=' . servername . ';dbname=' . dbName, dbUsername, dbPassword);

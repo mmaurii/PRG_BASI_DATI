@@ -1,7 +1,7 @@
 import { isUserLoggedIn, getRoleFromToken, getUsernameFromToken } from "./script_navbar.js";
 
 let projectName, mail, projectData, comments, role, pictures, profili, candidatureByProfile, popUpFinanzia, btnClosePopUpFinanziamento,
-    mailFinanziatore, overlay, btnFinanzia, rewards, rewardViewers, selectedReward = "", btnUnselectReward,
+    mailFinanziatore, overlay, btnFinanzia, rewards, rewardViewers, selectedReward = null, btnUnselectReward,
     btnSelectReward, popUpSelectFinanziamento, btnClosePopUpSelectFinanziamento, btnSelectFinanziamento, btnShowPopUpAggiungiProfilo,
     popUpAggiungiProfilo, btnClosePopUpAggiungiProfilo, btnAddProfilo, competenzeSelezionate, livelliCompetenze,
     finanziamentiUtente, finanziamentoViewer, selectedFinanziamento = "", profileGrid, token,
@@ -1011,7 +1011,7 @@ function displayFinanziamento(event) {
                     popUpFinanzia.style.display = "flex";
                     mailFinanziatore.innerText = mail;
 
-                    if (selectedReward !== "") {
+                    if (selectedReward) {
                         let rewardDOMNodes = document.querySelectorAll(".reward");
                         rewardDOMNodes.forEach(reward => {
                             if (reward.querySelector("img")?.getAttribute("cod") == selectedReward) {
@@ -1038,7 +1038,7 @@ function closeFinanziamento(event) {
     // Pulisce i campi dell'interfaccia
     document.getElementById('importo').value = "";
     setUnselect(event, ".reward");
-    selectedReward = "";
+    selectedReward = null;
     // Nasconde l'interfaccia di finanziamento
     overlay.style.display = "none";
     popUpFinanzia.style.display = "none";
@@ -1165,7 +1165,7 @@ function updateDataFinanceInterface() {
 }
 
 async function displaySelectFinanziamento(event) {
-    if (selectedReward !== "") {
+    if (selectedReward) {
         if (isUserLoggedIn()) {
             //visualizzo il popUp
             overlay.style.display = "block";

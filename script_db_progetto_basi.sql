@@ -297,17 +297,24 @@ drop PROCEDURE if exists finanziaProgetto;
 DELIMITER |
 CREATE PROCEDURE finanziaProgetto(IN inputMail VARCHAR(255), IN inputNome VARCHAR(255),IN inputData DATE, IN inputImporto int, IN inputCodR VARCHAR(255))
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+    
 	if not exists(select * from PROGETTO where (nome = inputNome) and (stato = 'aperto')) then
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'inputNome doesn\'t exists or is not an open project';
     END IF;
-        
-	insert into FINANZIAMENTO (mail, nome, dataF, importo)
-	values (inputMail, inputNome, inputData, inputImporto);
-        
-	if (inputCodR <> '') then
-		call chooseReward(inputMail, inputNome, inputData, inputCodR);
-	END IF;
+    
+    start transaction;
+		insert into FINANZIAMENTO (mail, nome, dataF, importo)
+		values (inputMail, inputNome, inputData, inputImporto);
+			
+		if (inputCodR is not null) then
+			call chooseReward(inputMail, inputNome, inputData, inputCodR);
+		END IF;
+    commit;
 END;
 |
 DELIMITER ;
@@ -419,7 +426,7 @@ DROP PROCEDURE IF EXISTS getCompetenze;
 DELIMITER |
 CREATE PROCEDURE getCompetenze(inputMail VARCHAR(255))
 BEGIN
-    if(inputMail ='') then
+    if(inputMail is null) then
         SELECT competenza FROM SKILL;
     else
         SELECT * FROM POSSIEDE WHERE mail = inputMail;

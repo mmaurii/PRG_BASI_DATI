@@ -57,7 +57,7 @@ async function login(event) {
             credentials: 'include',
         }).then((result) => {
             if (result.data.token) {
-                localStorage.setItem('jwtToken', JSON.stringify(result));
+                localStorage.setItem('jwtToken', JSON.stringify(result.data));
                 console.log(JSON.stringify(result));
 
                 window.location.href = './index.html';

@@ -19,8 +19,8 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     }
 
     try {
-        if (isset($_GET['mail'])) {
-            $mail = $_GET['mail'];
+//        if (isset($_GET['mail'])) {
+            $mail = $_GET['mail'] ?? null; // Recupera il parametro 'mail' dalla query string
 
             $sql = "CALL getCompetenze(:mail)";
             $stmt = $pdo->prepare($sql);
@@ -34,10 +34,10 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
             // Se ci sono competenze, restituiscile in formato JSON
             echo json_encode(["result" => $competencies]);
-        } else {
+/*         } else {
             echo json_encode(["error" => "Parametro 'mail' mancante"]);
         }
-    } catch (PDOException $e) {
+ */    } catch (PDOException $e) {
         http_response_code(500);
         echo json_encode(["error" => "[ERRORE] Impossibile ottenere le competenze. Errore: " . $e->getMessage()]);
         exit();
