@@ -1,5 +1,5 @@
 let token, progetti, picture, picturesArray, linkLogin, lisignup, lilogout, liavvia, licom;
-let btnLogin, btnLogout, btnSignup, btnProfile, liProfile, logo, avviaProgetto;
+let btnLogin, btnLogout, btnSignup, btnProfile, liProfile, logo, avviaProgetto, competenze;
 
 document.addEventListener('DOMContentLoaded', function() {
     token = localStorage.getItem("jwtToken");
@@ -41,14 +41,16 @@ document.addEventListener('DOMContentLoaded', function() {
         btnProfile = document.getElementById('profile');
         logo = document.getElementById('logo');
         avviaProgetto = document.getElementById('avviaProgetto');
+        competenze = document.getElementById('competenze');;
 
         // Verifica che gli elementi esistano prima di aggiungere gli event listener
-        if (btnLogin && btnLogout && btnSignup && btnProfile && logo && avviaProgetto) {
+        if (btnLogin && btnLogout && btnSignup && btnProfile && logo && avviaProgetto && competenze) {
             logo.addEventListener('click', ()=>redirect("./index.html"));
             btnLogout.addEventListener('click', logout);
             btnLogin.addEventListener('click', login);
             btnSignup.addEventListener('click', signup);
             btnProfile.addEventListener('click', ()=>redirect("./profile.html"));
+            competenze.addEventListener('click', ()=>redirect("./competenze.html"));
 
             if (isUserLoggedIn()) {
                 avviaProgetto.addEventListener('click', ()=>redirect("./addProgetto.html"));

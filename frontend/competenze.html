@@ -6,12 +6,15 @@
     <title>Gestione Competenze</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="style_competenze.css">
+    <link rel="stylesheet" href="style_navbar.css">
+    <script type="module" src="script_competenze.js"></script>
 </head>
 <body>
-    <div class="admin-container">
-        <h1>BOSTARTER - Gestione Competenze</h1>
-        <button class="logout-button">Logout</button>
 
+    <div id="navbar"></div>
+
+    <h1>Gestione Competenze</h1>
+    <div class="admin-container">
         <section class="add-competence">
             <h2>Inserisci Competenza</h2>
             <form id="addCompetenceForm">
@@ -30,6 +33,5 @@
             </ul>
         </section>
     </div>
-    <script src="script_competenze.js"></script>
 </body>
 </html>

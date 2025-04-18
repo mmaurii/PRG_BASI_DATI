@@ -10,7 +10,7 @@ body {
 }
 
 .new-project {
-    max-width: 800px;
+    max-width: 33vw;
     margin: 32px auto;
     padding: 0 32px;
 }

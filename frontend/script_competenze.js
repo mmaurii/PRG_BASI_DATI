@@ -1,3 +1,5 @@
+import { isUserLoggedIn, getRoleFromToken, getUsernameFromToken } from "./script_navbar.js";
+
 document.addEventListener('DOMContentLoaded', function() {
     fetchCompetenze();
     document.getElementById('addCompetenceForm').addEventListener('submit', addCompetence);
