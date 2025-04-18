@@ -71,7 +71,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $jwtToken = JWT::encode($payload, JWTKEY, 'HS256');
         
             echo json_encode(["token" => $jwtToken]);
-        
         } catch (PDOException $e) {
             http_response_code(500);
             echo json_encode(["error" => "[ERRORE] Impossibile ottenere il ruolo: " . $e->getMessage()]);
