@@ -544,7 +544,6 @@ BEGIN
     
     SELECT 
         CASE 
-            WHEN a.mail IS NOT NULL AND c.mail IS NOT NULL THEN 'admin_creator'
             WHEN a.mail IS NOT NULL THEN 'admin'
             WHEN c.mail IS NOT NULL THEN 'creator'
             ELSE 'user'

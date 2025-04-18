@@ -1,10 +1,13 @@
 <?php
+
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+
 require_once 'config.php';
 require  __DIR__ . '/../vendor/autoload.php';
 
-function decodeJwt() {
+function decodeJwt()
+{
     try {
         $headers = getallheaders();
         $jwt = json_decode(str_replace("Bearer ", "", $headers['Authorization']), true)['token'];
@@ -17,7 +20,9 @@ function decodeJwt() {
         return null;
     }
 }
-function isCreator() {
+
+function isCreator()
+{
     $headers = getallheaders();
     $jwt = json_decode(str_replace("Bearer ", "", $headers['Authorization']), true)['token'];
     $decoded = decodeJwt($jwt);
@@ -26,16 +31,9 @@ function isCreator() {
     }
     return false;
 }
-function isCreatorAndAdmin() {
-    $headers = getallheaders();
-    $jwt = json_decode(str_replace("Bearer ", "", $headers['Authorization']), true)['token'];
-    $decoded = decodeJwt($jwt);
-    if ($decoded && isset($decoded['ruolo']) && $decoded['ruolo'] === 'admin_creator') {
-        return true;
-    }
-    return false;
-}
-function isAdmin() {
+
+function isAdmin()
+{
     $headers = getallheaders();
     $jwt = json_decode(str_replace("Bearer ", "", $headers['Authorization']), true)['token'];
     $decoded = decodeJwt($jwt);
@@ -45,8 +43,8 @@ function isAdmin() {
     return false;
 }
 
-
-function verifyJwtToken() : bool {
+function verifyJwtToken(): bool
+{
     header("Content-Type: application/json"); // Ensure JSON response
 
     $headers = getallheaders();
@@ -65,8 +63,7 @@ function verifyJwtToken() : bool {
         return true;
     } catch (Exception $e) {
         http_response_code(401);
-        echo json_encode(["error" => "Invalid or expired token: ".$e->getMessage()]);
+        echo json_encode(["error" => "Invalid or expired token: " . $e->getMessage()]);
         exit();
     }
 }
-?>
