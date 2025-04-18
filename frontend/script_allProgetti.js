@@ -12,15 +12,15 @@ async function initInterface() {
     await getProgetti(); // Recupera i progetti
 
     let htmlContent = progetti.map((element) => {
-        let totale_finanziato = element.budget - (element.differenza_budget);
+        element.totale_finanziato = element.totale_finanziato? element.totale_finanziato : 0;
         return `<a href="./progetto.html?name=${element.nome}" class="card" data-nome="${element.nome}">
             <img src="loading.jpg" data-src="" alt="" loading="lazy">
             <h3>${element.nome}</h3>
             <p>${element.descrizione}</p>
             <div class="progress-bar">
-                <div class="progress" style="width: ${Math.floor((totale_finanziato / element.budget) * 100)}%;"></div>
+                <div class="progress" style="width: ${Math.floor((element.totale_finanziato / element.budget) * 100)}%;"></div>
             </div>
-            <p>${Math.floor((totale_finanziato / element.budget) * 100)}% finanziato - €${totale_finanziato} raccolti</p>
+            <p>${Math.floor((element.totale_finanziato / element.budget) * 100)}% finanziato - €${element.totale_finanziato} raccolti</p>
         </a>`}).join("");
 
     projectContainer.innerHTML = htmlContent;
@@ -59,7 +59,7 @@ async function getFotoProgetti(progetti) {
 
 async function getProgetti() {
     try {
-        const response = await axios.get("../backend/getProgettiEvidenza.php", {
+        const response = await axios.get("../backend/getProgetti.php", {
             headers: {
                 "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
             }

@@ -690,12 +690,12 @@ CREATE VIEW viewClassifica(mail, affidabilita) AS
     limit 3;
 
 /* Visualizzare i progetti APERTI che sono più vicini al proprio completamento (= minore differenza tra budget richiesto e somma totale dei finanziamenti ricevuti). Mostrare solo i primi 3 progetti. */
-DROP VIEW if exists viewClassificaProgettiAperti;
+DROP VIEW IF EXISTS viewClassificaProgettiAperti;
 CREATE VIEW viewClassificaProgettiAperti AS
 SELECT P.nome, P.descrizione, P.dataInserimento, P.budget, P.dataLimite, 
-       P.budget - (SELECT SUM(F.importo) 
-                   FROM FINANZIAMENTO F 
-                   WHERE F.nome = P.nome) AS differenza_budget
+       P.budget - IFNULL((SELECT SUM(F.importo) 
+                          FROM FINANZIAMENTO F 
+                          WHERE F.nome = P.nome), 0) AS differenza_budget
 FROM PROGETTO P
 WHERE P.stato = 'aperto'
 ORDER BY differenza_budget ASC
