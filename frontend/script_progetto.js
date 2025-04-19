@@ -37,46 +37,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     btnSelectFinanziamento.addEventListener('click', associateRewardToFinanziamento);
     btnShowPopUpAggiungiProfilo.addEventListener('click', showFormAddProfile);
     btnClosePopUpAggiungiProfilo.addEventListener('click', closeFormAddProfile);
-
-    await getCompetenze(null, "competenzeTotali");
-
-    //codice per popolare il popUp con i dati raccolti (nascosto inizialmente da css)
-    initPopUpAddProfile();
-
-    //creazione interfaccia
-    await initInterface();
-
-    //creazione foto scorrevoli
-    const projectImages = document.querySelector('.project-images');
-    const images = projectImages.querySelectorAll('img');
-    const scrollLeftButton = document.querySelector('.scroll-left');
-    const scrollRightButton = document.querySelector('.scroll-right');
-
-
     document.getElementById('finanziamento').addEventListener('click', displayFinanziamento);
     document.querySelector('.submit-comment').addEventListener('click', sendComment);
 
-    let currentIndex = 0; // Per tracciare quale immagine è visibile
-
-    // Funzione per spostarsi a sinistra
-    scrollLeftButton.addEventListener('click', () => {
-        if (currentIndex > 0) {
-            currentIndex--; // Decrescere l'indice
-            const newTransformValue = -(currentIndex * 100); // Spostare il contenuto per mostrare l'immagine precedente
-            projectImages.style.transform = `translateX(${newTransformValue}%)`;
-        }
-    });
-
-    // Funzione per spostarsi a destra
-    scrollRightButton.addEventListener('click', () => {
-        if (currentIndex < images.length - 1) {
-            currentIndex++; // Aumentare l'indice
-            const newTransformValue = -(currentIndex * 100); // Spostare il contenuto per mostrare l'immagine successiva
-            projectImages.style.transform = `translateX(${newTransformValue}%)`;
-        }
-    });
+    //creazione interfaccia
+    await initInterface();
+    
 })
-
 async function initInterface() {
     try {
         const params = new URLSearchParams(window.location.search);
@@ -88,40 +55,30 @@ async function initInterface() {
             role = getRoleFromToken(token.token);
         }
 
-        await getProject();
+        await getCompetenze(null, "competenzeTotali");
+        initPopUpAddProfile();      //crea il popUp con i dati raccolti delle competenze totali (nascosto inizialmente da css)
 
-        updateDataFinanceInterface();
+        await getProject();
+        updateDataFinanceInterface();   //imposta i dati del progetto, nome, tipo ecc...
 
         await getPictures();
-        if (pictures) {
-            const projectImages = pictures[projectName];
-
-            projectImages.forEach(element => {
-                let image = document.createElement("img");
-                image.src = element.foto;
-                document.querySelector(".project-images").appendChild(image);
-            });
-        }
+        addScrollImg();    //mostra e crea logica per scorrere le foto nel caso ce ne siano più di una
 
         await getComments();
-        comments.forEach(element => {
-            templateComment(element.testo, element.data, element.mail, element.id)
-        });
+        displayComments();  //mostra tutti i commenti associati a quel progetto
 
         await getRewards();
-        displayRewards();
+        displayRewards();   //mostra tutte le rewards legate a quel progetto
 
         await getProfiliByProgetto();
-        profili.forEach(async (element) => {
-            await getCompetenzeByProfile(element.id);
-
-            templateProfile(element)
-        });
+        displayProfili();   //mostra profili richiesti per quel progetto
 
         if (profili.length === 0) {
             document.querySelector("#search-profile").innerText = "Nessun profilo richiesto al momento"
         }
-        if (mail === projectData.mailC && projectData.tipo === "Software") {  // Controlla se l'utente è il creatore del progetto, si possono aggiungere profili solo se il prgetto è di tipo software
+
+        // Controlla se l'utente è il creatore del progetto, si possono aggiungere profili solo se il prgetto è di tipo software
+        if (mail === projectData.mailC && projectData.tipo === "Software") {  
             btnShowPopUpAggiungiProfilo.style.display = "block";
         }
 
@@ -255,6 +212,56 @@ function initPopUpViewCandidature(idProfilo) {
 
     // Funzione per chiudere il popup e l'overlay
     document.getElementById("close-manageCandidature").addEventListener("click", closeManageCandidatura);
+}
+
+function displayProfili(){
+    profili.forEach(async (element) => {
+        await getCompetenzeByProfile(element.id);
+
+        templateProfile(element)
+    });
+}
+
+function displayComments(){
+    comments.forEach(element => {
+        templateComment(element.testo, element.data, element.mail, element.id)
+    });
+}
+
+function addScrollImg(){
+    if (pictures) {
+        const projectImages = pictures[projectName];
+
+        projectImages.forEach(element => {
+            let image = document.createElement("img");
+            image.src = element.foto;
+            document.querySelector(".project-images").appendChild(image);
+        });
+    }
+    const projectImages = document.querySelector('.project-images');
+    const images = projectImages.querySelectorAll('img');
+    const scrollLeftButton = document.querySelector('.scroll-left');
+    const scrollRightButton = document.querySelector('.scroll-right');
+
+    let currentIndex = 0; // Per tracciare quale immagine è visibile
+
+    // Funzione per spostarsi a sinistra
+    scrollLeftButton.addEventListener('click', () => {
+        if (currentIndex > 0) {
+            currentIndex--; // Decrescere l'indice
+            const newTransformValue = -(currentIndex * 100); // Spostare il contenuto per mostrare l'immagine precedente
+            projectImages.style.transform = `translateX(${newTransformValue}%)`;
+        }
+    });
+
+    // Funzione per spostarsi a destra
+    scrollRightButton.addEventListener('click', () => {
+        if (currentIndex < images.length - 1) {
+            currentIndex++; // Aumentare l'indice
+            const newTransformValue = -(currentIndex * 100); // Spostare il contenuto per mostrare l'immagine successiva
+            projectImages.style.transform = `translateX(${newTransformValue}%)`;
+        }
+    });
 }
 async function accettaCandidatura(idProfilo, mail, btnAcc, btnRej) {
     const data = {
