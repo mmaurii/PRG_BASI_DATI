@@ -55,11 +55,12 @@ async function initInterface() {
             role = getRoleFromToken(token.token);
         }
 
-        await getCompetenze(null, "competenzeTotali");
-        initPopUpAddProfile();      //crea il popUp con i dati raccolti delle competenze totali (nascosto inizialmente da css)
-
         await getProject();
         updateDataFinanceInterface();   //imposta i dati del progetto, nome, tipo ecc...
+
+        /*//teoricamente vanno bene le chiamate in parallelo, le teniamo per sicurezza nel caso trovassimo errori
+        await getCompetenze(null, "competenzeTotali");
+        initPopUpAddProfile();      //crea il popUp con i dati raccolti delle competenze totali (nascosto inizialmente da css)
 
         await getPictures();
         addScrollImg();    //mostra e crea logica per scorrere le foto nel caso ce ne siano più di una
@@ -72,6 +73,15 @@ async function initInterface() {
 
         await getProfiliByProgetto();
         displayProfili();   //mostra profili richiesti per quel progetto
+        */
+        
+        await Promise.all([
+            getCompetenze(null, "competenzeTotali").then(initPopUpAddProfile),      //crea il popUp con i dati raccolti delle competenze totali (nascosto inizialmente da css)
+            getPictures().then(addScrollImg),       //mostra e crea logica per scorrere le foto nel caso ce ne siano più di una
+            getComments().then(displayComments),        //mostra tutti i commenti associati a quel progetto
+            getRewards().then(displayRewards),      //mostra tutte le rewards legate a quel progetto
+            getProfiliByProgetto().then(displayProfili)     //mostra profili richiesti per quel progetto
+        ]);
 
         if (profili.length === 0) {
             document.querySelector("#search-profile").innerText = "Nessun profilo richiesto al momento"
@@ -796,7 +806,7 @@ function sendComment() {
                 .catch(error => {
                     let msg = error.response ? error.response.data : error.message;
                     console.error("Access denied:", msg);
-                    alert(msg);
+                    alert("Devi effettuare l'accesso prima di poter inviare un commento");
                     });
         }
     }
