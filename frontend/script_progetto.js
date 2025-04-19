@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     btnShowPopUpAggiungiProfilo.addEventListener('click', showFormAddProfile);
     btnClosePopUpAggiungiProfilo.addEventListener('click', closeFormAddProfile);
 
-    await getCompetenze("", "competenzeTotali");
+    await getCompetenze(null, "competenzeTotali");
 
     //codice per popolare il popUp con i dati raccolti (nascosto inizialmente da css)
     initPopUpAddProfile();
@@ -136,7 +136,7 @@ function initPopUpAddProfile() {
     let listaCompetenze = document.getElementById('lista-competenze');
     competenzeSelezionate = []; // Array delle competenze selezionate
     livelliCompetenze = {};
-
+    console.log(competenze.competenzeTotali)
     competenze.competenzeTotali.forEach(item => {
         let label = document.createElement('label');
         label.classList.add("checkbox-item");
