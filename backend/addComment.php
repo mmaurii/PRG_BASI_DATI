@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
             // Restituisci il risultato
             echo json_encode([
-                "success" => "Commento aggiunto con successo",
+                "result" => "Commento aggiunto con successo",
                 "comment_id" => $idResult['id']
             ]);
         } catch (PDOException $e) {

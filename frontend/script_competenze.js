@@ -66,8 +66,8 @@ async function addCompetence(event) {
                 }
             });
 
-            if (response.data.success) {
-                alert(response.data.success);
+            if (response.data.result) {
+                alert(response.data.result);
                 fetchCompetenze();
             } else {
                 alert(response.data.error || "Errore durante l'aggiunta della competenza");

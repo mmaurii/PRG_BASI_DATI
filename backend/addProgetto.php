@@ -61,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->execute();
         }
 
-        echo json_encode(["success" => "Progetto inserito con successo e immagine caricata", "imageUrl" => $imageUrl]);
+        echo json_encode(["result" => "Progetto inserito con successo e immagine caricata", "imageUrl" => $imageUrl]);
     } catch (PDOException $e) {
         http_response_code(500);
         echo json_encode(["error" => "[ERRORE] Impossibile inserire il progetto. Errore: " . $e->getMessage()]);

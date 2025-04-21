@@ -43,7 +43,7 @@
                 $stmt->execute();
 
                 // If everything is fine, send a success response
-                echo json_encode(["success" => "Competenze e livello aggiornati con successo."]);
+                echo json_encode(["result" => "Competenze e livello aggiornati con successo."]);
             } catch (PDOException $e) {
                 http_response_code(500);
                 echo json_encode(["error" => "[ERRORE] Query SQL non riuscita. Errore: " . $e->getMessage()]);

@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $text = "timeStamp: " . date('Y-m-d H:i:s').";competenza: " . $competenza . ";queryType: INSERT;query: " . $sql . ";result: " . $result;
         $resp = writeLog($text);
 
-        echo json_encode(["success" => "Competenza inserita con successo"]);
+        echo json_encode(["result" => "Competenza inserita con successo"]);
     } catch (PDOException $e) {
         http_response_code(500);
         echo json_encode(["error" => "[ERRORE] Impossibile inserire la competenza. Errore: " . $e->getMessage()]);

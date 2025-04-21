@@ -37,7 +37,7 @@
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 // Aggiungi l'ID alla risposta
-                echo json_encode(["success" => true, "profileID" => $result['profileID']]);
+                echo json_encode(["result" => true, "profileID" => $result['profileID']]);
             } catch (PDOException $e) {
                 http_response_code(500);
                 echo json_encode(["error" => "[ERRORE] Query SQL non riuscita. Errore: " . $e->getMessage()]);

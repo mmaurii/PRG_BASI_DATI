@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // Effettua la richiesta POST per caricare l'immagine
             axios.post("http://13.61.196.206/uploadImage.php", formData)
                 .then(response => {
-                    if (response.data.success) {
+                    if (response.data.result) {
                         // Ottieni il percorso dell'immagine dalla risposta
                         const imageUrl = response.data.imageUrl;
                         console.log(imageUrl);
@@ -130,7 +130,7 @@ document.querySelector('.project-form').addEventListener('submit', async functio
 
         const response = await axios.post("../backend/addProgetto.php", projectData);
 
-        if (response.data.success) {
+        if (response.data.result) {
             alert('Progetto creato con successo!');
         } else {
             alert('Errore: ' + response.data.error);
