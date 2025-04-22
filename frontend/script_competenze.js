@@ -15,9 +15,6 @@ async function fetchCompetenze() {
     try {
         // Effettua la richiesta GET per ottenere le competenze
         const response = await axios.get("../backend/getCompetenze.php", {
-            params: {
-                mail:""
-            },
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
             }
