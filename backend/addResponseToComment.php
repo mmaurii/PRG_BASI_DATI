@@ -32,7 +32,6 @@
                 // Execute the query
                 $result = $stmt->execute();
                 echo json_encode([
-                    "success" => "risposta aggiunto con successo",
                     "result" => $result
                 ]);
             } catch (PDOException $e) {
