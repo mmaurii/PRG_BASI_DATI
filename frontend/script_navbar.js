@@ -29,9 +29,13 @@ document.addEventListener('DOMContentLoaded', function() {
             liProfile.style.display='none';
         }
 
-        if(isUserLoggedIn() && (getRoleFromToken() === "admin_creator" || getRoleFromToken() === "admin")) {
+        if(isUserLoggedIn() && (getRoleFromToken() === "admin")) {
             liavvia.style.display = 'none';
-            licom.style.display = 'block'; 
+            licom.style.display = 'block';
+        }
+
+        if(getRoleFromToken() === "user") {
+            liavvia.style.display = 'none';
         }
 
         // Ora la navbar è caricata, quindi possiamo aggiungere gli eventListener
