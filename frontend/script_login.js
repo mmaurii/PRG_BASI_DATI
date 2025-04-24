@@ -37,7 +37,7 @@ async function login(event) {
         return;
     }
 
-        const hashedPassword = password;
+        const hashedPassword = await hashPassword(password);
 
         let loginData = {
             mail: username,

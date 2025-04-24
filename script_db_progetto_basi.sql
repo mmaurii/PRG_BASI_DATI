@@ -833,6 +833,8 @@ DELIMITER ;
 
 SHOW PROCEDURE STATUS WHERE Db = 'BOSTARTER';
 
+/* Popolamento delle tabelle con dati di esempio */
+/* 
 INSERT INTO UTENTE (mail, nickname, password, nome, cognome, annoN, luogo) 
 VALUES 
 ('mario.rossi@email.com', 'MarioR', 'Pass123!', 'Mario', 'Rossi', 1995, 'Roma'),
@@ -1064,3 +1066,4 @@ SELECT @role;
 SHOW PROCEDURE STATUS WHERE Db = 'BOSTARTER';
 
 
+ */
