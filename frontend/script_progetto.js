@@ -1,8 +1,8 @@
 import { isUserLoggedIn, getRoleFromToken, getUsernameFromToken } from "./script_navbar.js";
 
 let projectName, mail, projectData, comments, role, pictures, profili, candidatureByProfile, popUpFinanzia, btnClosePopUpFinanziamento,
-    mailFinanziatore, overlay, btnFinanzia, rewards, rewardViewers, selectedReward = null, btnUnselectReward,
-    btnSelectReward, popUpSelectFinanziamento, btnClosePopUpSelectFinanziamento, btnSelectFinanziamento, btnShowPopUpAggiungiProfilo,
+    mailFinanziatore, overlay, btnFinanzia, rewards, rewardViewers, selectedReward = null,
+    popUpSelectFinanziamento, btnClosePopUpSelectFinanziamento, btnSelectFinanziamento, btnShowPopUpAggiungiProfilo,
     popUpAggiungiProfilo, btnClosePopUpAggiungiProfilo, btnAddProfilo, competenzeSelezionate, livelliCompetenze,
     finanziamentiUtente, finanziamentoViewer, selectedFinanziamento = "", profileGrid, token,
     competenze = { "competenzeTotali": [], "competenzeUser": [], "competenzePerProfilo": [] };
@@ -13,9 +13,9 @@ let today = currentDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
 document.addEventListener('DOMContentLoaded', async function () {
     finanziamentoViewer = document.querySelector('.finanziamento-viewer');
     btnSelectFinanziamento = document.getElementById('btn-select-finanziamento');
-    btnSelectReward = document.querySelector('.select-reward');
-    btnUnselectReward = document.querySelector('.unselect-reward');
-    rewardViewers = Array.from(document.getElementsByClassName('reward-viewer'));
+/*    btnSelectReward = document.querySelector('.select-reward');
+     btnUnselectReward = document.querySelector('.unselect-reward');
+ */    rewardViewers = Array.from(document.getElementsByClassName('reward-viewer'));
     btnFinanzia = document.getElementById('finanzia');
     overlay = document.getElementById('overlay');
     mailFinanziatore = document.getElementById('mail');
@@ -31,9 +31,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     btnClosePopUpFinanziamento.addEventListener('click', closeFinanziamento);
     btnFinanzia.addEventListener('click', addFinanziamento);
-    btnUnselectReward.addEventListener('click', setUnselect);
-    btnSelectReward.addEventListener('click', displaySelectFinanziamento);
-    btnClosePopUpSelectFinanziamento.addEventListener('click', closeSelectFinanziamento);
+/*     btnUnselectReward.addEventListener('click', setUnselect);
+     btnSelectReward.addEventListener('click', displaySelectFinanziamento);
+*/    btnClosePopUpSelectFinanziamento.addEventListener('click', closeSelectFinanziamento);
     btnSelectFinanziamento.addEventListener('click', associateRewardToFinanziamento);
     btnShowPopUpAggiungiProfilo.addEventListener('click', showFormAddProfile);
     btnClosePopUpAggiungiProfilo.addEventListener('click', closeFormAddProfile);
@@ -1069,7 +1069,12 @@ function addFinanziamento(event) {
         return;
     }
 
-    if (mail == null || projectName == null || importo == null || mail == "" || projectName == "" || importo == "") {
+    if(selectedReward == null) {
+        alert("Selezionare una reward per procedere con il finanziamento");
+        return;
+    }
+
+    if (mail == null || projectName == null || importo == null) {
         alert("Errore nei dati inseriti");
         return;
     }
@@ -1077,8 +1082,6 @@ function addFinanziamento(event) {
     if (importo > projectData.budget - projectData.totale_finanziato) {
         alert("Importo superiore al budget rimanente, finanziato solo il budget rimanente");
         importo = projectData.budget - projectData.totale_finanziato;
-
-        //chiudere il progetto
     }
 
     // Prepara i dati da inviare al server

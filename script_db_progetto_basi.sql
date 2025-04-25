@@ -834,19 +834,29 @@ DELIMITER ;
 SHOW PROCEDURE STATUS WHERE Db = 'BOSTARTER';
 
 /* Popolamento delle tabelle con dati di esempio */
-/* 
+ 
 INSERT INTO UTENTE (mail, nickname, password, nome, cognome, annoN, luogo) 
 VALUES 
-('mario.rossi@email.com', 'MarioR', 'Pass123!', 'Mario', 'Rossi', 1995, 'Roma'),
-('luca.bianchi@email.com', 'LucaB', 'Secure456$', 'Luca', 'Bianchi', 1998, 'Milano'),
-('anna.verdi@email.com', 'AnnaV', 'Anna789%', 'Anna', 'Verdi', 2000, 'Firenze'),
-('sara.neri@email.com', 'SaraN', 'SaraPass99', 'Sara', 'Neri', 1993, 'Torino'),
-('giovanni.ferri@email.com', 'GiovanniF', 'GioSecure22', 'Giovanni', 'Ferri', 1997, 'Napoli'),
-('elena.moro@email.com', 'ElenaM', 'MoroPass33', 'Elena', 'Moro', 1996, 'Bologna'),
-('paolo.riva@email.com', 'PaoloR', 'RivaStrong77', 'Paolo', 'Riva', 1992, 'Genova'),
-('francesca.fontana@email.com', 'FrancyF', 'Fontana!88', 'Francesca', 'Fontana', 2001, 'Palermo'),
-('andrea.serra@email.com', 'AndreaS', 'SerraXx12', 'Andrea', 'Serra', 1999, 'Cagliari'),
-('valentina.marchi@email.com', 'ValeM', 'MarchiPass66', 'Valentina', 'Marchi', 1994, 'Verona');
+/* Pass123! */
+('mario.rossi@email.com', 'MarioR', '46708f23d682fef9aa996ecbb139bfb6c9ffdc039905ad6ad5c85a88b9411d97', 'Mario', 'Rossi', 1995, 'Roma'),
+/* Secure456$ */
+('luca.bianchi@email.com', 'LucaB', '1ff19fdc66d645f6c1f877ed9a45fdb5a4fdfae7ca438f0d6e58ed78e575706d', 'Luca', 'Bianchi', 1998, 'Milano'),
+/* Anna789% */
+('anna.verdi@email.com', 'AnnaV', 'f57c336f47211c7cfe1a25a0dbe5ae53646cbab3aee35a50698460fc99d3a964', 'Anna', 'Verdi', 2000, 'Firenze'),
+/* SaraPass99 */
+('sara.neri@email.com', 'SaraN', 'b6cb9353f28f11e0909a39be1de657b7fbadced11fc7758b58cf25fb048ce8ad', 'Sara', 'Neri', 1993, 'Torino'),
+/* GioSecure22 */
+('giovanni.ferri@email.com', 'GiovanniF', 'e255c9022e60397a4d448a687128263d97b8dca5a8e825dbf41e8f84ec42022e', 'Giovanni', 'Ferri', 1997, 'Napoli'),
+/* MoroPass33 */
+('elena.moro@email.com', 'ElenaM', 'c2d23fe476bfed83e47b3e482e90d22c4c0e3196c6ce2e3788b8d6c5f023f41b', 'Elena', 'Moro', 1996, 'Bologna'),
+/* RivaStrong77 */
+('paolo.riva@email.com', 'PaoloR', '2951273c312f619043ea7938c0298fad03f93d5003986de7da723b1ae913081c', 'Paolo', 'Riva', 1992, 'Genova'),
+/* Fontana!88 */
+('francesca.fontana@email.com', 'FrancyF', 'be1596a168d5812b73fcc98cc6fe1476d365537d409a69c320786477a78ea862', 'Francesca', 'Fontana', 2001, 'Palermo'),
+/* SerraXx12 */
+('andrea.serra@email.com', 'AndreaS', '11b1e87aef8cab2d63543d38a85578393304884ccf76098b4d3f310f99048941', 'Andrea', 'Serra', 1999, 'Cagliari'),
+/* MarchiPass66 */
+('valentina.marchi@email.com', 'ValeM', 'daa157d3ccdc45bd61cf5125a6c1bf8e05cab7d04902caae1cef99410e3b1153', 'Valentina', 'Marchi', 1994, 'Verona');
 
 INSERT INTO SKILL (competenza) VALUES 
 ('Programmazione'),
@@ -1066,4 +1076,3 @@ SELECT @role;
 SHOW PROCEDURE STATUS WHERE Db = 'BOSTARTER';
 
 
- */

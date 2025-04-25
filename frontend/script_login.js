@@ -73,35 +73,6 @@ async function login(event) {
             pErrorMsg.innerText = resp.error;
         });
 
-/*         const response = await fetch(loginUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify(loginData),
-        });
-
-        if (response.ok) {
-            const result = await response.json();
-
-            if (result.token) {
-                localStorage.setItem('jwtToken', JSON.stringify(result));
-                console.log(JSON.stringify(result));
-
-                window.location.href = './index.html';
-            } else {
-                pErrorMsg.innerText = result.error || 'Login failed.';
-            }
-
-            mailField.value = '';
-            passwordField.value = '';
-            codSicurezzaField.value = '';
-        } else {
-            let resp = JSON.parse(await response.text());
-            pErrorMsg.innerText = resp.error;
-        }
- */    
 }
 
 
