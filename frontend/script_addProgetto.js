@@ -1,10 +1,9 @@
 import { isUserLoggedIn, getUsernameFromToken } from './script_navbar.js';
 
 const rewardsData = [];
-let mail;
+let mail, projectForm, rewardsList, rewardsContainer, addRewardButton;
 
-document.addEventListener("DOMContentLoaded", function () {
-
+document.addEventListener("DOMContentLoaded", (event) => {
     if (isUserLoggedIn()) {
         mail = getUsernameFromToken();
 
@@ -18,73 +17,21 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.href = "./login.html";
     }
 
-    const addRewardButton = document.getElementById('add-reward');
-    const rewardsContainer = document.getElementById('rewards-container');
-    const rewardsList = document.getElementById('rewards-list');
-    
-    // Funzione per aggiungere una ricompensa
-    addRewardButton.addEventListener('click', function () {
-        const rewardTitle = document.querySelector('input[name="reward-title[]"]').value;
-        const rewardImage = document.querySelector('input[name="reward-image[]"]').files[0];
+    addRewardButton = document.getElementById('add-reward');
+    rewardsContainer = document.getElementById('rewards-container');
+    rewardsList = document.getElementById('rewards-list');
+    projectForm = document.querySelector('.project-form');
 
-        // Verifica che il titolo e l'immagine siano stati inseriti
-        if (!rewardTitle || !rewardImage) {
-            alert("Compila tutti i campi della ricompensa!");
-            return;
-        }
-
-        // Crea un nuovo item nella lista delle ricompense
-        const rewardItem = document.createElement('li');
-        rewardItem.classList.add('reward-item');
-
-        // Mostra il titolo e l'immagine della ricompensa
-        rewardItem.innerHTML = `
-            <img src="${URL.createObjectURL(rewardImage)}" alt="${rewardTitle}" width="50" height="50">
-            <p>${rewardTitle}</p>
-        `;
-
-        // Aggiungi la ricompensa alla lista
-        rewardsList.appendChild(rewardItem);
-
-        // Pulisce i campi per aggiungere nuove ricompense
-        document.querySelector('input[name="reward-title[]"]').value = '';
-        document.querySelector('input[name="reward-image[]"]').value = '';
-
-        
-        const nome = document.querySelector('#title').value;
-
-        if (rewardImage) {
-            const formData = new FormData();
-            formData.append('file', rewardImage);
-    
-            // Effettua la richiesta POST per caricare l'immagine
-            axios.post("http://13.61.196.206/uploadImage.php", formData)
-                .then(response => {
-                    if (response.data.result) {
-                        // Ottieni il percorso dell'immagine dalla risposta
-                        const imageUrl = response.data.imageUrl;
-                        console.log(imageUrl);
-                        rewardsData.push({
-                            inputCod: rewardTitle,
-                            inputFoto: imageUrl,
-                            inputDescrizione: rewardTitle,
-                            inputNomeP: nome
-                        });
-                    } else {
-                        alert('Errore nel caricamento dell\'immagine: ' + response.data.error);
-                    }
-                })
-                .catch(error => {
-                    console.error('Errore nella richiesta di caricamento dell\'immagine:', error);
-                    alert('Si è verificato un errore nel caricare l\'immagine.');
-                });
-        } else {
-            alert('Devi caricare un\'immagine per il progetto.');
-        }
-    });
+    addRewardButton.addEventListener('click', addReward);
+    projectForm.addEventListener('submit', addProject);
 });
 
-document.querySelector('.project-form').addEventListener('submit', async function(event) {
+/**
+ *  Aggiunge un nuovo progetto al db
+ * @param {*} event 
+ * @returns 
+ */
+async function addProject(event) {
     event.preventDefault(); // Impedisce il comportamento predefinito del form
 
     // Preleva i dati dal modulo
@@ -101,6 +48,16 @@ document.querySelector('.project-form').addEventListener('submit', async functio
 
     if (imageFiles.length === 0) {
         alert('Devi caricare almeno un\'immagine per il progetto.');
+        return;
+    }
+
+    if(!nome || !descrizione || !budget || !dataLimite || !tipo) {
+        alert("Compila tutti i campi del progetto!");
+        return;
+    }
+
+    if (new Date(dataLimite) <= new Date()) {
+        alert("La data di scadenza deve essere futura!");
         return;
     }
 
@@ -136,7 +93,7 @@ document.querySelector('.project-form').addEventListener('submit', async functio
             alert('Errore: ' + response.data.error);
         }
 
-        // Invia ogni ricompensa a addreward.php
+        // salva ogni ricompensa nel db
         rewardsData.forEach(reward => {
             axios.post("../backend/addReward.php", {
                 //codice: reward.inputCod,
@@ -148,13 +105,13 @@ document.querySelector('.project-form').addEventListener('submit', async functio
                     'Content-Type': 'application/json'
                 }
             })
-            .then(response => {
-                console.log('Ricompensa aggiunta con successo:', response.data);
-            })
-            .catch(error => {
-                console.error('Errore nell\'aggiunta della ricompensa:', error);
-                alert('Errore nel salvataggio della ricompensa: ' + error.message);
-            });
+                .then(response => {
+                    console.log('Ricompensa aggiunta con successo:', response.data);
+                })
+                .catch(error => {
+                    console.error('Errore nell\'aggiunta della ricompensa:', error);
+                    alert('Errore nel salvataggio della ricompensa: ' + error.message);
+                });
         });
 
         // Verifica se ci sono ricompense da inviare
@@ -163,8 +120,75 @@ document.querySelector('.project-form').addEventListener('submit', async functio
             return;
         }
 
+        //reindirizza alla pagina dei progetti
+        window.location.href = "./index.html";
     } catch (error) {
         console.error('Errore:', error);
         alert('Si è verificato un errore durante il caricamento.');
     }
-});
+}
+
+/**
+ * Funzione per aggiungere una ricompensa
+ * @param {*} event 
+ * @returns 
+ */
+async function addReward(event) {
+    const rewardTitle = document.querySelector('input[name="reward-title[]"]').value;
+    const rewardImage = document.querySelector('input[name="reward-image[]"]').files[0];
+
+    // Verifica che il titolo e l'immagine siano stati inseriti
+    if (!rewardTitle || !rewardImage) {
+        alert("Compila tutti i campi della ricompensa!");
+        return;
+    }
+
+
+    if (rewardImage) {
+        const formData = new FormData();
+        formData.append('file', rewardImage);
+
+        // Effettua la richiesta POST per caricare l'immagine
+        await axios.post("http://13.61.196.206/uploadImage.php", formData)
+            .then(response => {
+                if (response.data.success) {
+                    // Ottieni il percorso dell'immagine dalla risposta
+                    const imageUrl = response.data.imageUrl;
+/*                     console.log(imageUrl);
+ */
+                    // Crea un nuovo item nella lista delle ricompense
+                    const rewardItem = document.createElement('li');
+                    rewardItem.classList.add('reward-item');
+
+                    // Mostra il titolo e l'immagine della ricompensa
+                    rewardItem.innerHTML = `
+                        <img src="${URL.createObjectURL(rewardImage)}" alt="${rewardTitle}" width="50" height="50">
+                        <p>${rewardTitle}</p>`;
+
+                    // Aggiungi la ricompensa alla lista
+                    rewardsList.appendChild(rewardItem);
+
+                    // Pulisce i campi per aggiungere nuove ricompense
+                    document.querySelector('input[name="reward-title[]"]').value = '';
+                    document.querySelector('input[name="reward-image[]"]').value = '';
+
+                    const nome = document.querySelector('#title').value;
+
+                    rewardsData.push({
+                        inputCod: rewardTitle,
+                        inputFoto: imageUrl,
+                        inputDescrizione: rewardTitle,
+                        inputNomeP: nome
+                    });
+                } else {
+                    alert('Errore nel caricamento dell\'immagine: ' + response.data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Errore nella richiesta di caricamento dell\'immagine:', error);
+                alert('Si è verificato un errore nel caricare l\'immagine.');
+            });
+    } else {
+        alert('Devi caricare un\'immagine per il progetto.');
+    }
+}

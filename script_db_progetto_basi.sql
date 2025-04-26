@@ -834,7 +834,6 @@ DELIMITER ;
 SHOW PROCEDURE STATUS WHERE Db = 'BOSTARTER';
 
 /* Popolamento delle tabelle con dati di esempio */
- 
 INSERT INTO UTENTE (mail, nickname, password, nome, cognome, annoN, luogo) 
 VALUES 
 /* Pass123! */

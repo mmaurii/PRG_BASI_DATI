@@ -170,14 +170,19 @@ footer {
 }
 
 .reward-item img {
-    width: 100px;
+    width: 100%;
     height: 100px;
-    object-fit: contain;
+    object-fit: cover; /* Better than contain for avoiding overflow */
     border-radius: 4px;
     padding: 7px;
+    overflow: hidden;
 }
 
 .reward-item p {
     color: grey;
     margin-bottom: 16px;
+    word-break: break-word; /* This forces long words to break */
+    overflow-wrap: break-word; /* Extra safety */
+    text-align: center;
+    max-width: 100%;
 }
