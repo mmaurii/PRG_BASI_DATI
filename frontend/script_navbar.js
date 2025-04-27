@@ -17,9 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
         licom = document.getElementById('licom');
         liProfile = document.getElementById('liprofile');
 
-        console.log(getRoleFromToken());
-
-        //&& getRoleFromToken(token) === "admin_creator"
         if(isUserLoggedIn()) {
             linkLogin.style.display = 'none'; 
             lisignup.style.display = 'none'; 
@@ -85,7 +82,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
                     if (data.result && data.result.length > 0) {
                         data.result.forEach(progetto => {
-                            console.log(progetto);
                             const div = document.createElement("a");
                             div.href = `progetto.html?name=${encodeURIComponent(progetto.nome)}`; // Link alla pagina del progetto
                             div.classList.add("dropdown-item");
@@ -144,7 +140,6 @@ export function getRoleFromToken() {
     try {
         const payloadBase64 = token.split('.')[1]; // Estrae la parte payload del JWT
         const payloadDecoded = JSON.parse(atob(payloadBase64)); // Decodifica da Base64 a JSON
-        //console.log(payloadDecoded);
 
         return payloadDecoded.ruolo || null;
     } catch (error) {

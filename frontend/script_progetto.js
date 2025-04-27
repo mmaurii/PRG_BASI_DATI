@@ -13,9 +13,7 @@ let today = currentDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
 document.addEventListener('DOMContentLoaded', async function () {
     finanziamentoViewer = document.querySelector('.finanziamento-viewer');
     btnSelectFinanziamento = document.getElementById('btn-select-finanziamento');
-/*    btnSelectReward = document.querySelector('.select-reward');
-     btnUnselectReward = document.querySelector('.unselect-reward');
- */    rewardViewers = Array.from(document.getElementsByClassName('reward-viewer'));
+   rewardViewers = Array.from(document.getElementsByClassName('reward-viewer'));
     btnFinanzia = document.getElementById('finanzia');
     overlay = document.getElementById('overlay');
     mailFinanziatore = document.getElementById('mail');
@@ -31,9 +29,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     btnClosePopUpFinanziamento.addEventListener('click', closeFinanziamento);
     btnFinanzia.addEventListener('click', addFinanziamento);
-/*     btnUnselectReward.addEventListener('click', setUnselect);
-     btnSelectReward.addEventListener('click', displaySelectFinanziamento);
-*/    btnClosePopUpSelectFinanziamento.addEventListener('click', closeSelectFinanziamento);
+    btnClosePopUpSelectFinanziamento.addEventListener('click', closeSelectFinanziamento);
     btnSelectFinanziamento.addEventListener('click', associateRewardToFinanziamento);
     btnShowPopUpAggiungiProfilo.addEventListener('click', showFormAddProfile);
     btnClosePopUpAggiungiProfilo.addEventListener('click', closeFormAddProfile);
@@ -57,23 +53,6 @@ async function initInterface() {
 
         await getProject();
         updateDataFinanceInterface();   //imposta i dati del progetto, nome, tipo ecc...
-
-        /*//teoricamente vanno bene le chiamate in parallelo, le teniamo per sicurezza nel caso trovassimo errori
-        await getCompetenze(null, "competenzeTotali");
-        initPopUpAddProfile();      //crea il popUp con i dati raccolti delle competenze totali (nascosto inizialmente da css)
-
-        await getPictures();
-        addScrollImg();    //mostra e crea logica per scorrere le foto nel caso ce ne siano più di una
-
-        await getComments();
-        displayComments();  //mostra tutti i commenti associati a quel progetto
-
-        await getRewards();
-        displayRewards();   //mostra tutte le rewards legate a quel progetto
-
-        await getProfiliByProgetto();
-        displayProfili();   //mostra profili richiesti per quel progetto
-        */
         
         await Promise.all([
             getCompetenze(null, "competenzeTotali").then(initPopUpAddProfile),      //crea il popUp con i dati raccolti delle competenze totali (nascosto inizialmente da css)
@@ -103,7 +82,6 @@ function initPopUpAddProfile() {
     let listaCompetenze = document.getElementById('lista-competenze');
     competenzeSelezionate = []; // Array delle competenze selezionate
     livelliCompetenze = {};
-    console.log(competenze.competenzeTotali)
     competenze.competenzeTotali.forEach(item => {
         let label = document.createElement('label');
         label.classList.add("checkbox-item");
@@ -289,14 +267,12 @@ async function accettaCandidatura(idProfilo, mail, btnAcc, btnRej) {
         headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
     })
         .then(response => {
-            //console.log(response);
             if (response.data) {
                 alert("candidatura accettata")
                 btnAcc.disabled = true;
                 btnRej.disabled = false;
                 btnAcc.style.backgroundColor = "#a8d08d";
                 btnRej.style.backgroundColor = "red";
-                //console.log(response.data);
             } else if (response.data.error) {
                 console.error(response.data.error);
             } else {
@@ -320,14 +296,12 @@ async function rifiutaCandidatura(idProfilo, mail, btnAcc, btnRej) {
         headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
     })
         .then(response => {
-            //console.log(response);
             if (response.data) {
                 alert("candidatura rifiutata")
                 btnAcc.disabled = false;
                 btnRej.disabled = true;
                 btnAcc.style.backgroundColor = "green";
                 btnRej.style.backgroundColor = "#f1b0b0";
-                //console.log(response.data);
             } else if (response.data.error) {
                 console.error(response.data.error);
             } else {
@@ -370,7 +344,6 @@ async function addProfile(nome, comp, liv) {
         })
             .then(response => {
                 if (response.data) {
-                    //console.log(response.data);
                     document.querySelector("#search-profile").innerText = "Stiamo cercando profili con le seguenti competenze per aiutarci nel nostro progetto:";
                     let idProfilo = response.data.profileID
                     comp.forEach((element) => {
@@ -470,18 +443,7 @@ async function popola_s_p(id, comp, liv) {
 
     await axios.post("../backend/popola_s_p.php", data, {
         headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
-    })
-        .then(response => {
-            //console.log(response);
-            if (response.data) {
-                //console.log(response.data);
-            } else if (response.data.error) {
-                console.error(response.data.error);
-            } else {
-                console.error('Risposta non corretta dal server.');
-            }
-        })
-        .catch(error => {
+    }).catch(error => {
             let msg = error.response ? error.response.data : error.message;
             console.error("Access denied:", msg);
             alert(msg);
@@ -499,7 +461,6 @@ async function getCompetenze(mail, key) {
     })
         .then(response => {
             if (response.data.result) {
-                //console.log(response.data.result);
                 competenze[key] = response.data.result;
             } else if (response.data.error) {
                 console.error(response.data.error);
@@ -527,7 +488,6 @@ async function getCompetenzeByProfile(element) {
         .then(response => {
             if (response.data.result) {
                 competenze.competenzePerProfilo = response.data.result;
-                //console.log(competenzePerProfilo)
             } else if (response.data.error) {
                 console.error(response.data.error);
             } else {
@@ -553,7 +513,6 @@ async function getCandidatureByProfile(idProfilo) {
         .then(response => {
             if (response.data.result) {
                 candidatureByProfile = response.data.result;
-                //console.log(candidatureByProfile)
             } else if (response.data.error) {
                 console.error(response.data.error);
             } else {
@@ -604,7 +563,6 @@ async function getRewards() {
             .then(response => {
                 if (response.data.result) {
                     rewards = response.data.result;
-                    //console.log(response.data.result);
                 } else if (response.data.error) {
                     console.error(response.data.error);
                 } else {
@@ -632,7 +590,6 @@ async function getPictures() {
     })
         .then(response => {
             if (response.data.result.length !== 0) {
-                //console.log(response.data.result); // Load the protected content
                 pictures = response.data.result;
             } else {
                 console.log("foto non disponibile per il progetto")
@@ -682,7 +639,6 @@ async function getProject() {
         .then(response => {
             if (response.data.result) {
                 projectData = response.data.result;
-                console.log(response.data.result);
             } else if (response.data.error) {
                 console.error(response.data.error);
             } else {
@@ -752,7 +708,6 @@ function sendReply(text, idComment, divReply, btnReply) {
                 headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
             })
                 .then(response => {
-                    console.log(response.data); // Load the protected content
                     divReply.style.display = "none"
                     btnReply.style.display = "none"
 
@@ -805,7 +760,6 @@ function sendComment() {
             })
                 .then(response => {
                     templateComment(text, today, mail, response.data.comment_id);
-                    console.log(response.data); // Load the protected content
                 })
                 .catch(error => {
                     let msg = error.response ? error.response.data : error.message;
@@ -1102,7 +1056,6 @@ function addFinanziamento(event) {
     })
         .then(response => {
             if (response.data.result) {
-                console.log(response.data.result);
                 //aggiorno l'importo totale finanziato
                 projectData.totale_finanziato = parseInt(importo) + parseInt(projectData.totale_finanziato);
                 updateDataFinanceInterface();
@@ -1188,27 +1141,6 @@ function updateDataFinanceInterface() {
     document.querySelector(".progress").style.width = Math.floor((projectData.totale_finanziato / projectData.budget) * 100) + "%";
 }
 
-async function displaySelectFinanziamento(event) {
-    if (selectedReward) {
-        if (isUserLoggedIn()) {
-            //visualizzo il popUp
-            overlay.style.display = "block";
-            popUpSelectFinanziamento.style.display = "flex";
-
-            //scarico i dati dei finanziamenti dell'utente che non hanno una reward associata
-            await getFinanziamentiByMail();
-
-            //visualizzo i finanziamenti dell'utente
-            displayFinanziamenti();
-        } else {
-            alert("Devi essere loggato per poter selezionare un finanziamento");
-            window.location.href = "./login.html";
-        }
-    } else {
-        alert("Seleziona una reward per poter procedere con la selezione del finanziamento");
-    }
-}
-
 function closeSelectFinanziamento(event) {
     // Nasconde l'interfaccia di selezione del finanziamento
     overlay.style.display = "none";
@@ -1217,67 +1149,6 @@ function closeSelectFinanziamento(event) {
     // Pulisce i campi dell'interfaccia
     setUnselect(event, ".finanziamento");
     selectedFinanziamento = "";
-}
-
-async function getFinanziamentiByMail() {
-    try {
-        await axios.get("../backend/getFinanziamentiByUtente.php", {
-            params: {
-                mail: mail // Parametri della query string
-            },
-            headers: {
-                "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
-            }
-        })
-            .then(response => {
-                if (response.data.result) {
-                    finanziamentiUtente = response.data.result;
-                    console.log(response.data.result);
-                } else if (response.data.error) {
-                    console.error(response.data.error);
-                } else {
-                    console.error('Risposta non corretta dal server.', response.data);
-                }
-            })
-            .catch(error => {
-                console.error("Errore nel recupero delle rewards:", error.response ? error.response.data.error : error.message);
-                alert("Errore nel recupero dei finanziamenti");
-            });
-    } catch (error) {
-        console.error('Errore nel caricamento delle rewards:', error);
-        alert("Errore nel caricamento dei finanziamenti");
-    }
-}
-
-function displayFinanziamenti() {
-    //cleaning the finanziamenti container
-    finanziamentoViewer.innerHTML = "";
-
-    //read all finanziamenti and append them to the container
-    finanziamentiUtente.forEach(finanziamento => {
-        let finanziamentoNode = document.createElement("div");
-        finanziamentoNode.className = "finanziamento";
-        finanziamentoNode.setAttribute("tabindex", "0");
-        finanziamentoNode.innerHTML = `
-                                <p>mail: ${finanziamento.mail}</p>
-                                <p>nome progetto: ${finanziamento.nome}</p>
-                                <p>data: ${finanziamento.dataF}</p>
-                                <p>importo: ${finanziamento.importo}</p>
-                            `;
-
-        finanziamentoNode.addEventListener("click", selectFinanziamento);
-        finanziamentoViewer.appendChild(finanziamentoNode);
-    });
-
-}
-
-function selectFinanziamento(event) {
-    setUnselect(event, ".finanziamento");
-
-    let targetNode = event.target.closest(".finanziamento");
-    targetNode.classList.add("selected");
-    let indexSelected = [...targetNode.parentNode.children].indexOf(targetNode);
-    selectedFinanziamento = finanziamentiUtente[indexSelected]
 }
 
 function associateRewardToFinanziamento(event) {
@@ -1296,7 +1167,6 @@ function associateRewardToFinanziamento(event) {
             .then(response => {
                 if (response.data) {
                     if (response.data.result) {
-                        console.log(response.data); // Load the protected content
                         //aggiorno l'interfaccia
                         closeSelectFinanziamento(event);
                         alert("Reward associata con successo al finanziamento");
@@ -1365,7 +1235,6 @@ async function addCandidatura(id) {
         headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
     })
         .then(response => {
-            console.log(response)
             if (response.status == 200) {
                 alert("Candidatura inviata con successo");
             } else {
