@@ -300,12 +300,18 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
+        RESIGNAL;
     END;
     
 	if not exists(select * from PROGETTO where (nome = inputNome) and (stato = 'aperto')) then
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'inputNome doesn\'t exists or is not an open project';
     END IF;
+    
+    if exists(select 1 from FINANZIAMENTO where mail=inputMail and nome=inputNome and DATE(dataF) = DATE(inputData)) then
+		SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'il finanziamento oggi è già stato fatto';
+    end if;
     
     start transaction;
 		insert into FINANZIAMENTO (mail, nome, dataF, importo)
@@ -413,7 +419,7 @@ CREATE PROCEDURE InserisciCompetenza(IN inputCompetenza VARCHAR(255))
 BEGIN
     if exists(select * from SKILL where competenza = inputCompetenza) then
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'inputId alredy exists';
+        SET MESSAGE_TEXT = 'Competenza alredy exists';
     END IF;
     insert into SKILL (competenza)
 	values (inputCompetenza);

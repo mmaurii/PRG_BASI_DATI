@@ -115,13 +115,13 @@ async function addProject(event) {
         });
 
         // Verifica se ci sono ricompense da inviare
-        if (rewardsData.length === 0) {
+/*         if (rewardsData.length === 0) {
             alert("Nessuna ricompensa da salvare!");
             return;
-        }
+        } */
 
         //reindirizza alla pagina dei progetti
-        window.location.href = "./index.html";
+        window.location.href = `./progetto.html?name=${nome}`;
     } catch (error) {
         console.error('Errore:', error);
         alert('Si è verificato un errore durante il caricamento.');

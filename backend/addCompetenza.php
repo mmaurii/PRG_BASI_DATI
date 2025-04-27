@@ -32,17 +32,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bindParam(':competenza', $competenza, PDO::PARAM_STR);
 
         // Execute the query
-        $stmt->execute();
+        $result = $stmt->execute();
 
         $text = "timeStamp: " . date('Y-m-d H:i:s').";competenza: " . $competenza . ";queryType: INSERT;query: " . $sql . ";result: " . $result;
         $resp = writeLog($text);
 
         echo json_encode(["result" => "Competenza inserita con successo"]);
     } catch (PDOException $e) {
+        $errorInfo = $stmt->errorInfo();
         http_response_code(500);
-        echo json_encode(["error" => "[ERRORE] Impossibile inserire la competenza. Errore: " . $e->getMessage()]);
+        echo json_encode([
+            "error" => "[ERRORE] Query SQL non riuscita.",
+            "sqlstate" => $errorInfo[0],
+            "errorcode" => $errorInfo[1],
+            "msg" => $errorInfo[2]
+        ]);
         exit();
-    }
+}
 } else {
     http_response_code(405); // Method Not Allowed
     echo json_encode(["error" => "HTTP method not allowed"]);

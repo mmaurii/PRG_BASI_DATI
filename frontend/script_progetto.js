@@ -151,12 +151,17 @@ function initPopUpAddProfile() {
     });
 
     btnAddProfilo.addEventListener('click', function () {
-        let nomeProfilo = document.querySelector("#nome-profilo")
+        const nomeProfilo = document.querySelector("#nome-profilo")
+        let nome = nomeProfilo.value;
         let comp = competenzeSelezionate
         let liv = livelliCompetenze
-        addProfile(nomeProfilo, comp, liv)
+
+        nomeProfilo.value = ""; 
+
+        addProfile(nome, comp, liv)
     });
 }
+
 function initPopUpViewCandidature(idProfilo) {
     const popUp = document.querySelector(".manage-candidature");
     const overlay = document.getElementById("overlay");
@@ -354,10 +359,9 @@ async function showManageCandidatura(idProfilo) {
 }
 
 async function addProfile(nome, comp, liv) {
-    //console.log("profilo inserito")
-    if (nome.value) {
+    if (nome) {
         const data = {
-            nomeProfilo: nome.value,
+            nomeProfilo: nome,
             nomeProgetto: projectName,
         };
 
@@ -372,9 +376,8 @@ async function addProfile(nome, comp, liv) {
                     comp.forEach((element) => {
                         popola_s_p(idProfilo, element, liv[element])
                     });
-                    templateProfileFromButtonAdd(nome.value, comp, liv, idProfilo);
+                    templateProfileFromButtonAdd(nome, comp, liv, idProfilo);
                     closeFormAddProfile();
-                    nome.value = "";
                 } else if (response.data.error) {
                     console.error(response.data.error);
                 } else {
@@ -391,6 +394,7 @@ async function addProfile(nome, comp, liv) {
     }
 
 }
+
 function templateProfileFromButtonAdd(name, comp, liv, idProfilo) {
     let profileCard = document.createElement("div");
     profileCard.classList.add("profile-card");
@@ -1113,7 +1117,7 @@ function addFinanziamento(event) {
         .catch(error => {
             let msg = error.response ? error.response.data.error : error.message;
             alert(msg);
-            console.error("Access denied:", msg);
+            console.error(msg);
         });
 
 }

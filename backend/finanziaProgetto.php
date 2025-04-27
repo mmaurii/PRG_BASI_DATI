@@ -39,13 +39,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Execute the query
             $result = $stmt->execute();
 
-            $text = "timeStamp: " . date('Y-m-d H:i:s').";mail: " . $mail . ";progetto: " . $nomeProgetto . ";data: " . $dataFinanziamento . ";queryType: INSERT;query: " . $sql . ";result: " . $result;
+            $text = "timeStamp: " . date('Y-m-d H:i:s') . ";mail: " . $mail . ";progetto: " . $nomeProgetto . ";data: " . $dataFinanziamento . ";queryType: INSERT;query: " . $sql . ";result: " . $result;
             $resp = writeLog($text);
 
             echo json_encode(["result" => $result]);
         } catch (PDOException $e) {
+            $errorInfo = $stmt->errorInfo();
             http_response_code(500);
-            echo json_encode(["error" => "[ERRORE] Query SQL non riuscita. Errore: " . $e->getMessage()]);
+            echo json_encode([
+                "error" => $errorInfo[2],
+                "sqlstate" => $errorInfo[0],
+                "errorcode" => $errorInfo[1],
+            ]);
             exit();
         }
     } else {
@@ -56,4 +61,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     http_response_code(405);
     echo json_encode(["error" => "HTTP method not allowed"]);
 }
-?>

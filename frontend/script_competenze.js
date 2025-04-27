@@ -1,6 +1,6 @@
 import { isUserLoggedIn, getRoleFromToken, getUsernameFromToken } from "./script_navbar.js";
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     fetchCompetenze();
     document.getElementById('addCompetenceForm').addEventListener('submit', addCompetence);
 });
@@ -55,22 +55,16 @@ async function addCompetence(event) {
     if (competenceName) {
         const data = { competenza: competenceName };
 
-        try {
-            // Effettua la richiesta POST per aggiungere la competenza
-            const response = await axios.post('../backend/addCompetenza.php', data, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('jwtToken')}` // Header Authorization
-                }
-            });
-
-            if (response.data.result) {
-                alert(response.data.result);
-                fetchCompetenze();
-            } else {
-                alert(response.data.error || "Errore durante l'aggiunta della competenza");
+        // Effettua la richiesta POST per aggiungere la competenza
+        await axios.post('../backend/addCompetenza.php', data, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('jwtToken')}` // Header Authorization
             }
-        } catch (error) {
-            console.error("Errore di connessione:", error.response ? error.response.data.error : error.message);
-        }
+        }).then((result) => {
+            alert(result.data.result);
+            fetchCompetenze();
+        }).catch((err) => {
+            alert(err.response.data.msg || "Errore durante l'aggiunta della competenza");
+        });
     }
 }
