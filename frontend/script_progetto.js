@@ -13,7 +13,7 @@ let today = currentDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
 document.addEventListener('DOMContentLoaded', async function () {
     finanziamentoViewer = document.querySelector('.finanziamento-viewer');
     btnSelectFinanziamento = document.getElementById('btn-select-finanziamento');
-   rewardViewers = Array.from(document.getElementsByClassName('reward-viewer'));
+    rewardViewers = Array.from(document.getElementsByClassName('reward-viewer'));
     btnFinanzia = document.getElementById('finanzia');
     overlay = document.getElementById('overlay');
     mailFinanziatore = document.getElementById('mail');
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     //creazione interfaccia
     await initInterface();
-    
+
 })
 async function initInterface() {
     try {
@@ -53,7 +53,7 @@ async function initInterface() {
 
         await getProject();
         updateDataFinanceInterface();   //imposta i dati del progetto, nome, tipo ecc...
-        
+
         await Promise.all([
             getCompetenze(null, "competenzeTotali").then(initPopUpAddProfile),      //crea il popUp con i dati raccolti delle competenze totali (nascosto inizialmente da css)
             getPictures().then(addScrollImg),       //mostra e crea logica per scorrere le foto nel caso ce ne siano più di una
@@ -67,7 +67,7 @@ async function initInterface() {
         }
 
         // Controlla se l'utente è il creatore del progetto, si possono aggiungere profili solo se il prgetto è di tipo software
-        if (mail === projectData.mailC && projectData.tipo === "Software") {  
+        if (mail === projectData.mailC && projectData.tipo === "Software") {
             btnShowPopUpAggiungiProfilo.style.display = "block";
         }
 
@@ -134,7 +134,7 @@ function initPopUpAddProfile() {
         let comp = competenzeSelezionate
         let liv = livelliCompetenze
 
-        nomeProfilo.value = ""; 
+        nomeProfilo.value = "";
 
         addProfile(nome, comp, liv)
     });
@@ -207,7 +207,7 @@ function initPopUpViewCandidature(idProfilo) {
     document.getElementById("close-manageCandidature").addEventListener("click", closeManageCandidatura);
 }
 
-function displayProfili(){
+function displayProfili() {
     profili.forEach(async (element) => {
         await getCompetenzeByProfile(element.id);
 
@@ -215,13 +215,13 @@ function displayProfili(){
     });
 }
 
-function displayComments(){
+function displayComments() {
     comments.forEach(element => {
         templateComment(element.testo, element.data, element.mail, element.id)
     });
 }
 
-function addScrollImg(){
+function addScrollImg() {
     if (pictures) {
         const projectImages = pictures[projectName];
 
@@ -444,9 +444,9 @@ async function popola_s_p(id, comp, liv) {
     await axios.post("../backend/popola_s_p.php", data, {
         headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
     }).catch(error => {
-            let msg = error.response ? error.response.data : error.message;
-            console.error("Access denied:", msg);
-            alert(msg);
+        let msg = error.response ? error.response.data : error.message;
+        console.error("Access denied:", msg);
+        alert(msg);
     });
 }
 
@@ -472,7 +472,7 @@ async function getCompetenze(mail, key) {
             let msg = error.response ? error.response.data : error.message;
             console.error("Access denied:", msg);
             alert(msg);
-    });
+        });
 }
 
 
@@ -498,7 +498,7 @@ async function getCompetenzeByProfile(element) {
             let msg = error.response ? error.response.data : error.message;
             console.error("Access denied:", msg);
             alert(msg);
-    });
+        });
 }
 
 async function getCandidatureByProfile(idProfilo) {
@@ -523,7 +523,7 @@ async function getCandidatureByProfile(idProfilo) {
             let msg = error.response ? error.response.data : error.message;
             console.error("Access denied:", msg);
             alert(msg);
-    });
+        });
 }
 
 async function getProfiliByProgetto() {
@@ -548,7 +548,7 @@ async function getProfiliByProgetto() {
             let msg = error.response ? error.response.data : error.message;
             console.error("Access denied:", msg);
             alert(msg);
-    });
+        });
 }
 async function getRewards() {
     try {
@@ -599,7 +599,7 @@ async function getPictures() {
             let msg = error.response ? error.response.data : error.message;
             console.error("Access denied:", msg);
             alert(msg);
-        //window.location.href = "login.html"; // Redirect if unauthorized
+            //window.location.href = "login.html"; // Redirect if unauthorized
         });
 }
 
@@ -625,7 +625,7 @@ async function getComments() {
             let msg = error.response ? error.response.data : error.message;
             console.error("Access denied:", msg);
             alert(msg);
-    });
+        });
 }
 async function getProject() {
     await axios.get("../backend/getProjectByName.php", {
@@ -649,7 +649,7 @@ async function getProject() {
             let msg = error.response ? error.response.data : error.message;
             console.error("Access denied:", msg);
             alert(msg);
-    });
+        });
 }
 
 function showFormAddProfile() {
@@ -733,7 +733,7 @@ function sendReply(text, idComment, divReply, btnReply) {
                     let msg = error.response ? error.response.data : error.message;
                     console.error("Access denied:", msg);
                     alert(msg);
-                    });
+                });
 
         }
 
@@ -765,7 +765,7 @@ function sendComment() {
                     let msg = error.response ? error.response.data : error.message;
                     console.error("Access denied:", msg);
                     alert("Devi effettuare l'accesso prima di poter inviare un commento");
-                    });
+                });
         }
     }
     document.querySelector("#textComment").value = ""
@@ -977,34 +977,29 @@ function displayFinanziamento(event) {
     if (projectData.stato == "aperto") {
         //verifico che l'utente sia loggato
         if (isUserLoggedIn()) {
-            //verifico che l'utente non sia il creatore del progetto
-            if (mail !== projectData.mailC) {
-                //verifico che il progetto non sia chiuso
-                if (projectData.budget > projectData.totale_finanziato && today <= projectData.dataLimite) {
-                    //visualizzo l'interfaccia di finanziamento
-                    overlay.style.display = "block";
-                    popUpFinanzia.style.display = "flex";
-                    mailFinanziatore.innerText = mail;
+            //verifico che il progetto non sia chiuso
+            if (projectData.budget > projectData.totale_finanziato && today <= projectData.dataLimite) {
+                //visualizzo l'interfaccia di finanziamento
+                overlay.style.display = "block";
+                popUpFinanzia.style.display = "flex";
+                mailFinanziatore.innerText = mail;
 
-                    if (selectedReward) {
-                        let rewardDOMNodes = document.querySelectorAll(".reward");
-                        rewardDOMNodes.forEach(reward => {
-                            if (reward.querySelector("img")?.getAttribute("cod") == selectedReward) {
-                                reward.classList.add("selected");
-                            }
-                        });
-                    }
-                } else {
-                    alert("Progetto non finanziabile, il progetto è chiuso perchè il budget è stato raggiunto o la data limite è scaduta");
+                if (selectedReward) {
+                    let rewardDOMNodes = document.querySelectorAll(".reward");
+                    rewardDOMNodes.forEach(reward => {
+                        if (reward.querySelector("img")?.getAttribute("cod") == selectedReward) {
+                            reward.classList.add("selected");
+                        }
+                    });
                 }
             } else {
-                alert("Non puoi finanziare il tuo progetto");
+                alert("Progetto non finanziabile, il progetto è chiuso perchè il budget è stato raggiunto o la data limite è scaduta");
             }
         } else {
             alert("Devi essere loggato per poter finanziare il progetto");
             window.location.href = "./login.html";
         }
-    }else{
+    } else {
         alert("Progetto non finanziabile, il progetto è chiuso perchè il budget è stato raggiunto o la data limite è scaduta");
     }
 }
@@ -1027,7 +1022,7 @@ function addFinanziamento(event) {
         return;
     }
 
-    if(selectedReward == null) {
+    if (selectedReward == null) {
         alert("Selezionare una reward per procedere con il finanziamento");
         return;
     }
@@ -1246,5 +1241,5 @@ async function addCandidatura(id) {
             let msg = error.response ? error.response.data : error.message;
             console.error("Access denied:", msg);
             alert(msg);
-    });
+        });
 }
