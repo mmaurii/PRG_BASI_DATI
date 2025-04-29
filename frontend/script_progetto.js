@@ -1022,11 +1022,6 @@ function addFinanziamento(event) {
         return;
     }
 
-    if (selectedReward == null) {
-        alert("Selezionare una reward per procedere con il finanziamento");
-        return;
-    }
-
     if (mail == null || projectName == null || importo == null) {
         alert("Errore nei dati inseriti");
         return;
@@ -1065,7 +1060,6 @@ function addFinanziamento(event) {
         .catch(error => {
             let msg = error.response ? error.response.data.error : error.message;
             alert(msg);
-            console.error(msg);
         });
 
 }
