@@ -14,16 +14,11 @@ body {
     margin: 32px auto;
     padding: 0 32px;
     display: flex;
-    /* Usa il flex per disporre gli elementi in orizzontale */
     gap: 32px;
-    align-items: flex-start;
-    /* Allinea gli oggetti in alto */
 }
 
 .project-info {
-    text-align: left;
     flex: 1;
-    /* Prende lo spazio rimanente */
 }
 
 .project-info h1 {
@@ -32,11 +27,9 @@ body {
 }
 
 .subtitle {
-    font-size: 19px;
+    font-size: 16px;
     color: grey;
     margin-bottom: 32px;
-    word-break: break-word; /* This forces long words to break */
-    overflow-wrap: break-word; /* Extra safety */
 }
 
 .progress-bar {
@@ -101,7 +94,7 @@ body {
 }
 
 .project-description h2 {
-    font-size: 29px;
+    font-size: 28px;
     margin-bottom: 16px;
 }
 
@@ -124,6 +117,7 @@ body {
     display: flex;
     height: 100%;
     transition: transform 0.3s ease-in-out;
+
 
 }
 
@@ -152,17 +146,14 @@ button.scroll-right {
     z-index: 1;
     border-radius: 50%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    /* Aggiunto effetto ombra per maggiore visibilità */
 }
 
 button.scroll-left {
     left: 10px;
-    /* Spostato il pulsante verso il bordo */
 }
 
 button.scroll-right {
     right: 10px;
-    /* Spostato il pulsante verso il bordo */
 }
 
 button.scroll-left:hover,
@@ -180,70 +171,8 @@ button.scroll-right:hover {
     margin-bottom: 16px;
 }
 
-.creator-profile {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.creator-profile img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-}
-
 .creator-profile p {
     color: grey;
-}
-
-.rewards {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 32px;
-}
-
-.rewards h2 {
-    font-size: 29px;
-    margin-bottom: 32px;
-}
-
-.reward-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 32px;
-}
-
-
-.reward-card {
-    background-color: white;
-    border: 1px solid lightgray;
-    border-radius: 8px;
-    padding: 24px;
-    text-align: center;
-}
-
-.reward-card h3 {
-    font-size: 21px;
-    color: green;
-    margin-bottom: 8px;
-}
-
-.reward-card p {
-    color: grey;
-    margin-bottom: 16px;
-}
-
-.unselect-reward, .select-reward {
-    padding: 10px 24px;
-    background-color: green;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.unselect-reward:hover, .select-reward:hover {
-    background-color: darkgreen;
 }
 
 .comments {
@@ -253,7 +182,7 @@ button.scroll-right:hover {
 }
 
 .comments h2 {
-    font-size: 29px;
+    font-size: 28px;
     margin-bottom: 32px;
 }
 
@@ -271,8 +200,6 @@ button.scroll-right:hover {
     border: 1px solid lightgray;
     border-radius: 4px;
     font-size: 16px;
-    resize: vertical;
-    outline: none;
 }
 
 .comment-form textarea:focus {
@@ -299,11 +226,6 @@ button.scroll-right:hover {
     padding: 0;
 }
 
-.comment-list p{
-    word-break: break-word; /* This forces long words to break */
-    overflow-wrap: break-word; /* Extra safety */
-}
-
 .comment-list li {
     background-color: white;
     border: 1px solid lightgray;
@@ -313,16 +235,8 @@ button.scroll-right:hover {
 }
 
 .comment-user {
-    display: flex;
-    align-items: center;
     gap: 16px;
     margin-bottom: 8px;
-}
-
-.comment-user img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
 }
 
 .comment-user p {
@@ -370,9 +284,6 @@ button.scroll-right:hover {
 
 .reply-form {
     margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
 }
 
 .reply-text {
@@ -382,12 +293,9 @@ button.scroll-right:hover {
     border: 1px solid lightgray;
     border-radius: 4px;
     font-size: 14px;
-    resize: vertical;
-    outline: none;
 }
 
 .send-reply {
-    align-self: flex-start;
     padding: 6px 12px;
     background-color: green;
     color: white;
@@ -412,9 +320,7 @@ button.scroll-right:hover {
 .reply-container {
     display: flex;
     justify-content: space-between;
-    /* Spazia gli elementi uno a sinistra e uno a destra */
     align-items: center;
-    /* Centra verticalmente gli elementi */
     flex-wrap: wrap;
     margin-top: 12px;
     padding: 10px;
@@ -427,7 +333,6 @@ button.scroll-right:hover {
     font-style: italic;
     color: black;
     margin-right: 16px;
-    /* Distanza tra il testo della risposta e il nome dell'autore */
 }
 
 .creator-reference {
@@ -435,7 +340,6 @@ button.scroll-right:hover {
     color: grey;
     font-style: italic;
     text-align: right;
-    /* Assicura che il testo sia allineato a destra */
 }
 
 .help-us {
@@ -446,7 +350,7 @@ button.scroll-right:hover {
 }
 
 .help-us h2 {
-    font-size: 29px;
+    font-size: 28px;
     margin-bottom: 16px;
 }
 
@@ -454,160 +358,6 @@ button.scroll-right:hover {
     font-size: 18px;
     color: grey;
     margin-bottom: 32px;
-}
-
-.profile-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 32px;
-}
-
-.profile-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    padding: 24px;
-    border: 1px solid #e0e0e0; /* Colore del bordo più delicato */
-    border-radius: 16px; /* Aumenta l'angolo per bordi più morbidi */
-    position: relative;
-    max-width: 350px;
-    margin: 16px;
-    background-color: #ffffff; /* Colore di sfondo bianco per contrastare con il testo */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Ombra più prominente */
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Aggiungi un'animazione al passaggio del mouse */
-    word-break: break-word; /* This forces long words to break */
-    overflow-wrap: break-word; /* Extra safety */
-}
-
-.profile-card:hover, .reward:hover {
-    transform: translateY(-10px); /* Solleva la card quando ci passi sopra con il mouse */
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15); /* Ombra più pronunciata al passaggio del mouse */
-}
-
-.profile-card h3 {
-    font-size: 1.8rem;
-    margin-bottom: 10px;
-    color: #333;
-    font-weight: 600; /* Aggiungi un peso maggiore per il titolo */
-    text-transform: capitalize; /* Prima lettera maiuscola */
-}
-
-.profile-card h4 {
-    font-size: 1.3rem;
-    color: #6c757d; /* Colore più delicato per il sottotitolo */
-    margin-bottom: 16px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: bold;
-}
-
-.competence-list {
-    list-style: none; /* Rimuovi i pallini dalla lista */
-    padding: 0;
-    margin: 0;
-    width: 100%;
-}
-
-.competence-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    padding: 12px 16px;
-    border-bottom: 1px solid #f1f1f1; /* Colore dei bordi tra gli item */
-    font-size: 1rem;
-    margin-bottom: 8px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
-}
-
-.competence-item:hover {
-    background-color: #e9f9e9; /* Colore di hover più chiaro */
-}
-
-.competence-name {
-    font-weight: bold;
-    color: #2c3e50;
-}
-
-.competence-level {
-    color: #7f8c8d;
-    font-style: italic;
-}
-
-.apply-button {
-    padding: 12px 28px;
-    background-color: green; /* Colore verde più brillante */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 18px;
-    cursor: pointer;
-    margin-top: 24px;
-    transition: background-color 0.3s ease;
-}
-
-.apply-button:hover {
-    background-color: darkgreen; /* Colore più chiaro al passaggio del mouse */
-}
-
-.profile-card .apply-button {
-    font-size: 1.1rem; /* Aumenta leggermente la dimensione per renderlo più visibile */
-    font-weight: bold;
-}
-
-.profile-card h3, .profile-card h4 {
-    font-family: 'Roboto', sans-serif;
-}
-
-.profile-card {
-    width: 300px; /* O la dimensione che preferisci */
-    margin: 0 auto; /* Per centrarla orizzontalmente */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 20px;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-
-.profile-card .competence-item:hover {
-    background-color: #e8f5e9; /* Colore di hover più delicato per gli item della lista */
-}
-
-.profile-card .competence-name {
-    color: green; /* Colore verde per i nomi delle competenze */
-}
-
-.profile-card .competence-level {
-    color: #6c757d; /* Colore grigio per il livello delle competenze */
-}
-.add-profile-button {
-    display: none;
-    margin: 20px auto; /* Auto ai lati lo centra */
-    padding: 12px 24px;
-    background-color: green;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-
-.add-profile-button:hover {
-    background-color: darkgreen;
-}
-
-
-body.is-creator .creator-only {
-    display: inline-block;
 }
 
 footer {
@@ -618,7 +368,6 @@ footer {
 }
 
 
-/* pop up finanziamento */
 .popUp {
     display: none;
     position: fixed;
@@ -700,69 +449,6 @@ footer {
     background-color: darkgreen;
 }
 
-/* Pop-up per aggiungere il profilo */
-.popUp.add-profile {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #f9f9f9;
-    padding: 20px;
-    max-width: 90vw;
-    max-height: 90vh;
-    border-radius: 15px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    overflow: auto;
-    z-index: 1000;
-    flex-direction: column;
-    justify-content: top;
-    align-items: left;
-}
-
-.popUp.add-profile > .close-btn {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    width: 100%;
-}
-
-.popUp.add-profile h2 {
-    font-size: 20px;
-    margin-bottom: 16px;
-}
-
-.popUp.add-profile input {
-    width: 100%;
-    padding: 8px 16px;
-    border: 2px solid darkgreen;
-    border-radius: 5px;
-    font-size: 16px;
-    margin-bottom: 16px;
-    outline: none;
-}
-
-.popUp.add-profile input:focus {
-    border-color: green;
-}
-
-/* Bottone per aggiungere profilo */
-.add-profile-button, #aggiungi {
-    padding: 12px 24px;
-    background-color: green;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 16px;
-}
-
-.add-profile-button:hover, #aggiungi:hover {
-    background-color: darkgreen;
-}
-
-/* Campo input nome profilo */
 #nome-profilo {
     padding: 12px 16px;
     border: 1px solid lightgrey;
@@ -772,9 +458,8 @@ footer {
     margin-bottom: 16px;
 }
 
-/* Contenitore per selezione competenze */
 #lista-competenze {
-    max-height: 450px; /* Limita altezza per lo scrolling */
+    max-height: 450px;
     overflow-y: auto;
     padding: 10px;
     border: 1px solid #ccc;
@@ -782,62 +467,70 @@ footer {
     background: #fff;
     contain: content;
 }
-/* Checkbox personalizzate */
 .checkbox-item {
     display: flex;
     align-items: center;
     gap: 10px;
     margin-bottom: 10px;
     padding: 8px;
-    background: #ffffff; /* Sfondo bianco per contrasto */
+    background: #ffffff;
     border-radius: 5px;
-    border: 1px solid #ccc; /* Bordo più netto */
+    border: 1px solid #ccc;
     font-weight: 500;
-    color: #333; /* Testo più scuro */
-    text-shadow: none; /* Evita sfocatura del testo */
+    color: #333;
+    text-shadow: none;
 }
-
 
 .checkbox-item input[type="checkbox"] {
     transform: scale(1.2);
 }
-/* Slider livello */
 .range-slider {
     width: 100px;
     margin-left: 10px;
 }
 
-/* Sezione profili aggiunti */
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 300px)); /* Larghezza fissa di 250px */
+    gap: 32px;
+    justify-content: center; /* Centra la griglia orizzontalmente */
+    padding: 0 32px; /* Padding laterale per evitare aderenza ai bordi */
+}
+
 .profile-card {
+    width: 300px; /* Larghezza fissa */
     background: white;
     padding: 16px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    margin: 10px 0;
-    max-width: 400px;
+    margin: 0; /* Rimuovi margini extra */
 }
 
-/* Nome del profilo */
 .profile-card h3 {
+    font-size: 24px;
     margin-bottom: 8px;
     color: darkgreen;
+    text-transform: capitalize;
+    font-family: 'Roboto', sans-serif;
 }
 
-/* Titolo competenze */
 .profile-card h4 {
-    margin-top: 10px;
-    font-size: 14px;
+    font-size: 20px;
+    color: gray;
+    margin-bottom: 16px;
+    text-transform: uppercase;
     font-weight: bold;
+    font-size: 14px; /* Versione unificata per la seconda dichiarazione */
+    margin-top: 10px;
 }
 
-/* Lista competenze */
 .competence-list {
     list-style: none;
     padding: 0;
-    margin-top: 8px;
+    margin: 0;
+    width: 100%;
 }
 
-/* Ogni competenza in lista */
 .competence-item {
     display: flex;
     justify-content: space-between;
@@ -845,20 +538,26 @@ footer {
     padding: 6px;
     border-radius: 4px;
     margin-bottom: 5px;
+    border-bottom: 1px solid #f1f1f1; /* Colore dei bordi tra gli item */
+    transition: background-color 0.3s ease;
+}
+
+.competence-item:hover {
+    background-color: #e9f9e9;
 }
 
 .competence-name {
     font-size: 16px;
-    color: #222; /* Testo più scuro per contrasto */
+    font-weight: bold;
+    color: green; /* Combinato il colore */
 }
 
 .competence-level {
     font-size: 14px;
-    color: #006400; /* Verde più visibile */
+    color: #7f8c8d;
+    font-style: italic;
 }
 
-
-/* Bottone per candidarsi */
 .apply-button {
     display: block;
     width: 100%;
@@ -870,11 +569,52 @@ footer {
     text-align: center;
     cursor: pointer;
     border: none;
+    transition: background-color 0.3s ease;
 }
 
 .apply-button:hover {
     background: darkgreen;
 }
+
+.apply-button:nth-of-type(2) {
+    background: #004d99;
+}
+
+.apply-button:nth-of-type(2):hover {
+    background: #003366;
+}
+
+.add-profile-button {
+    display: none;
+    margin: 20px auto;
+    padding: 12px 24px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#aggiungi {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.add-profile-button:hover {
+    background-color: darkgreen;
+}
+
+body.is-creator .creator-only {
+    display: inline-block;
+}
+
 
 /* Bottone visualizza candidature (blu) */
 .apply-button:nth-of-type(2) {
@@ -885,43 +625,6 @@ footer {
     background: #003366;
 }
 
-/* Popup per la gestione delle candidature */
-.manage-candidature {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #f9f9f9;
-    padding: 20px;
-    max-width: 90vw;
-    max-height: 90vh;
-    border-radius: 15px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    overflow: auto;
-    z-index: 1000;
-    flex-direction: column;
-    justify-content: top;
-    align-items: left;
-}
-
-/* Header del popup (chiusura e titolo) */
-/* Header del popup (chiusura e titolo) */
-.manage-candidature .popup-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 20px; /* Spazio sotto il titolo */
-}
-
-.manage-candidature .popup-header h3 {
-    font-size: 20px;
-    margin: 0;
-    color: #333;
-}
-
-/* Lista delle candidature */
 .candidature-viewer {
     max-height: 400px;
     overflow-y: auto;
@@ -933,19 +636,10 @@ footer {
 }
 
 
-.manage-candidature .popup-header .close-btn {
-    background: none;
-    border: none;
-    font-size: 24px;
-    color: #888;
-    cursor: pointer;
-}
-
 .manage-candidature .popup-header .close-btn:hover {
     color: #333;
 }
 
-/* Candidatura individuale */
 .candidate-item {
     display: flex;
     justify-content: space-between;
@@ -963,7 +657,6 @@ footer {
     color: #555;
 }
 
-/* Bottoni "Accetta" e "Rifiuta" */
 .accept-btn, .reject-btn {
     padding: 8px 15px;
     font-size: 14px;
@@ -974,7 +667,6 @@ footer {
     margin-left: 10px;
 }
 
-/* "Accetta" - verde */
 .accept-btn {
     background-color: green;
     color: white;
@@ -984,7 +676,6 @@ footer {
     background-color: darkgreen;
 }
 
-/* "Rifiuta" - rosso */
 .reject-btn {
     background-color: red;
     color: white;
@@ -993,7 +684,6 @@ footer {
 .reject-btn:hover {
     background-color: #92251d;
 }
-/* Messaggio quando non ci sono candidature */
 .no-candidates-msg {
     font-style: italic;
     color: #555;
@@ -1002,16 +692,52 @@ footer {
     margin: 8px 0;
 }
 
-/* Overlay to block interface */
 #overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* Semi-transparent */
-    display: none; /* Initially hidden */
-    z-index: 999; /* Lower than .wrapper */
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: 999;
+}
+
+.rewards {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px;
+}
+
+.rewards h2 {
+    font-size: 28px;
+    margin-bottom: 32px;
+}
+
+.reward-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 32px;
+}
+
+
+.reward-card {
+    background-color: white;
+    border: 1px solid lightgray;
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+}
+
+.reward-card h3 {
+    font-size: 20px;
+    color: green;
+    margin-bottom: 8px;
+}
+
+.reward-card p {
+    color: grey;
+    margin-bottom: 16px;
 }
 
 .reward-viewer{
@@ -1045,12 +771,6 @@ footer {
     width: 100%;
 }
 
-/*
-.reward.selected, .finanziamento.selected {
-    box-shadow: 0px 5px 15px rgb(25, 76, 20);
-    transition: box-shadow 0.1s ease-in-out;
-}*/
-
 .finanziamento{
     display: flex;
     flex-direction: column;
@@ -1067,8 +787,4 @@ footer {
 
 .finanziamento:hover{
     background-color: rgba(25, 76, 20, 0.4); ;
-}
-
-p{
-    word-wrap: break-word;
 }
