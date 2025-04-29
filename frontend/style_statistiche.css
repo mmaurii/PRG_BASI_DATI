@@ -1,0 +1,173 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+.hero {
+    text-align: center;
+    padding: 64px 32px;
+    background-color: #f9f9f9;
+}
+
+.hero h1 {
+    font-size: 40px;
+    margin-bottom: 16px;
+}
+
+.hero p {
+    font-size: 19px;
+    color: darkgrey;
+    margin-bottom: 32px;
+}
+
+.start-button, .esplora {
+    padding: 10px 28px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.esplora-btn {
+    text-align: center;
+    margin-bottom: 1%;
+}
+
+.start-button:hover {
+    background-color: darkgreen;
+}
+
+.top-progetti {
+    padding: 32px;
+}
+
+.top-progetti h2 {
+    text-align: center;
+    margin-bottom: 32px;
+    font-size: 24px;
+}
+
+.top-creatori h2 {
+    text-align: center;
+    margin: 32px;
+    font-size: 24px;
+}
+.top-finanziatori h2 {
+    text-align: center;
+    margin: 32px;
+    font-size: 24px;
+}
+
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 32px;
+    max-width: 1500px;
+    margin: 0 auto;
+}
+
+.card {
+    display: block;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-decoration: none;
+    color: black;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.card h3 {
+    padding: 16px;
+    font-size: 20px;
+}
+
+.card p {
+    padding: 0 16px;
+    color: grey;
+    height: 10%;
+}
+
+.progress-bar {
+    height: 10px;
+    background-color: lightgray;
+    margin: 16px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background-color: green;
+}
+
+.card p:last-child {
+    padding: 0 16px 16px;
+    font-size: 14px;
+    color: black;
+    margin-bottom: 25px;
+}
+
+.top-creatori ul {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+}
+
+.top-creatori ul li {
+    flex: 1;
+    text-align: center;
+    font-weight: bold;
+}
+
+.top-finanziatori ul {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.top-finanziatori ul li {
+    flex: 1;
+    text-align: center;
+    font-weight: bold;
+}
+
+
+footer {
+    text-align: center;
+    padding: 16px;
+    background-color: #f9f9f9;
+    color: darkgrey;
+}

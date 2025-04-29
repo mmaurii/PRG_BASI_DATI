@@ -695,11 +695,12 @@ GROUP BY P.nome;
 
 /* Visualizzare la classifica degli utenti creatori, in base al loro valore di affidabilità. Mostrare solo il nickname dei primi 3 utenti. */
 DROP VIEW if exists viewClassifica;
-CREATE VIEW viewClassifica(mail, affidabilita) AS
-	SELECT mail, affidabilita
-	FROM CREATORE
-	order by affidabilita desc
-    limit 3;
+CREATE VIEW viewClassifica AS
+    SELECT U.nickname
+    FROM CREATORE C
+    JOIN UTENTE U ON C.mail = U.mail
+    ORDER BY C.affidabilita DESC
+    LIMIT 3;
 
 /* Visualizzare i progetti APERTI che sono più vicini al proprio completamento (= minore differenza tra budget richiesto e somma totale dei finanziamenti ricevuti). Mostrare solo i primi 3 progetti. */
 DROP VIEW IF EXISTS viewClassificaProgettiAperti;
@@ -717,12 +718,12 @@ LIMIT 3;
 Mostrare	solo	i	nickname	dei	primi	3	utenti.*/
 DROP VIEW if exists ClassificaTotFinanziamenti;
 CREATE VIEW ClassificaTotFinanziamenti AS
-	SELECT U.nickname, SUM(F.importo) AS Totale_Finanziamenti
-	FROM UTENTE U, FINANZIAMENTO F
-	where U.mail = F.mail
-	GROUP BY U.mail
-	ORDER BY Totale_Finanziamenti DESC
-	LIMIT 3;
+    SELECT U.nickname
+    FROM UTENTE U
+    JOIN FINANZIAMENTO F ON U.mail = F.mail
+    GROUP BY U.mail
+    ORDER BY SUM(F.importo) DESC
+    LIMIT 3;
 
 /* DEFINIZIONE DEI TRIGGER */
 
