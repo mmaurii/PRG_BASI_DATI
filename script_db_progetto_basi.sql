@@ -676,14 +676,48 @@ DELIMITER ;
 /*ottenere tutte le candidature di un certo profilo*/
 DROP PROCEDURE IF EXISTS getCandidatureByProfiloId;
 DELIMITER |
-CREATE PROCEDURE getCandidatureByProfiloId(IN profiloId INT)
+CREATE PROCEDURE getCandidatureByProfiloId(
+    IN profiloId INT,
+    IN mailCreatore VARCHAR(255)
+)
 BEGIN
+    DECLARE progetto_nome VARCHAR(255);
+
+    -- Controlla se il profilo esiste
+    IF NOT EXISTS (
+        SELECT 1
+        FROM PROFILO
+        WHERE id = profiloId
+    ) THEN
+        SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT = 'Errore: il profilo non esiste.';
+    END IF;
+
+    -- Ottieni il nome del progetto associato al profilo
+    SELECT nomeS INTO progetto_nome
+    FROM PROFILO
+    WHERE id = profiloId;
+
+    -- Verifica che il progetto appartenga al creatore specificato
+    IF NOT EXISTS (
+        SELECT 1
+        FROM PROGETTO
+        WHERE nome = progetto_nome AND mailC = mailCreatore
+    ) THEN
+        SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT = 'Errore: non sei il creatore del progetto associato a questo profilo.';
+    END IF;
+
+    -- Se tutti i controlli sono superati, restituisci le candidature
     SELECT *
     FROM CANDIDATURA
     WHERE id = profiloId;
-END
+
+END;
 |
 DELIMITER ;
+
+
 
 /* ottiene tutte le statistiche relative all'utente */
 DROP PROCEDURE IF EXISTS getUserStatistics;

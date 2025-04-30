@@ -513,6 +513,7 @@ async function getCandidatureByProfile(idProfilo) {
         }
     })
         .then(response => {
+            //console.log(response.data)
             if (response.data.result) {
                 candidatureByProfile = response.data.result;
             } else if (response.data.error) {
