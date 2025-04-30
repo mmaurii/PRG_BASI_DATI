@@ -1,26 +1,21 @@
 import { isUserLoggedIn, getRoleFromToken, getUsernameFromToken } from "./script_navbar.js";
 
-let projectName, mail, projectData, comments, role, pictures, profili, candidatureByProfile, popUpFinanzia, btnClosePopUpFinanziamento,
+let projectName, mail, projectData, comments, pictures, profili, candidatureByProfile, popUpFinanzia, 
     mailFinanziatore, overlay, btnFinanzia, rewards, rewardViewers, selectedReward = null,
-    popUpSelectFinanziamento, btnClosePopUpSelectFinanziamento, btnSelectFinanziamento, btnShowPopUpAggiungiProfilo,
+    btnShowPopUpAggiungiProfilo, btnClosePopUpFinanziamento,
     popUpAggiungiProfilo, btnClosePopUpAggiungiProfilo, btnAddProfilo, competenzeSelezionate, livelliCompetenze,
-    finanziamentiUtente, finanziamentoViewer, selectedFinanziamento = "", profileGrid, token,
-    competenze = { "competenzeTotali": [], "competenzeUser": [], "competenzePerProfilo": [] };
+    profileGrid, token, competenze = { "competenzeTotali": [], "competenzeUser": [], "competenzePerProfilo": [] };
 
 const currentDate = new Date();
 let today = currentDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
 
 document.addEventListener('DOMContentLoaded', async function () {
-    finanziamentoViewer = document.querySelector('.finanziamento-viewer');
-    btnSelectFinanziamento = document.getElementById('btn-select-finanziamento');
     rewardViewers = Array.from(document.getElementsByClassName('reward-viewer'));
     btnFinanzia = document.getElementById('finanzia');
     overlay = document.getElementById('overlay');
     mailFinanziatore = document.getElementById('mail');
     popUpFinanzia = document.querySelector('.popUp.finanzia');
-    popUpSelectFinanziamento = document.querySelector('.popUp.select-finanziamento');
     btnClosePopUpFinanziamento = document.getElementById('close-finanziamento');
-    btnClosePopUpSelectFinanziamento = document.getElementById('close-selectFinanziamento');
     profileGrid = document.querySelector(".profile-grid")
     btnShowPopUpAggiungiProfilo = document.querySelector(".add-profile-button");
     popUpAggiungiProfilo = document.querySelector(".popUp.aggiungi-profilo");
@@ -29,8 +24,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     btnClosePopUpFinanziamento.addEventListener('click', closeFinanziamento);
     btnFinanzia.addEventListener('click', addFinanziamento);
-    btnClosePopUpSelectFinanziamento.addEventListener('click', closeSelectFinanziamento);
-    btnSelectFinanziamento.addEventListener('click', associateRewardToFinanziamento);
     btnShowPopUpAggiungiProfilo.addEventListener('click', showFormAddProfile);
     btnClosePopUpAggiungiProfilo.addEventListener('click', closeFormAddProfile);
     document.getElementById('finanziamento').addEventListener('click', displayFinanziamento);
@@ -70,8 +63,6 @@ async function initInterface() {
         if (mail === projectData.mailC && projectData.tipo === "Software") {
             btnShowPopUpAggiungiProfilo.style.display = "block";
         }
-
-        console.log("progetto caricato con successo!")
     } catch (error) {
         console.error('Errore nel caricamento del progetto:', error);
     }
@@ -517,7 +508,6 @@ async function getCandidatureByProfile(idProfilo) {
         }
     })
         .then(response => {
-            //console.log(response.data)
             if (response.data.result) {
                 candidatureByProfile = response.data.result;
             } else if (response.data.error) {
@@ -598,8 +588,6 @@ async function getPictures() {
         .then(response => {
             if (response.data.result.length !== 0) {
                 pictures = response.data.result;
-            } else {
-                console.log("foto non disponibile per il progetto")
             }
         })
         .catch(error => {
@@ -910,11 +898,7 @@ function templateComment(text, mysqlDate, creatore, id) {
     let buttonRispondi = document.createElement("button")
     buttonRispondi.classList.add("reply-button")
     buttonRispondi.classList.add("creator-only")
-    /*
-    if(role == "creator" || role == "admin_creator"){
-        buttonRispondi.style.display = "block";
-    }
-    */
+
     if (mail === projectData.mailC) {  // Controlla se l'utente è il creatore del progetto
         buttonRispondi.style.display = "block";
     }
@@ -1135,53 +1119,6 @@ function updateDataFinanceInterface() {
     document.querySelector("#budget").innerText = "raccolti di " + projectData.budget;
     document.querySelector("#percentuale").innerText = Math.floor((projectData.totale_finanziato / projectData.budget) * 100) + "%";
     document.querySelector(".progress").style.width = Math.floor((projectData.totale_finanziato / projectData.budget) * 100) + "%";
-}
-
-function closeSelectFinanziamento(event) {
-    // Nasconde l'interfaccia di selezione del finanziamento
-    overlay.style.display = "none";
-    popUpSelectFinanziamento.style.display = "none";
-
-    // Pulisce i campi dell'interfaccia
-    setUnselect(event, ".finanziamento");
-    selectedFinanziamento = "";
-}
-
-function associateRewardToFinanziamento(event) {
-    if (selectedFinanziamento != "") {
-        // Prepara i dati da inviare al server
-        const data = {
-            mail: selectedFinanziamento.mail,
-            nomeProgetto: selectedFinanziamento.nome,
-            dataFinanziamento: selectedFinanziamento.dataF,
-            codiceReward: selectedReward
-        };
-
-        axios.put("../backend/chooseReward.php", data, {
-            headers: { "Authorization": `Bearer ${JSON.stringify(token)}` }
-        })
-            .then(response => {
-                if (response.data) {
-                    if (response.data.result) {
-                        //aggiorno l'interfaccia
-                        closeSelectFinanziamento(event);
-                        alert("Reward associata con successo al finanziamento");
-                    } else {
-                        console.error(response.data);
-                        alert("Errore nell'associazione della reward al finanziamento");
-                    }
-                } else {
-                    console.error('Risposta non corretta dal server.');
-                    alert("Errore nell'associazione della reward al finanziamento");
-                }
-            })
-            .catch(error => {
-                console.error("Access denied:", error.response ? error.response.data : error.message);
-                alert("Errore nell'associazione della reward al finanziamento");
-            });
-    } else {
-        alert("Seleziona un finanziamento per poter procedere con l'associazione");
-    }
 }
 
 async function applyForProfile(event) {

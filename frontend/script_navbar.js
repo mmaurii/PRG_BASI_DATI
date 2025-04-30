@@ -124,7 +124,6 @@ export function isUserLoggedIn() {
         const currentTime = Date.now() / 1000;
 
         if (payloadDecoded.exp < currentTime) {
-            console.log("Il token è scaduto.");
             return false;
         }
 

@@ -67,7 +67,6 @@ async function getProgetti() {
 
         if (response.data.result) {
             progetti = response.data.result;
-            console.log(response.data.result);
         } else if (response.data.error) {
             console.error(response.data.error);
         } else {

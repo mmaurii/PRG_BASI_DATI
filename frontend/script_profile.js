@@ -88,7 +88,6 @@ function getCompetenze(mail, key) {
     })
         .then(response => {
             if (response.data.result) {
-                console.log(response.data.result);
                 competenze[key] = response.data.result;
             } else if (response.data.error) {
                 console.error(response.data.error);
@@ -179,7 +178,6 @@ function saveCompetenze() {
             })
                 .then(response => {
                     if (response.data.result) {
-                        console.log(response.data.result);
                         alert("Competenze salvate correttamente");
                         closeSetLivelloCompetenze();
                     }

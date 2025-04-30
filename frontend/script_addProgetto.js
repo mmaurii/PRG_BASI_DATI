@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
         if (!mail) {
             return
         }
-        console.log(mail);
     } else {
         alert("Devi essere loggato");
         window.location.href = "./login.html";
@@ -51,7 +50,7 @@ async function addProject(event) {
         return;
     }
 
-    if(!nome || !descrizione || !budget || !dataLimite || !tipo) {
+    if (!nome || !descrizione || !budget || !dataLimite || !tipo) {
         alert("Compila tutti i campi del progetto!");
         return;
     }
@@ -104,21 +103,11 @@ async function addProject(event) {
                 headers: {
                     'Content-Type': 'application/json'
                 }
-            })
-                .then(response => {
-                    console.log('Ricompensa aggiunta con successo:', response.data);
-                })
-                .catch(error => {
-                    console.error('Errore nell\'aggiunta della ricompensa:', error);
-                    alert('Errore nel salvataggio della ricompensa: ' + error.message);
-                });
+            }).catch(error => {
+                console.error('Errore nell\'aggiunta della ricompensa:', error);
+                alert('Errore nel salvataggio della ricompensa: ' + error.message);
+            });
         });
-
-        // Verifica se ci sono ricompense da inviare
-/*         if (rewardsData.length === 0) {
-            alert("Nessuna ricompensa da salvare!");
-            return;
-        } */
 
         //reindirizza alla pagina dei progetti
         window.location.href = `./progetto.html?name=${nome}`;
@@ -154,8 +143,6 @@ async function addReward(event) {
                 if (response.data.success) {
                     // Ottieni il percorso dell'immagine dalla risposta
                     const imageUrl = response.data.imageUrl;
-/*                     console.log(imageUrl);
- */
                     // Crea un nuovo item nella lista delle ricompense
                     const rewardItem = document.createElement('li');
                     rewardItem.classList.add('reward-item');

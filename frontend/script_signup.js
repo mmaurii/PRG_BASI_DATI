@@ -65,9 +65,7 @@ async function createAccount(event) {
       await axios.post("../backend/signUp.php", registerData)
          .then(response => {
             if (response.data) {
-               console.log(response.data.result);
                if (response.data.result === 1) {
-                  console.log("Registrazione avvenuta con successo.");
                   window.location.href = "./index.html";
                } else if(response.data.result === 0){
                   pErrorMsg.innerText = "Esiste già un account associato a questa mail, usa un'altra mail.";

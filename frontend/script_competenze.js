@@ -19,9 +19,7 @@ async function fetchCompetenze() {
                 'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
             }
         });
-
-        console.log(response.data);
-
+        
         if (response.data.result) {
             popolaLista(response.data.result);
         } else {
