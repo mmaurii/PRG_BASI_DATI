@@ -8,13 +8,6 @@ use Firebase\JWT\Key;
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
     if(isCreator()) {
-        // Decodifica il JWT per ottenere la mail del creatore
-        $headers = apache_request_headers();
-        if (!isset($headers['Authorization'])) {
-            http_response_code(401);
-            echo json_encode(["error" => "Token non presente"]);
-            exit();
-        }
 
         $payload = decodeJwt();
         $mailCreatore = $payload['username'];

@@ -320,16 +320,20 @@ function closeManageCandidatura() {
     document.getElementById("overlay").style.display = "none";
 }
 async function showManageCandidatura(idProfilo) {
-    await getCandidatureByProfile(idProfilo);
+    try {
+        await getCandidatureByProfile(idProfilo);
+        // inizializzo i popUp solo se la chiamata ha successo
+        initPopUpViewCandidature(idProfilo);
 
-    //inizializzo i popUp
-    initPopUpViewCandidature(idProfilo);
-
-    const popUp = document.querySelector(".manage-candidature");
-    const overlay = document.getElementById("overlay");
-    // Mostra il popup e l'overlay
-    popUp.style.display = "block";
-    overlay.style.display = "block";
+        const popUp = document.querySelector(".manage-candidature");
+        const overlay = document.getElementById("overlay");
+        // Mostra il popup e l'overlay
+        popUp.style.display = "block";
+        overlay.style.display = "block";
+    } catch (err) {
+        console.error("Errore nella richiesta delle candidature:", err);
+        // opzionale: mostra un messaggio di errore all'utente
+    }
 }
 
 async function addProfile(nome, comp, liv) {

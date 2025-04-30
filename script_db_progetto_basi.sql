@@ -489,22 +489,47 @@ END;
 |
 DELIMITER ;
 
-/* creo una procedura per l'aggiunta di una risposta ad un commento */
-drop PROCEDURE if exists addResponseToComment;
+DROP PROCEDURE IF EXISTS addResponseToComment;
 DELIMITER |
-CREATE PROCEDURE addResponseToComment(IN inputId INT, IN inputRisposta TEXT)
+CREATE PROCEDURE addResponseToComment(
+    IN inputId INT,
+    IN inputRisposta TEXT,
+    IN inputMailCreatore VARCHAR(255)
+)
 BEGIN
-	IF not EXISTS (SELECT * FROM COMMENTO WHERE id = inputId AND risposta IS NULL) THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Commento non trovato o risposta già presente';
+    DECLARE mailCreatoreDB VARCHAR(255);
+
+    -- Recupera la mail del creatore del progetto legato al commento
+    SELECT P.mailC INTO mailCreatoreDB
+    FROM COMMENTO C
+    JOIN PROGETTO P ON C.nome = P.nome
+    WHERE C.id = inputId;
+
+    -- Controllo se il commento esiste
+    IF mailCreatoreDB IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Commento non trovato';
     END IF;
-    
-	UPDATE COMMENTO
+
+    -- Controllo se è autorizzato
+    IF mailCreatoreDB != inputMailCreatore THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Non autorizzato a rispondere a questo commento';
+    END IF;
+
+    -- Controllo se la risposta esiste già
+    IF EXISTS (SELECT 1 FROM COMMENTO WHERE id = inputId AND risposta IS NOT NULL) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Risposta già presente';
+    END IF;
+
+    -- Esegui aggiornamento
+    UPDATE COMMENTO
     SET risposta = inputRisposta
     WHERE id = inputId;
 END;
 |
 DELIMITER ;
+
+
+
 
 DROP PROCEDURE IF EXISTS addProfileForProjectSoft;
 DELIMITER |
@@ -547,19 +572,42 @@ DELIMITER ;
 /* creo una procedura per gestire l'accettazione di una candidatura */
 drop PROCEDURE if exists manageApplicationStatus ;
 DELIMITER |
-CREATE PROCEDURE manageApplicationStatus(IN inputMail VARCHAR(255), IN inputId INT, IN inputStato VARCHAR(50))
+CREATE PROCEDURE manageApplicationStatus(
+    IN inputMail VARCHAR(255), 
+    IN inputId INT, 
+    IN inputStato VARCHAR(50), 
+    IN inputMailCreatore VARCHAR(255)
+)
 BEGIN
-	 IF not EXISTS (SELECT * FROM CANDIDATURA WHERE mail = inputMail AND id = inputId) THEN
+    -- Verifica che la candidatura esista
+    IF NOT EXISTS (
+        SELECT 1 
+        FROM CANDIDATURA 
+        WHERE mail = inputMail AND id = inputId
+    ) THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Candidatura non trovata';
     END IF;
-    
+
+    -- Verifica che il profilo appartenga a un progetto creato da inputMailCreatore
+    IF NOT EXISTS (
+        SELECT 1
+        FROM PROFILO P
+        JOIN PROGETTO PR ON P.nomeS = PR.nome
+        WHERE P.id = inputId AND PR.mailC = inputMailCreatore
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Non sei autorizzato a modificare lo stato di questa candidatura';
+    END IF;
+
+    -- Aggiorna lo stato della candidatura
     UPDATE CANDIDATURA
-	SET stato = inputStato
-	WHERE mail = inputMail AND id = inputId;
+    SET stato = inputStato
+    WHERE mail = inputMail AND id = inputId;
 END;
 |
 DELIMITER ;
+
 
 /*Procedure di appoggio*/
 /*ottenere il ruolo dell'utente, se admin, amministratore, entrambi o nessuno dei due*/
