@@ -22,7 +22,7 @@
             }
 
             try {
-                $isSuccess;
+                $isSuccess = false;
                 foreach($competenza as $comp) {
                     $livello = $comp["livello"];
                     $competenza = $comp["competenza"];

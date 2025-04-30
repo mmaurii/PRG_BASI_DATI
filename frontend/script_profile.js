@@ -1,7 +1,7 @@
 import { isUserLoggedIn, getUsernameFromToken } from './script_navbar.js';
 
 let token, btnCloseCompetenze, overlay, popUpSetLivelloCompetenze, competenzeViewer, competenzeUser, containerStatistics,
-btnSaveCompetenze, btnDisplayCompetenze, competenze = { "competenzeTotali": [], "competenzeUser": [] };
+    btnSaveCompetenze, btnDisplayCompetenze, competenze = { "competenzeTotali": [], "competenzeUser": [] };
 
 
 document.addEventListener('DOMContentLoaded', async function () {
@@ -160,44 +160,41 @@ function saveCompetenze() {
         }
     });
 
-    if (isUserLoggedIn()) {
-        let mail = getUsernameFromToken();
+    if (competenzeUpdated.length != 0) {
+        if (isUserLoggedIn()) {
+            let mail = getUsernameFromToken();
 
-        //controllo che non sia null undefined o false per via di getUsernameFromToken
-        if (!mail) {
-            return
-        }
-
-        axios.put("../backend/setLivelloCompetenze.php", {
-            mail: mail,
-            competenze: competenzeUpdated
-        }, {
-            headers: {
-                "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
+            //controllo che non sia null undefined o false per via di getUsernameFromToken
+            if (!mail) {
+                return
             }
-        })
-            .then(response => {
-                if (response.data.result) {
-                    console.log(response.data.result);
-                    alert("Competenze salvate correttamente");
-                    closeSetLivelloCompetenze();
-                } else if (response.data.error) {
-                    console.error(response.data.error);
-                    alert("Errore nel salvataggio delle competenze");
-                } else {
-                    console.error('Risposta non corretta dal server.', response.data);
-                    alert("Errore nel salvataggio delle competenze");
+
+            axios.put("../backend/setLivelloCompetenze.php", {
+                mail: mail,
+                competenze: competenzeUpdated
+            }, {
+                headers: {
+                    "Authorization": `Bearer ${JSON.stringify(token)}` // Header Authorization
                 }
             })
-            .catch(error => {
-                console.error("Errore nel salvataggio delle competenze:", error.response ? error.response.data.error : error.message);
-                alert("Errore nel salvataggio delle competenze");
-            });
+                .then(response => {
+                    if (response.data.result) {
+                        console.log(response.data.result);
+                        alert("Competenze salvate correttamente");
+                        closeSetLivelloCompetenze();
+                    }
+                })
+                .catch(error => {
+                    console.error("Errore nel salvataggio delle competenze:", error.response ? error.response.data.error : error.message);
+                    alert("Errore nel salvataggio delle competenze");
+                });
+        } else {
+            alert("Devi essere loggato per poter salvare le competenze");
+            window.location.href = "./login.html";
+        }
     } else {
-        alert("Devi essere loggato per poter salvare le competenze");
-        window.location.href = "./login.html";
+        alert("Non hai modificato nessuna competenza quindi non sono state aggiornate");
     }
-
 }
 
 function loadStatistics() {
