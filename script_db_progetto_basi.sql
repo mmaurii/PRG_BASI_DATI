@@ -303,17 +303,12 @@ BEGIN
         RESIGNAL;
     END;
     
-	if exists(select 1 from ADMIN where (mail = inputMail)) then
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'sei un admin e non puoi finanziare';
-    END IF;
-    
 	if not exists(select * from PROGETTO where (nome = inputNome) and (stato = 'aperto')) then
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'inputNome doesn\'t exists or is not an open project';
     END IF;
     
-    if exists(select 1 from FINANZIAMENTO where (mail = inputMail and nome = inputNome) and DATE(dataF) = DATE(inputData)) then
+    if exists(select 1 from FINANZIAMENTO where mail=inputMail and nome=inputNome and DATE(dataF) = DATE(inputData)) then
 		SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'il finanziamento oggi è già stato fatto';
     end if;
