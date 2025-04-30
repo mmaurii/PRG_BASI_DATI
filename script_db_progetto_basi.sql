@@ -901,11 +901,16 @@ INSERT INTO CREATORE (mail, nr_progetti, affidabilita) VALUES
 ('giovanni.ferri@email.com', 0, 0);
 
 INSERT INTO ADMIN (mail, codSicurezza) VALUES 
-('mario.rossi@email.com', 'SEC123XYZ'),
-('sara.neri@email.com', 'SAFE456ABC'),
-('paolo.riva@email.com', 'PROT789DEF'),
-('valentina.marchi@email.com', 'SECURE101GHI'),
-('andrea.serra@email.com', 'LOCK202JKL');
+/* SEC123XYZ */
+('mario.rossi@email.com', 'e90653108c85867d9ef6d7f4b54e68f0552cee869804edc81bf8475479cb8064'),
+/* SAFE456ABC */
+('sara.neri@email.com', 'b75f4feaf03c04deebb35199f3f23c0c73cdd9c6642aeb8aeb694ae3bb32b3c8'),
+/* PROT789DEF */
+('paolo.riva@email.com', 'c5b2de8140af83e7b7ee8e90910c5bbe2b1041c0288409f5ca4c6d295fac999e'),
+/* SECURE101GHI */
+('valentina.marchi@email.com', 'e6c635bc07fa634af776c753220eb6d25df32e851e0d23ae8d431f851d4817d8'),
+/* LOCK202JKL */
+('andrea.serra@email.com', '9d5323a68cf15fa0825fbd4b03cf8896630273459c1c5c992742d948ade33e80');
 
 INSERT INTO PROGETTO (nome, descrizione, dataInserimento, budget, dataLimite, stato, mailC, tipo) VALUES 
 ('Smart Home Hub', 'Un dispositivo per la gestione della casa domotica.', '2025-02-15', 5000, '2025-06-15', 'aperto', 'mario.rossi@email.com', 'Hardware'),
