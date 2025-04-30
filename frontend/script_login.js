@@ -47,7 +47,7 @@ async function login(event) {
         let loginUrl = '../backend/login.php';
 
         if (accountType === 'admin') {
-            loginData.codSicurezza = codSicurezza;
+            loginData.codSicurezza = await hashPassword(codSicurezza);
             loginUrl = '../backend/loginAdmin.php';
         }
 

@@ -59,7 +59,7 @@ async function createAccount(event) {
             pErrorMsg.innerText = "Inserisci il codice di sicurezza.";
             return;
          }
-         registerData.secureCode = secureCodeField.value;
+         registerData.secureCode = await hashPassword(secureCodeField.value);
       }
 
       await axios.post("../backend/signUp.php", registerData)
