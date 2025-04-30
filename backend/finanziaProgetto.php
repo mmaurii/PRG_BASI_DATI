@@ -6,52 +6,57 @@ require_once 'logMongoDB.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (verifyJwtToken()) {
-        // Recupero i dati inviati dal client
-        $data = json_decode(file_get_contents('php://input'), true);
-        $mail = $data["mail"];
-        $nomeProgetto = $data["nomeProgetto"];
-        $dataFinanziamento = $data["dataFinanziamento"];
-        $importoFinanziamento = $data["importoFinanziamento"];
-        $codiceReward = $data["codiceReward"] ?? null; // Imposta a null se non fornito
+        if (!isAdmin()) {
+            // Recupero i dati inviati dal client
+            $data = json_decode(file_get_contents('php://input'), true);
+            $mail = $data["mail"];
+            $nomeProgetto = $data["nomeProgetto"];
+            $dataFinanziamento = $data["dataFinanziamento"];
+            $importoFinanziamento = $data["importoFinanziamento"];
+            $codiceReward = $data["codiceReward"] ?? null; // Imposta a null se non fornito
 
-        try {
-            $pdo = new PDO('mysql:host=' . servername . ';dbname=' . dbName, dbUsername, dbPassword);
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $pdo->exec(mysqlCharachter);
-        } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode(["error" => "[ERRORE] Connessione al DB non riuscita"]);
-            exit();
-        }
+            try {
+                $pdo = new PDO('mysql:host=' . servername . ';dbname=' . dbName, dbUsername, dbPassword);
+                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $pdo->exec(mysqlCharachter);
+            } catch (PDOException $e) {
+                http_response_code(500);
+                echo json_encode(["error" => "[ERRORE] Connessione al DB non riuscita"]);
+                exit();
+            }
 
-        try {
-            // Preparing the SQL query to call the procedure with an output parameter
-            $sql = "CALL finanziaProgetto(:mail, :nomeProgetto, :dataFinanziamento, :importoFinanziamento, :codiceReward)";
-            $stmt = $pdo->prepare($sql);
+            try {
+                // Preparing the SQL query to call the procedure with an output parameter
+                $sql = "CALL finanziaProgetto(:mail, :nomeProgetto, :dataFinanziamento, :importoFinanziamento, :codiceReward)";
+                $stmt = $pdo->prepare($sql);
 
-            // Binding the input parameters
-            $stmt->bindParam(':mail', $mail, PDO::PARAM_STR);
-            $stmt->bindParam(':nomeProgetto', $nomeProgetto, PDO::PARAM_STR);
-            $stmt->bindParam(':dataFinanziamento', $dataFinanziamento, PDO::PARAM_STR);
-            $stmt->bindParam(':importoFinanziamento', $importoFinanziamento, PDO::PARAM_INT);
-            $stmt->bindParam(':codiceReward', $codiceReward, PDO::PARAM_STR);
+                // Binding the input parameters
+                $stmt->bindParam(':mail', $mail, PDO::PARAM_STR);
+                $stmt->bindParam(':nomeProgetto', $nomeProgetto, PDO::PARAM_STR);
+                $stmt->bindParam(':dataFinanziamento', $dataFinanziamento, PDO::PARAM_STR);
+                $stmt->bindParam(':importoFinanziamento', $importoFinanziamento, PDO::PARAM_INT);
+                $stmt->bindParam(':codiceReward', $codiceReward, PDO::PARAM_STR);
 
-            // Execute the query
-            $result = $stmt->execute();
+                // Execute the query
+                $result = $stmt->execute();
 
-            $text = "timeStamp: " . date('Y-m-d H:i:s') . ";mail: " . $mail . ";progetto: " . $nomeProgetto . ";data: " . $dataFinanziamento . ";queryType: INSERT;query: " . $sql . ";result: " . $result;
-            $resp = writeLog($text);
+                $text = "timeStamp: " . date('Y-m-d H:i:s') . ";mail: " . $mail . ";progetto: " . $nomeProgetto . ";data: " . $dataFinanziamento . ";queryType: INSERT;query: " . $sql . ";result: " . $result;
+                $resp = writeLog($text);
 
-            echo json_encode(["result" => $result]);
-        } catch (PDOException $e) {
-            $errorInfo = $stmt->errorInfo();
-            http_response_code(500);
-            echo json_encode([
-                "error" => $errorInfo[2],
-                "sqlstate" => $errorInfo[0],
-                "errorcode" => $errorInfo[1],
-            ]);
-            exit();
+                echo json_encode(["result" => $result]);
+            } catch (PDOException $e) {
+                $errorInfo = $stmt->errorInfo();
+                http_response_code(500);
+                echo json_encode([
+                    "error" => $errorInfo[2],
+                    "sqlstate" => $errorInfo[0],
+                    "errorcode" => $errorInfo[1],
+                ]);
+                exit();
+            }
+        } else {
+            http_response_code(403);
+            echo json_encode(["error" => "Non hai i permessi per eseguire questa operazione perchè se i un admin"]);
         }
     } else {
         http_response_code(401);
