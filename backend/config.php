@@ -1,9 +1,9 @@
 <?php
 // Configurazione della connessione al database
-const servername = "13.61.196.206";  // Usa "localhost" se il database è sulla stessa macchina
-const dbUsername = "prova";         // Nome utente MySQL (modifica se necessario)
-const dbPassword = "MyNewPass1!";   // Password dell'utente MySQL (se impostata)
-const dbName = "BOSTARTER";  // Il nome del database
+const servername = "13.61.196.206";
+const dbUsername = "prova";
+const dbPassword = "MyNewPass1!";
+const dbName = "BOSTARTER";
 
 const mysqlCharachter = "SET NAMES 'utf8mb4'";
 

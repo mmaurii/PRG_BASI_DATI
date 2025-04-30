@@ -4,73 +4,68 @@ require 'protected.php';
 require  __DIR__ . '/../vendor/autoload.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
-    if (true || verifyJwtToken()) {
+    try {
+        // Connessione al database
+        $pdo = new PDO('mysql:host=' . servername . ';dbname=' . dbName, dbUsername, dbPassword);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        $pdo->exec(mysqlCharachter);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(["error" => "[ERRORE] Connessione al DB non riuscita"]);
+        exit();
+    }
+
+    // Recupero del nome del progetto dai parametri della query
+    $params = $_GET;
+    if (isset($params['progetto'])) {
+        $projectName = $params['progetto'];
+
         try {
-            // Connessione al database
-            $pdo = new PDO('mysql:host=' . servername . ';dbname=' . dbName, dbUsername, dbPassword);
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-            $pdo->exec(mysqlCharachter);
-        } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode(["error" => "[ERRORE] Connessione al DB non riuscita"]);
-            exit();
-        }
+            // Preparazione della query SQL per chiamare la stored procedure con il parametro
+            $sql = "CALL getProjectByName(:progetto)";
+            $stmt = $pdo->prepare($sql);
 
-        // Recupero del nome del progetto dai parametri della query
-        $params = $_GET;
-        if (isset($params['progetto'])) {
-            $projectName = $params['progetto'];
+            $stmt->bindParam(':progetto', $projectName, PDO::PARAM_STR);
 
-            try {
-                // Preparazione della query SQL per chiamare la stored procedure con il parametro
-                $sql = "CALL getProjectByName(:progetto)";
-                $stmt = $pdo->prepare($sql);
+            $stmt->execute();
 
-                $stmt->bindParam(':progetto', $projectName, PDO::PARAM_STR);
+            $result = $stmt->fetch();
 
-                $stmt->execute();
+            $stmt->closeCursor();
 
-                $result = $stmt->fetch();
+            if ($result) {
+                // Query per ottenere il totale finanziato dalla vista
+                $sqlView = "SELECT totale_finanziato FROM TotaleFinanziamenti WHERE nome = :progetto";
+                $stmtView = $pdo->prepare($sqlView);
 
-                $stmt->closeCursor();
+                $stmtView->bindParam(':progetto', $projectName, PDO::PARAM_STR);
 
-                if ($result) {
-                    // Query per ottenere il totale finanziato dalla vista
-                    $sqlView = "SELECT totale_finanziato FROM TotaleFinanziamenti WHERE nome = :progetto";
-                    $stmtView = $pdo->prepare($sqlView);
+                $stmtView->execute();
 
-                    $stmtView->bindParam(':progetto', $projectName, PDO::PARAM_STR);
+                $resultView = $stmtView->fetch();
 
-                    $stmtView->execute();
-
-                    $resultView = $stmtView->fetch();
-
-                    if ($resultView) {
-                        $result['totale_finanziato'] = $resultView['totale_finanziato'];
-                    } else {
-                        $result['totale_finanziato'] = 0;
-                    }
-
-                    // Restituisce il risultato con il dato aggiunto in formato JSON
-                    echo json_encode(["result" => $result]);
+                if ($resultView) {
+                    $result['totale_finanziato'] = $resultView['totale_finanziato'];
                 } else {
-                    echo json_encode(["error" => "Progetto non trovato"]);
+                    $result['totale_finanziato'] = 0;
                 }
-            } catch (PDOException $e) {
-                // this should never happen, but just in case
-                http_response_code(500);
-                echo json_encode(["error" => "Query SQL non riuscita. Errore: " . $e->getMessage()]);
-                exit();
+
+                // Restituisce il risultato con il dato aggiunto in formato JSON
+                echo json_encode(["result" => $result]);
+            } else {
+                echo json_encode(["error" => "Progetto non trovato"]);
             }
-        } else {
-            http_response_code(400);
-            echo json_encode(["error" => "Parametro 'progetto' mancante."]);
+        } catch (PDOException $e) {
+            // this should never happen, but just in case
+            http_response_code(500);
+            echo json_encode(["error" => "Query SQL non riuscita. Errore: " . $e->getMessage()]);
             exit();
         }
     } else {
-        http_response_code(401);
-        echo json_encode(["error" => "jwtToken non valido"]);
+        http_response_code(400);
+        echo json_encode(["error" => "Parametro 'progetto' mancante."]);
+        exit();
     }
 } else {
     http_response_code(405);

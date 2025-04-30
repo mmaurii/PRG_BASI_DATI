@@ -6,7 +6,6 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
-    
     // Connessione al DB
     try {
         $pdo = new PDO('mysql:host=' . servername . ';dbname=' . dbName, dbUsername, dbPassword);
