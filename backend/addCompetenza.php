@@ -2,6 +2,7 @@
 require_once 'config.php';
 require_once 'logMongoDB.php';
 require  __DIR__ . '/../vendor/autoload.php';
+require_once 'protected.php';
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
