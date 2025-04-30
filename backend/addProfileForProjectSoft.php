@@ -9,6 +9,7 @@
             $data = json_decode(file_get_contents('php://input'), true);
             $inputNome = $data["nomeProfilo"];
             $inputNomeS = $data["nomeProgetto"];
+            $mail = $data["mail"];
 
             try {
                 $pdo = new PDO('mysql:host='.servername.';dbname='.dbName, dbUsername, dbPassword);
@@ -22,12 +23,14 @@
 
             try {
                 // Prepara la query per chiamare la procedura con un parametro di uscita
-                $sql = "CALL addProfileForProjectSoft(:inputNome, :inputNomeS, @outputProfileID)";
+                $sql = "CALL addProfileForProjectSoft(:inputNome, :inputNomeS, :mail, @outputProfileID)";
                 $stmt = $pdo->prepare($sql);
 
                 // Binding dei parametri di input
                 $stmt->bindParam(':inputNome', $inputNome, PDO::PARAM_STR);
                 $stmt->bindParam(':inputNomeS', $inputNomeS, PDO::PARAM_STR);
+                $stmt->bindParam(':mail', $mail, PDO::PARAM_STR);
+
 
                 // Esegui la query
                 $stmt->execute();

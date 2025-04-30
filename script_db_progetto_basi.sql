@@ -396,6 +396,18 @@ DROP PROCEDURE IF EXISTS InserisciCandidatura;
 DELIMITER |
 CREATE PROCEDURE InserisciCandidatura(IN inputMail VARCHAR(255), IN inputId INT)
 BEGIN
+
+    IF EXISTS(
+        SELECT 1
+          FROM PROFILO
+          JOIN PROGETTO ON PROFILO.nomeS = PROGETTO.nome
+         WHERE PROFILO.id = inputId
+           AND PROGETTO.mailC = inputMail
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Non puoi candidarti a un profilo del tuo stesso progetto';
+    END IF;
+
 	IF EXISTS (SELECT 1 FROM CANDIDATURA WHERE mail = inputMail AND id = inputId) THEN
 		SIGNAL SQLSTATE '45000'
 		SET MESSAGE_TEXT = 'Candidatura già presente';
@@ -504,13 +516,18 @@ DELIMITER |
 CREATE PROCEDURE addProfileForProjectSoft(
     IN inputNome VARCHAR(255), 
     IN inputNomeS VARCHAR(255),
+    IN mail VARCHAR(255),
     OUT outputProfileID INT
 )
 BEGIN
-    -- Controlla se il progetto esiste
-    IF NOT EXISTS (SELECT 1 FROM PROGETTO WHERE nome = inputNomeS) THEN
+    IF NOT EXISTS (
+        SELECT 1
+          FROM PROGETTO
+         WHERE nome  = inputNomeS
+           AND mailC = mail
+    ) THEN
         SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'Errore: Il progetto non esiste.';
+            SET MESSAGE_TEXT = 'Errore: non sei il creatore di questo progetto o il progetto non esiste.';
     END IF;
 
     -- Controlla se il progetto è di tipo 'Software'

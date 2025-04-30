@@ -333,10 +333,12 @@ async function showManageCandidatura(idProfilo) {
 }
 
 async function addProfile(nome, comp, liv) {
+    mail = getUsernameFromToken();
     if (nome) {
         const data = {
             nomeProfilo: nome,
             nomeProgetto: projectName,
+            mail: mail,
         };
 
         await axios.post("../backend/addProfileForProjectSoft.php", data, {
