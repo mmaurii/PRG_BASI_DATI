@@ -1,6 +1,7 @@
 <?php
 require_once 'config.php';
 require 'protected.php';
+require_once 'logMongoDB.php';
 require  __DIR__ . '/../vendor/autoload.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -35,10 +36,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bindParam(':dataCommento', $dataCommento, PDO::PARAM_STR);
         
             // Esecuzione della query
-            $stmt->execute();
-        
+            $result = $stmt->execute();
+
             // Recupero dell'ID generato
             $idResult = $pdo->query("SELECT @newId AS id")->fetch(PDO::FETCH_ASSOC);
+
+            $text = "timeStamp: " . date('Y-m-d H:i:s') . 
+            ";mail: " . $mail . 
+            ";nomeProgetto: " . $nomeProgetto . 
+            ";testo: " . $testo . 
+            ";dataCommento: " . $dataCommento . 
+            ";queryType: INSERT" . 
+            ";query: " . $sql . 
+            ";result: " . $result;
+
+            $resp = writeLog($text);
         
             // Restituisci il risultato
             echo json_encode([

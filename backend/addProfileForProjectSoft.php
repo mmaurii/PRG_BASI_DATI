@@ -1,6 +1,7 @@
 <?php
     require_once 'config.php';
     require 'protected.php';
+    require_once 'logMongoDB.php';
     require  __DIR__ . '/../vendor/autoload.php';
 
     if($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -38,6 +39,16 @@
                 // Recupera l'ID del profilo appena creato
                 $stmt = $pdo->query("SELECT @outputProfileID AS profileID");
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                $text = "timeStamp: " . date('Y-m-d H:i:s') . 
+                ";mail: " . $mail . 
+                ";inputNome: " . $inputNome . 
+                ";inputNomeS: " . $inputNomeS . 
+                ";queryType: INSERT" . 
+                ";query: " . $sql . 
+                ";result: " . $result;
+    
+                $resp = writeLog($text);
 
                 // Aggiungi l'ID alla risposta
                 echo json_encode(["result" => true, "profileID" => $result['profileID']]);

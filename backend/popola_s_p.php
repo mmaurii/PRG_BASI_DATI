@@ -1,6 +1,7 @@
 <?php
     require_once 'config.php';
     require 'protected.php';
+    require_once 'logMongoDB.php';
     require __DIR__ . '/../vendor/autoload.php';
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -40,7 +41,17 @@
                 $stmt->bindParam(':livello', $livello, PDO::PARAM_INT);
 
                 // Execute the query
-                $stmt->execute();
+                $result = $stmt->execute();
+
+                $text = "timeStamp: " . date('Y-m-d H:i:s') . 
+                ";competenza: " . $competenza . 
+                ";idProfilo: " . $idProfilo . 
+                ";livello: " . $livello . 
+                ";queryType: INSERT" . 
+                ";query: " . $sql . 
+                ";result: " . $result;
+    
+                $resp = writeLog($text);
 
                 // If everything is fine, send a success response
                 echo json_encode(["result" => "Competenze e livello aggiornati con successo."]);

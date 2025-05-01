@@ -1,6 +1,7 @@
 <?php
 require_once 'config.php';
 require 'protected.php';
+require_once 'logMongoDB.php';
 require  __DIR__ . '/../vendor/autoload.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "PUT") {
@@ -36,6 +37,17 @@ if ($_SERVER["REQUEST_METHOD"] == "PUT") {
 
             // Eseguiamo la query
             $result = $stmt->execute();
+
+            $text = "timeStamp: " . date('Y-m-d H:i:s') . 
+            ";inputId: " . $inputId . 
+            ";inputRisposta: " . $inputRisposta . 
+            ";inputMailCreatore: " . $mailCreatore . 
+            ";queryType: UPDATE" . 
+            ";query: " . $sql . 
+            ";result: " . $result;
+
+            $resp = writeLog($text);
+
             echo json_encode([
                 "result" => $result
             ]);

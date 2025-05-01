@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require 'protected.php';
 require_once 'logMongoDB.php';
 require  __DIR__ . '/../vendor/autoload.php';
 
@@ -50,7 +51,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bindParam(':tipo', $tipo, PDO::PARAM_STR);
 
             // Esegui la query
-            $stmt->execute();
+            $result = $stmt->execute();
+
+            $text = "timeStamp: " . date('Y-m-d H:i:s') . 
+            ";nome: " . $nome . 
+            ";descrizione: " . $descrizione . 
+            ";dataInserimento: " . $dataInserimento . 
+            ";budget: " . $budget . 
+            ";dataLimite: " . $dataLimite . 
+            ";stato: " . $stato . 
+            ";mailC: " . $mailC . 
+            ";tipo: " . $tipo . 
+            ";queryType: INSERT" . 
+            ";query: " . $sql . 
+            ";result: " . $result;
+
+            $resp = writeLog($text);
+
+            
 
             // Aggiungi il file immagine alla tabella FOTO
             $sql = "INSERT INTO FOTO (foto, nomeP) VALUES (:foto, :nomeP)";
@@ -59,7 +77,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             foreach ($imageUrls as $imageUrl) {
                 $stmt->bindParam(':foto', $imageUrl, PDO::PARAM_STR);
                 $stmt->bindParam(':nomeP', $nome, PDO::PARAM_STR);
-                $stmt->execute();
+                $result1 = $stmt->execute();
+
+                $text1 = "timeStamp: " . date('Y-m-d H:i:s') . 
+                ";foto: " . $imageUrl . 
+                ";nomeP: " . $nome . 
+                ";queryType: INSERT" . 
+                ";query: " . $sql . 
+                ";result: " . $result1;
+
+                $resp1 = writeLog($text1);
             }
 
             echo json_encode(["result" => "Progetto inserito con successo e immagine caricata", "imageUrl" => $imageUrl]);
