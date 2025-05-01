@@ -1,6 +1,6 @@
 import { isUserLoggedIn, getRoleFromToken, getUsernameFromToken } from "./script_navbar.js";
 
-let projectName, mail, projectData, comments, pictures, profili, candidatureByProfile, popUpFinanzia, 
+let projectName, mail, role, projectData, comments, pictures, profili, candidatureByProfile, popUpFinanzia, 
     mailFinanziatore, overlay, btnFinanzia, rewards, rewardViewers, selectedReward = null,
     btnShowPopUpAggiungiProfilo, btnClosePopUpFinanziamento,
     popUpAggiungiProfilo, btnClosePopUpAggiungiProfilo, btnAddProfilo, competenzeSelezionate, livelliCompetenze,
