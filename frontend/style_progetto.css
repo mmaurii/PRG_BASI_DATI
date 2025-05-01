@@ -759,6 +759,13 @@ body.is-creator .creator-only {
     overflow-wrap: break-word; /* Extra safety */
 }
 
+.reward.selected {
+    border: 2px solid #4CAF50;
+    background-color: #e8f5e9;
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 128, 0, 0.3);
+}
+
 .divimg {
     height: 20vh;
     display: flex;
