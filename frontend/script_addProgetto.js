@@ -84,7 +84,11 @@ async function addProject(event) {
             imageUrls: imageUrls
         };
 
-        const response = await axios.post("../backend/addProgetto.php", projectData);
+        const response = await axios.post("../backend/addProgetto.php", projectData, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('jwtToken')}` // Header Authorization
+            }
+        })
 
         if (response.data.result) {
             alert('Progetto creato con successo!');
@@ -101,6 +105,7 @@ async function addProject(event) {
                 progetto: reward.inputNomeP
             }, {
                 headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`, // Header Authorization
                     'Content-Type': 'application/json'
                 }
             }).catch(error => {
